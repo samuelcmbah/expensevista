@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../services/authService";
+import { useAuth } from "../context/AuthContext";
 
 export default function AuthPage() {
+  const { login } = useAuth();
+
 
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -27,6 +30,7 @@ export default function AuthPage() {
   };
 
 
+  // HANDLE REGISTRATION
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); //stop page refresh
     setError(null);
@@ -40,8 +44,7 @@ export default function AuthPage() {
       return;
     }
 
-
-     setLoading(true);
+    setLoading(true);
     try {
       await registerUser({
         firstName,
@@ -68,45 +71,32 @@ export default function AuthPage() {
   };
 
 
+  // HANDLE LOGIN
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); //stop page refresh
     setError(null);
 
-    if (!email.trim() || !password) {
-      setError("Please provide email and password.");
-      return;
-    }
+    if (!email.trim() || !password) return setError("Please provide email and password.");
+
 
     setLoading(true);
     try {
       const data = await loginUser({ email, password });
       // assume backend returns: { token: 'jwt', user: { ... } }
       const token = data?.token ?? data?.accessToken ?? null;
+      console.log("Received token:", token);
       if (!token) {
-        // If your backend returns different shape, adapt this block
-        setError(" no token returned from server.");
-        setLoading(false);
-        return;
+        throw new Error("No token received from server.");
       }
 
-      // Store token securely: localStorage (if rememberMe) or sessionStorage
-      if (rememberMe) {
-        localStorage.setItem("expensevista_token", token);
-      } else {
-        sessionStorage.setItem("expensevista_token", token);
-      }
-
-      // Optionally store user info
-      if (data.user) {
-        localStorage.setItem("expensevista_user", JSON.stringify(data.user));
-      }
+      // store token and user in auth context
+      login(token, data?.user, rememberMe);
 
       // redirect to dashboard
       navigate("/dashboard");
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ??
-        err?.response?.data ??
         err?.message ??
         "Login failed";
       setError(String(msg));
