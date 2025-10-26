@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 interface User{
@@ -23,6 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   // Load token/user on app start
   useEffect(() => {
@@ -74,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("expensevista_user");
     sessionStorage.removeItem("expensevista_token");
     sessionStorage.removeItem("expensevista_user");
+    navigate("/login");
   };
 
   const value: AuthContextType = {
