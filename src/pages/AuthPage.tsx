@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
 
@@ -11,6 +11,7 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   // form state
   const [firstName, setFirstName] = useState("");
@@ -19,6 +20,14 @@ export default function AuthPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+
+  useEffect(() => {
+  if (location.pathname === "/login") {
+    setIsLogin(true);
+  } else if (location.pathname === "/register") {
+    setIsLogin(false);
+  }
+}, [location.pathname]);
 
   const resetForm = () => {
     setFirstName("");
@@ -84,13 +93,15 @@ export default function AuthPage() {
       const data = await loginUser({ email, password });
       // assume backend returns: { token: 'jwt', user: { ... } }
       const token = data?.token ?? data?.accessToken ?? null;
-      console.log("Received token:", token);
+      const user = data?.user ?? data?.applicationUser ?? null;
+
+      console.log("Login response data:", data);
       if (!token) {
         throw new Error("No token received from server.");
       }
 
       // store token and user in auth context
-      login(token, data?.user, rememberMe);
+      login(token, user, rememberMe);
 
       // redirect to dashboard
       navigate("/dashboard");
@@ -265,6 +276,7 @@ export default function AuthPage() {
                     setIsLogin(false);
                     setError(null);
                     resetForm();
+                    navigate("/register");
                   }}
                   className="text-blue-600 font-medium"
                 >
@@ -279,6 +291,7 @@ export default function AuthPage() {
                     setIsLogin(true);
                     setError(null);
                     resetForm();
+                    navigate("/login");
                   }}
                   className="text-blue-600 font-medium"
                 >

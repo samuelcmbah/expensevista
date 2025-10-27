@@ -2,10 +2,15 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function ProtectedRoute() {
-  const { token } = useAuth();
+  const { token, loading } = useAuth();
 
-  // If no token, redirect to login
-  if (!token) return <Navigate to="/login" replace />;
+  if (loading) {
+    return <div className="text-center mt-10 text-gray-500">Loading...</div>;
+  }
 
-  return <Outlet />; // Allow nested routes to render
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <Outlet />;
 }
