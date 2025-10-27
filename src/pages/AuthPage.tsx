@@ -161,7 +161,7 @@ export default function AuthPage() {
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  type="password"
+                  type="text"
                   placeholder="••••••••"
                   className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
                 />

@@ -1,27 +1,16 @@
-import axios from "axios";
+import type { LoginDTO } from "../types/LoginDTO";
+import type { RegisterDTO } from "../types/RegisterDTO";
+import apiClient from "./apiClient";
 
-const API_BASE = import.meta.env.VITE_API_URL ?? "https://localhost:7000"; // adjust if needed
-const AUTH_URL = `${API_BASE.replace(/\/+$/, "")}/api/auth`;
 
-export type RegisterData = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
 
-export const registerUser = async (data: RegisterData) => {
-  const response = await axios.post(`${AUTH_URL}/register`, data);
+export const registerUser = async (data: RegisterDTO) => {
+  const response = await apiClient.post("/auth/register", data);
   return response.data;
 };
 
-export type LoginData = {
-  email: string;
-  password: string;
-} 
 
-export const loginUser = async (data: LoginData) => {
-  const response = await axios.post(`${AUTH_URL}/login`, data);
+export const loginUser = async (data: LoginDTO) => {
+  const response = await apiClient.post("/auth/login", data);
   return response.data;
 };

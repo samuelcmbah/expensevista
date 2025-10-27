@@ -1,6 +1,6 @@
-import axios from "axios";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import { getToken, getUser, setTokenStorage, setUserStorage, clearTokenStorage, clearUserStorage } from "../services/handleJWT";
 
 interface User {
   id: string;
@@ -26,57 +26,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Load token/user on app start
+  // ✅ Load token/user on app start
   useEffect(() => {
-  const savedToken =
-    localStorage.getItem("expensevista_token") ??
-    sessionStorage.getItem("expensevista_token");
-  const savedUser =
-    localStorage.getItem("expensevista_user") ??
-    sessionStorage.getItem("expensevista_user");
+    const savedToken = getToken();
+    const savedUser = getUser();
 
-  if (savedToken) setToken(savedToken);
+    if (savedToken) setToken(savedToken);
+    if (savedUser) setUser(savedUser);
 
-  if (savedUser) {
-    try {
-      setUser(JSON.parse(savedUser));
-    } catch {
-      console.warn("Failed to parse saved user, clearing corrupted data.");
-      localStorage.removeItem("expensevista_user");
-      sessionStorage.removeItem("expensevista_user");
-    }
-  }
+    setLoading(false);
+  }, []);
 
-  setLoading(false);
-}, []);
-
-
-  // Attach token to all axios requests
-  useEffect(() => {
-    const interceptor = axios.interceptors.request.use((config) => {
-      if (token) config.headers.Authorization = `Bearer ${token}`;
-      return config;
-    });
-    return () => axios.interceptors.request.eject(interceptor);
-  }, [token]);
-
+  // ✅ login: store token/user and update state
   const login = (token: string, user: User, remember = false) => {
     setToken(token);
     setUser(user);
-    if (remember) {
-      localStorage.setItem("expensevista_token", token);
-      localStorage.setItem("expensevista_user", JSON.stringify(user));
-    } else {
-      sessionStorage.setItem("expensevista_token", token);
-      sessionStorage.setItem("expensevista_user", JSON.stringify(user));
-    }
+    setTokenStorage(token, remember);
+    setUserStorage(user, remember);
   };
 
+  // ✅ logout: clear everything and redirect
   const logout = () => {
     setToken(null);
     setUser(null);
-    localStorage.clear();
-    sessionStorage.clear();
+    clearTokenStorage();
+    clearUserStorage();
     navigate("/login");
   };
 
