@@ -104,7 +104,7 @@ export default function AuthPage() {
       login(token, user, rememberMe);
 
       // redirect to dashboard
-      navigate("/dashboard");
+      navigate("/");
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ??

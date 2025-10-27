@@ -5,6 +5,7 @@ import Reports from "../pages/Reports";
 import Settings from "../pages/Settings";
 import Transactions from "../pages/Transactions";
 import ProtectedRoute from "./ProtectedRoute";
+import MainLayout from "../layouts/MainLayout";
 
 
 export default function AppRoutes() {
@@ -17,10 +18,12 @@ export default function AppRoutes() {
 
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/transactions" element={<Transactions />} />
-        <Route path="/reports" element={<Reports />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route path="/" element={<MainLayout />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="transactions" element={<Transactions />} />
+          <Route path="reports" element={<Reports />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
       </Route>
 
       {/* Redirect unknown routes */}
