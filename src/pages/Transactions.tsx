@@ -4,6 +4,7 @@ import type { TransactionDTO } from "../types/TransactionDTO";
 import { TransactionType } from "../types/TransactionType";
 import { Plus, Search, Pencil, Trash2 } from "lucide-react"; // 🟢 Added icons
 import { deleteTransaction, getAllTransactions } from "../services/transactionService";
+import toast from "react-hot-toast";
 
 const Transactions: React.FC = () => {
   const navigate = useNavigate();
@@ -60,16 +61,18 @@ const Transactions: React.FC = () => {
 
   const handleDelete = async (id: number) => {
   if (window.confirm("Are you sure you want to delete this transaction?")) {
+    const toastId = toast.loading("Deleting...");
     try {
-      await deleteTransaction(id); // 🟢 backend call
+      await deleteTransaction(id);
       setTransactions((prev) => prev.filter((tx) => tx.id !== id));
-      alert("✅ Transaction deleted successfully!");
+      toast.success("Transaction deleted!", { id: toastId });
     } catch (error) {
-      console.error("❌ Failed to delete transaction:", error);
-      alert("Failed to delete transaction. Please try again.");
+      toast.error("Failed to delete transaction.", { id: toastId });
     }
   }
 };
+
+
 
 
   return (
