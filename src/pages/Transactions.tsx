@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { TransactionDTO } from "../types/TransactionDTO";
 import { TransactionType } from "../types/TransactionType";
-import { Plus, Search, Pencil, Trash2 } from "lucide-react"; // 🟢 Added icons
-import { deleteTransaction, getAllTransactions } from "../services/transactionService";
+import { Plus, Search, Pencil, Trash2 } from "lucide-react";
+import {
+  deleteTransaction,
+  getAllTransactions,
+} from "../services/transactionService";
 import toast from "react-hot-toast";
 
 const Transactions: React.FC = () => {
@@ -18,11 +21,13 @@ const Transactions: React.FC = () => {
   // ✅ Fetch all transactions
   useEffect(() => {
     const fetchData = async () => {
+      const toastId = toast.loading("Fetching transactions...");
       try {
         const data = await getAllTransactions();
         setTransactions(data);
+        toast.success("Transactions loaded", { id: toastId });
       } catch (error) {
-        console.error("❌ Failed to fetch transactions:", error);
+        toast.error("Failed to fetch transactions", { id: toastId });
       }
     };
     fetchData();
@@ -56,24 +61,22 @@ const Transactions: React.FC = () => {
 
   // ✅ Handlers
   const handleEdit = (id: number) => {
+    toast("Editing transaction...", { icon: "✏️" });
     navigate(`/edit-transaction/${id}`);
   };
 
   const handleDelete = async (id: number) => {
-  if (window.confirm("Are you sure you want to delete this transaction?")) {
-    const toastId = toast.loading("Deleting...");
-    try {
-      await deleteTransaction(id);
-      setTransactions((prev) => prev.filter((tx) => tx.id !== id));
-      toast.success("Transaction deleted!", { id: toastId });
-    } catch (error) {
-      toast.error("Failed to delete transaction.", { id: toastId });
+    if (window.confirm("Are you sure you want to delete this transaction?")) {
+      const toastId = toast.loading("Deleting transaction...");
+      try {
+        await deleteTransaction(id);
+        setTransactions((prev) => prev.filter((tx) => tx.id !== id));
+        toast.success("Transaction deleted!", { id: toastId });
+      } catch (error) {
+        toast.error("Failed to delete transaction.", { id: toastId });
+      }
     }
-  }
-};
-
-
-
+  };
 
   return (
     <div className="p-6 space-y-6">
@@ -144,7 +147,9 @@ const Transactions: React.FC = () => {
               <th className="px-4 py-3 whitespace-nowrap">Category</th>
               <th className="px-4 py-3 whitespace-nowrap">Type</th>
               <th className="px-4 py-3 whitespace-nowrap">Amount</th>
-              <th className="px-4 py-3 whitespace-nowrap text-center">Actions</th>
+              <th className="px-4 py-3 whitespace-nowrap text-center">
+                
+              </th>
             </tr>
           </thead>
           <tbody>
@@ -152,10 +157,14 @@ const Transactions: React.FC = () => {
               paginated.map((tx) => (
                 <tr key={tx.id} className="border-t hover:bg-gray-50">
                   <td className="px-4 py-3">
-                    {new Date(tx.transactionDate).toISOString().split("T")[0]}
+                    {new Date(tx.transactionDate)
+                      .toISOString()
+                      .split("T")[0]}
                   </td>
                   <td className="px-4 py-3">{tx.description}</td>
-                  <td className="px-4 py-3">{tx.category?.categoryName || "—"}</td>
+                  <td className="px-4 py-3">
+                    {tx.category?.categoryName || "—"}
+                  </td>
                   <td className="px-4 py-3">
                     <span
                       className={`px-2 py-1 rounded-full text-sm ${
@@ -177,7 +186,6 @@ const Transactions: React.FC = () => {
                     {tx.type === TransactionType.Income ? "+" : "-"}₦
                     {tx.amount.toLocaleString()}
                   </td>
-                  {/* ✅ Action Buttons */}
                   <td className="px-4 py-3 text-center flex justify-center gap-3">
                     <button
                       onClick={() => handleEdit(tx.id)}
