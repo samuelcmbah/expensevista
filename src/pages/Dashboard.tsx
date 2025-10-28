@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getRecentTransactions } from "../services/transactionService";
+import { getAllTransactions } from "../services/transactionService";
 import type { BudgetDTO } from "../types/BudgetDTO";
 import type { TransactionDTO } from "../types/TransactionDTO";
 import { TransactionType } from "../types/TransactionType";
@@ -11,12 +11,14 @@ import {
   ArrowDownCircle,
   TrendingUp,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
   const [budget, setBudget] = useState<BudgetDTO | null>(null);
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   // ✅ Fetch dashboard data when component mounts
   useEffect(() => {
@@ -24,7 +26,7 @@ const Dashboard: React.FC = () => {
       try {
         const [budgetData, transactionData] = await Promise.all([
           getBudgetStatus(),
-          getRecentTransactions(),
+          getAllTransactions(),
         ]);
         setBudget(budgetData);
         setTransactions(transactionData.slice(0, 5)); // Show only the 5 most recent transactions
@@ -118,7 +120,9 @@ const Dashboard: React.FC = () => {
       <div className="bg-white shadow rounded-xl p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Recent Transactions</h3>
-          <button className="text-blue-600 text-sm font-medium hover:underline">
+          <button 
+            onClick={() => navigate("/transactions")}
+            className="text-blue-600 text-sm font-medium hover:underline">
             View All
           </button>
         </div>
