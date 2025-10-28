@@ -26,9 +26,8 @@ const Dashboard: React.FC = () => {
           getBudgetStatus(),
           getRecentTransactions(),
         ]);
-        console.log("✅ Fetched budget data:", budgetData);
         setBudget(budgetData);
-        setTransactions(transactionData);
+        setTransactions(transactionData.slice(0, 5)); // Show only the 5 most recent transactions
       } catch (error) {
         console.error("❌ Failed to load dashboard data:", error);
       } finally {
@@ -43,15 +42,23 @@ const Dashboard: React.FC = () => {
     return <p className="p-6 text-gray-500">Loading dashboard...</p>;
   }
 
+
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'Good morning';
+    if (hour < 18) return 'Good afternoon';
+    return 'Good evening';
+  };
+
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* ✅ Greeting and Month */}
       <div>
         <h2 className="text-2xl font-semibold">
-          Hello, {user?.firstName || "User"} 👋
+          {getGreeting()}, {user?.firstName || "User"} 👋
         </h2>
         <p className="text-gray-500">
-          {budget?.budgetMonth
+          Your financial overview for {budget?.budgetMonth
             ? new Date(budget.budgetMonth).toLocaleString("default", {
               month: "long",
               year: "numeric",
@@ -135,7 +142,7 @@ const Dashboard: React.FC = () => {
                     <p className="font-medium">{tx.description}</p>
                     <p className="text-sm text-gray-500">
                       {new Date(tx.transactionDate).toLocaleDateString()} •{" "}
-                      {tx.category?.name ?? "Uncategorized"}
+                      {tx.category?.categoryName ?? "Uncategorized"}
                     </p>
                   </div>
                 </div>
