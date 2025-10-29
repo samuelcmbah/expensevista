@@ -33,6 +33,11 @@ const Transactions: React.FC = () => {
     fetchData();
   }, []);
 
+  // ✅ Helper to convert enum number → string
+  const getTypeLabel = (type: number) => {
+    return type === TransactionType.Income ? "Income" : "Expense";
+  };
+
   // ✅ Filters
   const filtered = transactions.filter((tx) => {
     const matchesSearch =
@@ -43,8 +48,7 @@ const Transactions: React.FC = () => {
       categoryFilter === "All" || tx.category?.categoryName === categoryFilter;
 
     const matchesType =
-      typeFilter === "All" ||
-      tx.type.toString().toLowerCase() === typeFilter.toLowerCase();
+      typeFilter === "All" || getTypeLabel(tx.type) === typeFilter;
 
     return matchesSearch && matchesCategory && matchesType;
   });
@@ -84,7 +88,7 @@ const Transactions: React.FC = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h2 className="text-2xl font-semibold">Transactions</h2>
-          <p className="text-gray-500">Manage all your income and expenses</p>
+          <p className="text-gray-500">Manage all your records</p>
         </div>
         <button
           onClick={() => navigate("/add-transaction")}
@@ -145,7 +149,6 @@ const Transactions: React.FC = () => {
               <th className="px-4 py-3 whitespace-nowrap">Date</th>
               <th className="px-4 py-3 whitespace-nowrap">Description</th>
               <th className="px-4 py-3 whitespace-nowrap">Category</th>
-              <th className="px-4 py-3 whitespace-nowrap">Type</th>
               <th className="px-4 py-3 whitespace-nowrap">Amount</th>
               <th className="px-4 py-3 whitespace-nowrap text-center">
                 Actions
@@ -154,58 +157,48 @@ const Transactions: React.FC = () => {
           </thead>
           <tbody>
             {paginated.length > 0 ? (
-              paginated.map((tx) => (
-                <tr key={tx.id} className="border-t hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    {new Date(tx.transactionDate)
-                      .toISOString()
-                      .split("T")[0]}
-                  </td>
-                  <td className="px-4 py-3">{tx.description}</td>
-                  <td className="px-4 py-3">
-                    {tx.category?.categoryName || "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`px-2 py-1 rounded-full text-sm ${tx.type === TransactionType.Income
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-red-100 text-red-700"
-                        }`}
-                    >
-                      {tx.type === TransactionType.Income ? "Income" : "Expense"}
-                    </span>
-                  </td>
-                  <td
-                    className={`px-4 py-3 font-semibold ${tx.type === TransactionType.Income
-                        ? "text-green-600"
-                        : "text-red-600"
-                      }`}
-                  >
-                    {tx.type === TransactionType.Income ? "+" : "-"}₦
-                    {tx.amount.toLocaleString()}
-                  </td>
-                  <td className="px-4 py-3 text-center flex justify-center gap-3">
-                    <button
-                      onClick={() => handleEdit(tx.id)}
-                      className="text-blue-600 hover:text-blue-800"
-                      title="Edit"
-                    >
-                      <Pencil size={18} />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(tx.id)}
-                      className="text-red-600 hover:text-red-800"
-                      title="Delete"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))
+              paginated.map((tx) => {
+                const isIncome = tx.type === TransactionType.Income;
+                const sign = isIncome ? "+" : "-";
+                const color = isIncome ? "text-green-600" : "text-gray-800";
+
+                return (
+                  <tr key={tx.id} className="border-t hover:bg-gray-50">
+                    <td className="px-4 py-3">
+                      {new Date(tx.transactionDate)
+                        .toISOString()
+                        .split("T")[0]}
+                    </td>
+                    <td className="px-4 py-3">{tx.description}</td>
+                    <td className="px-4 py-3">
+                      {tx.category?.categoryName || "—"}
+                    </td>
+                    <td className={`px-4 py-3 font-semibold ${color}`}>
+                      {sign}₦{tx.amount.toLocaleString()}
+                    </td>
+                    <td className="px-4 py-3 text-center flex justify-center gap-3">
+                      <button
+                        onClick={() => handleEdit(tx.id)}
+                        className="text-blue-600 hover:text-blue-800"
+                        title="Edit"
+                      >
+                        <Pencil size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(tx.id)}
+                        className="text-red-600 hover:text-red-800"
+                        title="Delete"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td
-                  colSpan={6}
+                  colSpan={5}
                   className="text-center py-6 text-gray-500 text-sm"
                 >
                   No transactions found.

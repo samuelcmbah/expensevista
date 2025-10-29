@@ -1,6 +1,13 @@
+import type CreateTransactionDTO from "../types/CreateTransactionDTO";
 import type { EditTransactionDTO } from "../types/EditTransactionDTO";
 import type { TransactionDTO } from "../types/TransactionDTO";
 import apiClient from "./apiClient";
+
+
+export const createTransaction = async (data: CreateTransactionDTO) => {
+  const response = await apiClient.post("/transactions", data);
+  return response.data;
+}
 
 export const getAllTransactions = async (): Promise<TransactionDTO[]> => {
   const response = await apiClient.get<TransactionDTO[]>("/transactions");

@@ -1,72 +1,53 @@
-// src/pages/EditTransaction.tsx
+// ✅ src/pages/AddTransaction.tsx
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import {
-  getTransactionById,
-  updateTransaction,
-} from "../services/transactionService";
-import { getAllCategories } from "../services/categoryService.ts"; 
+import { createTransaction } from "../services/transactionService";
+import { getAllCategories } from "../services/categoryService";
 import { TransactionType } from "../types/TransactionType";
-import type { TransactionDTO } from "../types/TransactionDTO";
-import type { EditTransactionDTO } from "../types/EditTransactionDTO";
-
+import type CreateTransactionDTO from "../types/CreateTransactionDTO";
 interface Category {
   id: number;
   categoryName: string;
 }
 
-const EditTransaction: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+const AddTransaction: React.FC = () => {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState<TransactionDTO | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Fetch transaction and categories
+  const [formData, setFormData] = useState<CreateTransactionDTO>({
+    amount: 0,
+    type: TransactionType.Expense,
+    transactionDate: new Date().toISOString(),
+    categoryId: 0,
+    description: "",
+  });
+
+  // ✅ Fetch categories
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchCategories = async () => {
       try {
-        if (!id) return;
-
-        setLoading(true);
-        const [transaction, categoryList] = await Promise.all([
-          getTransactionById(Number(id)),
-          getAllCategories(),
-        ]);
-
-        if (transaction?.transactionDate) {
-          transaction.transactionDate =
-            typeof transaction.transactionDate === "string"
-              ? transaction.transactionDate
-              : new Date(transaction.transactionDate).toISOString();
-        }
-
-        setFormData(transaction);
-        setCategories(categoryList);
+        const data = await getAllCategories();
+        setCategories(data);
       } catch (error) {
         console.error(error);
-        toast.error("Failed to load transaction or categories.");
+        toast.error("Failed to load categories.");
       } finally {
         setLoading(false);
       }
     };
-    fetchData();
-  }, [id]);
+    fetchCategories();
+  }, []);
 
-  // tracks when a particular field changes and updates the formData state accordingly
+  // ✅ Handle input changes
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
-    if (!formData) return;
     const { name, value } = e.target;
 
     if (name === "amount") {
-      setFormData({
-        ...formData,
-        amount: value === "" ? 0 : parseFloat(value),
-      });
+      setFormData({ ...formData, amount: value === "" ? 0 : parseFloat(value) });
       return;
     }
 
@@ -82,10 +63,7 @@ const EditTransaction: React.FC = () => {
     }
 
     if (name === "categoryId") {
-      setFormData({
-        ...formData,
-        category: { ...(formData.category ?? {}), id: Number(value) },
-      });
+      setFormData({ ...formData, categoryId: Number(value) });
       return;
     }
 
@@ -95,40 +73,29 @@ const EditTransaction: React.FC = () => {
   // ✅ Handle submit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData || !id) return;
 
-    const payload: EditTransactionDTO = {
-      id: Number(id),
-      amount: formData.amount,
-      type: formData.type,
-      transactionDate: formData.transactionDate,
-      categoryId: formData.category?.id ?? 0,
-      description: formData.description ?? "",
-    };
+    if (!formData.description || !formData.amount || !formData.categoryId) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
 
-    const toastId = toast.loading("Updating transaction...");
+    const toastId = toast.loading("Adding transaction...");
     try {
-      await updateTransaction(Number(id), payload);
-      toast.success("Transaction updated successfully!", { id: toastId });
+      await createTransaction(formData);
+      toast.success("Transaction added successfully!", { id: toastId });
       navigate("/transactions");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to update transaction.", { id: toastId });
+      toast.error("Failed to add transaction.", { id: toastId });
     }
   };
 
   if (loading)
     return <p className="text-center mt-8 text-gray-500">Loading...</p>;
-  if (!formData)
-    return (
-      <p className="text-center mt-8 text-gray-500">
-        Transaction not found.
-      </p>
-    );
 
   return (
     <div className="max-w-lg mx-auto bg-white shadow rounded-xl p-6 mt-6">
-      <h2 className="text-2xl font-semibold mb-4">Edit Transaction</h2>
+      <h2 className="text-2xl font-semibold mb-4">Add Transaction</h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Description */}
@@ -137,7 +104,7 @@ const EditTransaction: React.FC = () => {
           <input
             type="text"
             name="description"
-            value={formData.description ?? ""}
+            value={formData.description}
             onChange={handleChange}
             className="w-full border rounded-lg px-3 py-2"
             required
@@ -151,7 +118,7 @@ const EditTransaction: React.FC = () => {
             type="number"
             step="0.01"
             name="amount"
-            value={formData.amount?.toString() ?? "0"}
+            value={formData.amount.toString()}
             onChange={handleChange}
             className="w-full border rounded-lg px-3 py-2"
             required
@@ -163,7 +130,7 @@ const EditTransaction: React.FC = () => {
           <label className="block text-gray-600 mb-1">Type</label>
           <select
             name="type"
-            value={String(formData.type ?? "")}
+            value={String(formData.type)}
             onChange={handleChange}
             className="w-full border rounded-lg px-3 py-2"
           >
@@ -172,12 +139,12 @@ const EditTransaction: React.FC = () => {
           </select>
         </div>
 
-        {/* Category dropdown */}
+        {/* Category */}
         <div>
           <label className="block text-gray-600 mb-1">Category</label>
           <select
             name="categoryId"
-            value={formData.category?.id ?? ""}
+            value={formData.categoryId || ""}
             onChange={handleChange}
             className="w-full border rounded-lg px-3 py-2"
             required
@@ -197,11 +164,7 @@ const EditTransaction: React.FC = () => {
           <input
             type="date"
             name="transactionDate"
-            value={
-              formData.transactionDate
-                ? formData.transactionDate.split("T")[0]
-                : ""
-            }
+            value={formData.transactionDate.split("T")[0]}
             onChange={handleChange}
             className="w-full border rounded-lg px-3 py-2"
           />
@@ -211,11 +174,11 @@ const EditTransaction: React.FC = () => {
           type="submit"
           className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition"
         >
-          Save Changes
+          Add Transaction
         </button>
       </form>
     </div>
   );
 };
 
-export default EditTransaction;
+export default AddTransaction;
