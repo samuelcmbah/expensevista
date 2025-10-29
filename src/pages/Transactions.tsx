@@ -148,7 +148,7 @@ const Transactions: React.FC = () => {
               <th className="px-4 py-3 whitespace-nowrap">Type</th>
               <th className="px-4 py-3 whitespace-nowrap">Amount</th>
               <th className="px-4 py-3 whitespace-nowrap text-center">
-                
+                Actions
               </th>
             </tr>
           </thead>
@@ -167,21 +167,19 @@ const Transactions: React.FC = () => {
                   </td>
                   <td className="px-4 py-3">
                     <span
-                      className={`px-2 py-1 rounded-full text-sm ${
-                        tx.type === TransactionType.Income
+                      className={`px-2 py-1 rounded-full text-sm ${tx.type === TransactionType.Income
                           ? "bg-blue-100 text-blue-700"
                           : "bg-red-100 text-red-700"
-                      }`}
+                        }`}
                     >
-                      {tx.type.toString().toLowerCase()}
+                      {tx.type === TransactionType.Income ? "Income" : "Expense"}
                     </span>
                   </td>
                   <td
-                    className={`px-4 py-3 font-semibold ${
-                      tx.type === TransactionType.Income
+                    className={`px-4 py-3 font-semibold ${tx.type === TransactionType.Income
                         ? "text-green-600"
                         : "text-red-600"
-                    }`}
+                      }`}
                   >
                     {tx.type === TransactionType.Income ? "+" : "-"}₦
                     {tx.amount.toLocaleString()}

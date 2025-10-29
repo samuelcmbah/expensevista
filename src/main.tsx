@@ -9,13 +9,6 @@ createRoot(document.getElementById('root')!).render(
     
     <App />
     {/*Toast container */}
-    <Toaster
-      position="top-right"
-      toastOptions={{
-        style: { fontSize: "0.9rem" },
-        success: { iconTheme: { primary: "#22c55e", secondary: "#fff" } },
-        error: { iconTheme: { primary: "#dc2626", secondary: "#fff" } },
-      }}
-    />
+    <Toaster/>
   </StrictMode>,
 )
