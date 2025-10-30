@@ -7,9 +7,9 @@ import {
   updateTransaction,
 } from "../services/transactionService";
 import { getAllCategories } from "../services/categoryService.ts"; 
-import { TransactionType } from "../types/TransactionType";
-import type { TransactionDTO } from "../types/TransactionDTO";
-import type { EditTransactionDTO } from "../types/EditTransactionDTO";
+import { TransactionType } from "../types/transaction/TransactionType.ts";
+import type { TransactionDTO } from "../types/transaction/TransactionDTO";
+import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
 
 interface Category {
   id: number;

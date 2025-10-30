@@ -1,5 +1,5 @@
-import type { LoginDTO } from "../types/LoginDTO";
-import type { RegisterDTO } from "../types/RegisterDTO";
+import type { LoginDTO } from "../types/auth/LoginDTO";
+import type { RegisterDTO } from "../types/auth/RegisterDTO";
 import apiClient from "./apiClient";
 
 

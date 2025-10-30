@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import type { TransactionDTO } from "../types/TransactionDTO";
-import { TransactionType } from "../types/TransactionType";
+import type { TransactionDTO } from "../types/transaction/TransactionDTO";
+import { TransactionType } from "../types/transaction/TransactionType";
 import { Plus, Search, Pencil, Trash2 } from "lucide-react";
 import {
   deleteTransaction,

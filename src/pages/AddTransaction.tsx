@@ -4,8 +4,8 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { createTransaction } from "../services/transactionService";
 import { getAllCategories } from "../services/categoryService";
-import { TransactionType } from "../types/TransactionType";
-import type CreateTransactionDTO from "../types/CreateTransactionDTO";
+import { TransactionType } from "../types/transaction/TransactionType";
+import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
 interface Category {
   id: number;
   categoryName: string;

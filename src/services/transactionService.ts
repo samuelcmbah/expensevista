@@ -1,6 +1,6 @@
-import type CreateTransactionDTO from "../types/CreateTransactionDTO";
-import type { EditTransactionDTO } from "../types/EditTransactionDTO";
-import type { TransactionDTO } from "../types/TransactionDTO";
+import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
+import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
+import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import apiClient from "./apiClient";
 
 

@@ -1,6 +1,6 @@
 import apiClient from "./apiClient";
-import type { BudgetDTO } from "../types/BudgetDTO";
-import type { EditBudgetDTO } from "../types/EditBudgetDTO";
+import type { BudgetDTO } from "../types/Budget/BudgetDTO";
+import type { EditBudgetDTO } from "../types/Budget/EditBudgetDTO";
 
 export const getBudgetStatus = async (): Promise<BudgetDTO> => {
   const now = new Date();

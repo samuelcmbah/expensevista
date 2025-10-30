@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getAllTransactions } from "../services/transactionService";
-import type { BudgetDTO } from "../types/BudgetDTO";
-import type { TransactionDTO } from "../types/TransactionDTO";
-import { TransactionType } from "../types/TransactionType";
+import type { BudgetDTO } from "../types/Budget/BudgetDTO";
+import type { TransactionDTO } from "../types/transaction/TransactionDTO";
+import { TransactionType } from "../types/transaction/TransactionType";
 import { getBudgetStatus } from "../services/budgetServices";
 import { useAuth } from "../context/AuthContext";
 import {

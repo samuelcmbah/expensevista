@@ -1,5 +1,5 @@
 import apiClient from "./apiClient";
-import type { CategoryDTO } from "../types/CategoryDTO";
+import type { CategoryDTO } from "../types/Category/CategoryDTO";
 
 export const getAllCategories = async (): Promise<CategoryDTO[]> => {
   const response = await apiClient.get<CategoryDTO[]>("/categories");
