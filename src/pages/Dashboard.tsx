@@ -12,6 +12,7 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -52,90 +53,140 @@ const Dashboard: React.FC = () => {
     return 'Good evening';
   };
 
+  // ✅ Format amount helper
+  const formatAmount = (amount: number) => {
+    if (amount >= 1_000_000_000) return (amount / 1_000_000_000).toFixed(2) + "B";
+    return amount.toLocaleString();
+  };
+
   return (
-    <div className="space-y-6">
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
       {/* ✅ Greeting and Month */}
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+      >
         <h2 className="text-2xl font-semibold">
           {getGreeting()}, {user?.firstName || "User"} 👋
         </h2>
         <p className="text-gray-500">
-          Your financial overview for {budget?.budgetMonth
+          Your financial overview for{" "}
+          {budget?.budgetMonth
             ? new Date(budget.budgetMonth).toLocaleString("default", {
               month: "long",
               year: "numeric",
             })
             : "Loading..."}
         </p>
-      </div>
+      </motion.div>
 
       {/* ✅ Budget Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.3, duration: 0.5 }}
+      >
         {/* Total Balance */}
-        <div className="bg-white shadow rounded-xl p-4 flex items-center justify-between">
+        <motion.div
+          className="bg-blue-50 shadow-sm rounded-xl p-4 flex items-center justify-between border border-blue-100"
+          whileHover={{ scale: 1.03 }}
+          transition={{ type: 'spring', stiffness: 200 }}
+        >
           <div>
-            <h3 className="text-gray-600 text-sm">Balance</h3>
-            <p className="text-2xl font-bold text-blue-600">
-              ₦{budget?.remainingAmount?.toLocaleString() ?? "0"}
+            <h3 className="text-gray-600 text-sm font-medium">Balance</h3>
+            <p className="text-xl font-semibold text-black-500">
+              ₦{budget?.remainingAmount?.toLocaleString() ?? '0'}
             </p>
           </div>
-          <Wallet className="text-blue-600 w-8 h-8" />
-        </div>
+          <Wallet className="text-blue-500 w-8 h-8" />
+        </motion.div>
 
         {/* Total Income */}
-        <div className="bg-white shadow rounded-xl p-4 flex items-center justify-between">
+        <motion.div
+          className="bg-green-50 shadow-sm rounded-xl p-4 flex items-center justify-between border border-green-100"
+          whileHover={{ scale: 1.03 }}
+        >
           <div>
-            <h3 className="text-gray-600 text-sm">Total Income</h3>
-            <p className="text-2xl font-bold text-green-600">
-              ₦{budget?.totalIncome?.toLocaleString() ?? "0"}
+            <h3 className="text-gray-600 text-sm font-medium">Total Income</h3>
+            <p className="text-xl font-semibold text-black-500">
+              ₦{budget?.totalIncome?.toLocaleString() ?? '0'}
             </p>
           </div>
-          <ArrowUpCircle className="text-green-600 w-8 h-8" />
-        </div>
+          <ArrowUpCircle className="text-green-500 w-8 h-8" />
+        </motion.div>
 
         {/* Total Expense */}
-        <div className="bg-white shadow rounded-xl p-4 flex items-center justify-between">
+        <motion.div
+          className="bg-red-50 shadow-sm rounded-xl p-4 flex items-center justify-between border border-red-100"
+          whileHover={{ scale: 1.03 }}
+        >
           <div>
-            <h3 className="text-gray-600 text-sm">Total Expense</h3>
-            <p className="text-2xl font-bold text-red-600">
-              ₦{budget?.currentUsage?.toLocaleString() ?? "0"}
+            <h3 className="text-gray-600 text-sm font-medium">Total Expense</h3>
+            <p className="text-xl font-semibold text-black-500">
+              ₦{budget?.currentUsage?.toLocaleString() ?? '0'}
             </p>
           </div>
-          <ArrowDownCircle className="text-red-600 w-8 h-8" />
-        </div>
+          <ArrowDownCircle className="text-red-500 w-8 h-8" />
+        </motion.div>
 
         {/* Budget Used */}
-        <div className="bg-white shadow rounded-xl p-4 flex items-center justify-between">
+        <motion.div
+          className="bg-purple-50 shadow-sm rounded-xl p-4 flex items-center justify-between border border-purple-100"
+          whileHover={{ scale: 1.03 }}
+        >
           <div>
-            <h3 className="text-gray-600 text-sm">Budget Status</h3>
-            <p className="text-2xl font-bold text-purple-600">
+            <h4 className="text-gray-600 text-sm font-medium">Budget Status</h4>
+            <p className="text-xl font-semibold text-gray-600">
               {budget?.percentageUsed?.toFixed(1) ?? 0}%
             </p>
-            <p className="text-sm text-gray-800 mt-1 truncate">of ₦{budget?.monthlyLimit.toLocaleString() ?? "0"}</p>
-
+            <p className="text-sm text-gray-700 mt-1 truncate">
+              of ₦{budget?.monthlyLimit.toLocaleString() ?? '0'}
+            </p>
           </div>
-          <TrendingUp className="text-purple-600 w-8 h-8" />
-        </div>
-      </div>
+          <TrendingUp className="text-purple-500 w-8 h-8" />
+        </motion.div>
+      </motion.div>
 
       {/* ✅ Recent Transactions */}
-      <div className="bg-white shadow rounded-xl p-4">
+      <motion.div
+        className="bg-white shadow rounded-xl p-4"
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4, duration: 0.5 }}
+      >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-semibold">Recent Transactions</h3>
-          <button 
+          <button
             onClick={() => navigate("/transactions")}
-            className="text-blue-600 text-sm font-medium hover:underline">
+            className="text-green-600 text-sm font-medium hover:underline"
+          >
             View All
           </button>
         </div>
 
         {transactions.length > 0 ? (
-          <ul className="divide-y">
-            {transactions.map((tx) => (
-              <li key={tx.id} className="py-3 flex justify-between items-center">
+          <ul className="">
+            {transactions.map((tx, index) => (
+              <motion.li
+                key={tx.id}
+                className="py-3 flex justify-between items-center"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index, duration: 0.3 }}
+                whileHover={{ scale: 1.02 }}
+              >
                 <div className="flex items-center space-x-3">
                   <div
-                    className={`w-8 h-8 flex items-center justify-center rounded-full ${tx.type === TransactionType.Income ? "bg-green-100" : "bg-red-100"
+                    className={`w-8 h-8 flex items-center justify-center rounded-full ${tx.type === TransactionType.Income
+                        ? "bg-green-100"
+                        : "bg-red-100"
                       }`}
                   >
                     {tx.type === TransactionType.Income ? (
@@ -144,8 +195,14 @@ const Dashboard: React.FC = () => {
                       <ArrowDownCircle className="text-red-600 w-5 h-5" />
                     )}
                   </div>
+
                   <div>
-                    <p className="font-medium">{tx.description}</p>
+                    <p className="font-normal truncate max-w-[180px] sm:max-w-[250px] md:max-w-[300px]">
+                      {tx.description && tx.description.length > 40
+                        ? `${tx.description.slice(0, 37)}...`
+                        : tx.description}
+
+                    </p>
                     <p className="text-sm text-gray-500">
                       {new Date(tx.transactionDate).toLocaleDateString()} •{" "}
                       {tx.category?.categoryName ?? "Uncategorized"}
@@ -153,23 +210,22 @@ const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <p
-                  className={`font-semibold ${tx.type === TransactionType.Income
-                      ? "text-green-600"
-                      : "text-red-600"
+                  className={`font-medium ${tx.type === TransactionType.Income
+                      ? "text-gray-600"
+                      : "text-gray-600"
                     }`}
                 >
                   {tx.type === TransactionType.Income ? "+" : "-"}₦
-                  {tx.amount.toLocaleString()}
+                  {formatAmount(tx.amount)}
                 </p>
-              </li>
-
+              </motion.li>
             ))}
           </ul>
         ) : (
           <p className="text-gray-500 text-sm">No recent transactions yet.</p>
         )}
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 };
 

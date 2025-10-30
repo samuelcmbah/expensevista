@@ -1,6 +1,5 @@
-import type { CategoryDTO } from "./CategoryDTO";
+import type { CategoryDTO } from "../Category/CategoryDTO";
 import type { TransactionType } from "./TransactionType";
-
 export interface TransactionDTO {
   id: number;
   amount: number;
