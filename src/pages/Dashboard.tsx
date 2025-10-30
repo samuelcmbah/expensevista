@@ -107,10 +107,12 @@ const Dashboard: React.FC = () => {
         {/* Budget Used */}
         <div className="bg-white shadow rounded-xl p-4 flex items-center justify-between">
           <div>
-            <h3 className="text-gray-600 text-sm">Budget Used</h3>
+            <h3 className="text-gray-600 text-sm">Budget Status</h3>
             <p className="text-2xl font-bold text-purple-600">
               {budget?.percentageUsed?.toFixed(1) ?? 0}%
             </p>
+            <p className="text-sm text-gray-800 mt-1 truncate">of ₦{budget?.monthlyLimit.toLocaleString() ?? "0"}</p>
+
           </div>
           <TrendingUp className="text-purple-600 w-8 h-8" />
         </div>

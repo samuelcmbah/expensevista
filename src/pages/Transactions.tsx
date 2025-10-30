@@ -165,9 +165,9 @@ const Transactions: React.FC = () => {
                 return (
                   <tr key={tx.id} className="border-t hover:bg-gray-50">
                     <td className="px-4 py-3">
-                      {new Date(tx.transactionDate)
-                        .toISOString()
-                        .split("T")[0]}
+
+                      {new Date(tx.transactionDate).toLocaleDateString()}
+
                     </td>
                     <td className="px-4 py-3">{tx.description}</td>
                     <td className="px-4 py-3">
@@ -179,14 +179,14 @@ const Transactions: React.FC = () => {
                     <td className="px-4 py-3 text-center flex justify-center gap-3">
                       <button
                         onClick={() => handleEdit(tx.id)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-gray-600 hover:text-green-600"
                         title="Edit"
                       >
                         <Pencil size={18} />
                       </button>
                       <button
                         onClick={() => handleDelete(tx.id)}
-                        className="text-red-600 hover:text-red-800"
+                        className="text-black-600 hover:text-red-600"
                         title="Delete"
                       >
                         <Trash2 size={18} />
