@@ -16,7 +16,7 @@ const Transactions: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 2;
+  const pageSize = 10;
 
   // ✅ Fetch all transactions
   useEffect(() => {

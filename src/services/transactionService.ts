@@ -4,7 +4,7 @@ import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import apiClient from "./apiClient";
 
 
-export const createTransaction = async (data: CreateTransactionDTO) => {
+export const createTransaction = async (data: CreateTransactionDTO): Promise<TransactionDTO> => {
   const response = await apiClient.post("/transactions", data);
   return response.data;
 }
@@ -15,12 +15,12 @@ export const getAllTransactions = async (): Promise<TransactionDTO[]> => {
   return response.data;
 };
 
-export const getTransactionById = async (id: number) => {
+export const getTransactionById = async (id: number): Promise<TransactionDTO> => {
   const response = await apiClient.get(`/transactions/${id}`);
   return response.data;
 };
 
-export const updateTransaction = async (id: number, data: EditTransactionDTO) => {
+export const updateTransaction = async (id: number, data: EditTransactionDTO): Promise<TransactionDTO> => {
   const response = await apiClient.put(`/transactions/${id}`, data);
   return response.data;
 };
