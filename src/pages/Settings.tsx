@@ -1,45 +1,82 @@
-// src/pages/Settings.tsx
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { getUserProfile, updateUserProfile } from "../services/userService";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
+import { getBudgetStatus, updateMonthlyBudget } from "../services/budgetServices";
 
 const Settings: React.FC = () => {
-  const navigate = useNavigate();
+  const { logout } = useAuth();
+
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [monthlyBudget, setMonthlyBudget] = useState<number>(0);
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [loading, setLoading] = useState(false);
-  const {logout} = useAuth();
+  const [budgetId, setBudgetId] = useState<number>(0);
 
   useEffect(() => {
-    // Simulated API call
-    const fetchData = async () => {
+  const fetchData = async () => {
+    try {
       const user = await getUserProfile();
       setFullName(user.fullName);
       setEmail(user.email);
-      setMonthlyBudget(user.monthlyBudget);
-    };
-    fetchData();
-  }, []);
+
+      const budget = await getBudgetStatus();
+      setMonthlyBudget(budget.monthlyLimit);
+      setBudgetId(budget.id);
+    } catch {
+      toast.error("Failed to load user or budget data");
+    }
+  };
+  fetchData();
+}, []);
+
 
   const handleSaveProfile = async () => {
-    setLoading(true);
-    await updateUserProfile({ fullName });
-    setLoading(false);
-    alert("Profile updated successfully!");
+    const toastId = "profile-update";
+  toast.loading("Updating profile...", { id: toastId });
+    try {
+      setLoading(true);
+      await updateUserProfile({ fullName });
+      toast.success("Profile updated successfully!", { id: toastId });
+    } catch {
+      toast.error("Failed to update profile", { id: toastId });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
+  const handleBudgetUpdate = async () => {
+    if (!budgetId) {
+      toast.error("Budget ID is missing");
+      return;
+    }
+  const toastId = "budget-update";
+  toast.loading("Updating monthly budget...", { id: toastId });
 
-  const handleBudgetUpdate = () => {
+  try {
+    setIsEditingBudget(true);
+
+    const currentMonth = new Date().toISOString().slice(0, 7) + "-01"; // e.g. 2025-10-01
+
+    await updateMonthlyBudget(budgetId, {
+      id: budgetId!,
+      monthlyLimit: monthlyBudget,
+      budgetMonth: currentMonth,
+    });
+
+    toast.success(`Monthly budget updated to ₦${monthlyBudget.toLocaleString()}`, {
+      id: toastId,
+    });
+  } catch (error) {
+    toast.error("Failed to update budget", { id: toastId });
+  } finally {
     setIsEditingBudget(false);
-    alert(`Monthly budget updated to ₦${monthlyBudget.toLocaleString()}`);
-  };
+  }
+};
+
+
+ 
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
@@ -47,7 +84,7 @@ const Settings: React.FC = () => {
         <h1 className="text-2xl font-semibold text-gray-800 mb-4">Settings</h1>
 
         {/* Profile Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h2 className="text-lg font-medium text-gray-800 mb-4">
             Profile Information
           </h2>
@@ -78,19 +115,26 @@ const Settings: React.FC = () => {
           <div className="flex justify-end mt-4 gap-3">
             <button
               onClick={handleSaveProfile}
-              className="bg-green-600 text-white px-5 py-2 rounded-lg hover:bg-green-700 transition"
               disabled={loading}
+              className={`px-5 py-2 rounded-lg text-white transition ${
+                loading
+                  ? "bg-green-400 cursor-not-allowed"
+                  : "bg-green-600 hover:bg-green-700"
+              }`}
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>
-            <button className="border border-gray-300 px-5 py-2 rounded-lg hover:bg-gray-100">
+            <button
+              onClick={() => toast("No changes made")}
+              className="border border-gray-300 px-5 py-2 rounded-lg hover:bg-gray-100 transition"
+            >
               Cancel
             </button>
           </div>
         </div>
 
         {/* Monthly Budget Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-medium text-gray-800">
               Monthly Budget
@@ -120,13 +164,16 @@ const Settings: React.FC = () => {
             </div>
           ) : (
             <p className="text-gray-700 text-base">
-              Monthly Budget: <span className="font-semibold">₦{monthlyBudget.toLocaleString()}</span>
+              Monthly Budget:{" "}
+              <span className="font-semibold">
+                ₦{monthlyBudget.toLocaleString()}
+              </span>
             </p>
           )}
         </div>
 
         {/* Categories Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm">
+        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h2 className="text-lg font-medium text-gray-800 mb-2">Categories</h2>
           <p className="text-sm text-gray-600">
             Manage your transaction categories from the Transactions page.
@@ -136,7 +183,7 @@ const Settings: React.FC = () => {
         {/* Logout */}
         <div className="text-center pt-6">
           <button
-            onClick={handleLogout}
+            onClick={logout}
             className="text-red-600 hover:text-red-700 font-medium border border-red-600 px-6 py-2 rounded-lg hover:bg-red-50 transition"
           >
             Logout

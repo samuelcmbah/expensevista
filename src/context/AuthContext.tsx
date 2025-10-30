@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken, getUser, setTokenStorage, setUserStorage, clearTokenStorage, clearUserStorage } from "../services/handleJWT";
+import toast from "react-hot-toast";
 
 interface User {
   id: string;
@@ -51,6 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
     clearTokenStorage();
     clearUserStorage();
+    toast.success("You’ve been logged out");
     navigate("/login");
   };
 

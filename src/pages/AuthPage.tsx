@@ -95,7 +95,6 @@ export default function AuthPage() {
       const token = data?.token ?? data?.accessToken ?? null;
       const user = data?.user ?? data?.applicationUser ?? null;
 
-      console.log("Login response data:", data);
       if (!token) {
         throw new Error("No token received from server.");
       }
@@ -118,9 +117,9 @@ export default function AuthPage() {
 
   return (
     <div className="flex min-h-screen bg-gray-50">
-      <div className="hidden md:flex w-1/2 bg-blue-100 items-center justify-center">
+      <div className="hidden md:flex w-1/2 bg-green-100 items-center justify-center">
         <div className="text-center p-10">
-          <h2 className="text-3xl font-bold text-blue-700 mb-4">ExpenseVista</h2>
+          <h2 className="text-3xl font-bold text-green-700 mb-4">ExpenseVista</h2>
           <p className="text-gray-600 italic">
             “Take control of your money, one expense at a time.”
           </p>
@@ -150,7 +149,7 @@ export default function AuthPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   placeholder="samuelcmbah@gmail.com"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
@@ -163,7 +162,7 @@ export default function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   type="text"
                   placeholder="••••••••"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
@@ -177,7 +176,7 @@ export default function AuthPage() {
                   />
                   Remember me
                 </label>
-                <a className="text-blue-600 hover:underline" href="#">
+                <a className="text-green-600 hover:underline" href="#">
                   Forgot password?
                 </a>
               </div>
@@ -185,7 +184,7 @@ export default function AuthPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
@@ -201,7 +200,7 @@ export default function AuthPage() {
                   onChange={(e) => setFirstName(e.target.value)}
                   type="text"
                   placeholder="Samuel"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
@@ -214,7 +213,7 @@ export default function AuthPage() {
                   onChange={(e) => setLastName(e.target.value)}
                   type="text"
                   placeholder="Mbah"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
@@ -227,7 +226,7 @@ export default function AuthPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   placeholder="samuelcmbah@gmail.com"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
@@ -240,7 +239,7 @@ export default function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   type="password"
                   placeholder="At least 8 characters"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
@@ -253,14 +252,14 @@ export default function AuthPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   type="password"
                   placeholder="Retype password"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500"
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+                className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
               >
                 {loading ? "Creating account..." : "Sign up"}
               </button>
@@ -278,7 +277,7 @@ export default function AuthPage() {
                     resetForm();
                     navigate("/register");
                   }}
-                  className="text-blue-600 font-medium"
+                  className="text-green-600 font-medium"
                 >
                   Sign up
                 </button>
@@ -293,7 +292,7 @@ export default function AuthPage() {
                     resetForm();
                     navigate("/login");
                   }}
-                  className="text-blue-600 font-medium"
+                  className="text-green-600 font-medium"
                 >
                   Login
                 </button>

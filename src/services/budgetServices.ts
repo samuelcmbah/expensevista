@@ -1,5 +1,6 @@
 import apiClient from "./apiClient";
 import type { BudgetDTO } from "../types/BudgetDTO";
+import type { EditBudgetDTO } from "../types/EditBudgetDTO";
 
 export const getBudgetStatus = async (): Promise<BudgetDTO> => {
   const now = new Date();
@@ -16,4 +17,9 @@ export const getBudgetStatus = async (): Promise<BudgetDTO> => {
 
   return response.data;
 };
+
+export const updateMonthlyBudget = async (id: number, data: EditBudgetDTO): Promise<BudgetDTO> => {
+  const response = await apiClient.put<BudgetDTO>(`/budgets/${id}`, data );
+  return response.data;
+}
 
