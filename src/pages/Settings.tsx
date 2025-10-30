@@ -7,6 +7,8 @@ import type { CategoryDTO } from "../types/Category/CategoryDTO";
 import { createCategory, deleteCategory, getAllCategories } from "../services/categoryService";
 import type { CreateCategoryDTO } from "../types/Category/CreateCategoryDTO";
 import type { AxiosError } from "axios";
+import { motion } from "framer-motion";
+import { User, Wallet2, Tags, LogOut } from "lucide-react";
 
 const Settings: React.FC = () => {
   const { logout } = useAuth();
@@ -122,136 +124,159 @@ const Settings: React.FC = () => {
 
 
 
+return (
+  <div className="min-h-screen bg-gray-50 p-6">
+    <div className="max-w-3xl mx-auto space-y-6">
+      <h1 className="text-2xl font-semibold text-gray-800 mb-4">Settings</h1>
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-3xl mx-auto space-y-6">
-        <h1 className="text-2xl font-semibold text-gray-800 mb-4">Settings</h1>
-
-        {/* Profile Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-lg font-medium text-gray-800 mb-4">
-            Profile Information
-          </h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2"
-                value={fullName}
-                readOnly
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Email Address
-              </label>
-              <input
-                type="email"
-                className="w-full bg-gray-100 border border-gray-200 rounded-lg px-3 py-2"
-                value={email}
-                readOnly
-              />
-            </div>
-          </div>
+      {/* 👤 Profile Section */}
+      <motion.div
+        className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-blue-100"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        <div className="flex items-center gap-2 mb-4">
+          <User className="text-blue-600 w-5 h-5" />
+          <h2 className="text-lg font-medium text-gray-800">Profile Information</h2>
         </div>
 
-
-        {/* Monthly Budget Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-medium text-gray-800">
-              Monthly Budget
-            </h2>
-            <button
-              onClick={() => setIsEditingBudget(!isEditingBudget)}
-              className="text-green-600 hover:underline text-sm"
-            >
-              {isEditingBudget ? "Close" : "Edit"}
-            </button>
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Full Name
+            </label>
+            <input
+              type="text"
+              disabled
+              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
+              value={fullName}
+              readOnly
+            />
           </div>
-
-          {isEditingBudget ? (
-            <div className="flex items-center gap-3">
-              <input
-                type="number"
-                value={monthlyBudget}
-                onChange={(e) => setMonthlyBudget(Number(e.target.value))}
-                className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-green-500"
-              />
-              <button
-                onClick={handleBudgetUpdate}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
-              >
-                Save
-              </button>
-            </div>
-          ) : (
-            <p className="text-gray-700 text-base">
-              Monthly Budget:{" "}
-              <span className="font-semibold">
-                ₦{monthlyBudget.toLocaleString()}
-              </span>
-            </p>
-          )}
+          <div>
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Email Address
+            </label>
+            <input
+              type="email"
+              disabled
+              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
+              value={email}
+              readOnly
+            />
+          </div>
         </div>
+      </motion.div>
 
-        {/* Categories Section */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-      <h2 className="text-lg font-medium text-gray-800 mb-1 flex items-center gap-2">
-        <span className="text-blue-500">🏷️</span> Categories
-      </h2>
-      <p className="text-sm text-gray-500 mb-4">Manage your transaction categories</p>
-
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          value={newCategory}
-          onChange={(e) => setNewCategory(e.target.value)}
-          placeholder="Add new category"
-          className="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-green-500 focus:outline-none"
-        />
-        <button
-          onClick={handleAddCategory}
-          className="bg-green-600 hover:bg-green-700 text-white rounded-lg px-4 py-2"
-        >
-          + Add
-        </button>
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        {categories.map((cat) => (
-          <div
-            key={cat.id}
-            className="flex items-center gap-2 bg-gray-100 text-gray-800 px-3 py-1 rounded-lg"
-          >
-            {cat.categoryName}
-            <button
-              onClick={() => handleDeleteCategory(cat.id)}
-              className="text-gray-500 hover:text-red-500 text-sm"
-            >
-              ✕
-            </button>
+      {/* 💰 Monthly Budget Section */}
+      <motion.div
+        className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-green-100"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1, duration: 0.3 }}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Wallet2 className="text-green-600 w-5 h-5" />
+            <h2 className="text-lg font-medium text-gray-800">Monthly Budget</h2>
           </div>
-        ))}
-      </div>
-    </div>
-
-        {/* Logout */}
-        <div className="text-center pt-6">
           <button
-            onClick={logout}
-            className="text-red-600 hover:text-red-700 font-medium border border-red-600 px-6 py-2 rounded-lg hover:bg-red-50 transition"
+            onClick={() => setIsEditingBudget(!isEditingBudget)}
+            className="text-green-700 hover:underline text-sm font-medium"
           >
-            Logout
+            {isEditingBudget ? "Close" : "Edit"}
           </button>
         </div>
+
+        {isEditingBudget ? (
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              value={monthlyBudget}
+              onChange={(e) => setMonthlyBudget(Number(e.target.value))}
+              className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-green-500"
+            />
+            <button
+              onClick={handleBudgetUpdate}
+              className="bg-green-700 text-white px-4 py-2 rounded-sm hover:bg-green-600 transition"
+            >
+              Save
+            </button>
+          </div>
+        ) : (
+          <p className="text-gray-700 text-base">
+            Monthly Budget:{" "}
+            <span className="font-semibold">
+              ₦{monthlyBudget.toLocaleString()}
+            </span>
+          </p>
+        )}
+      </motion.div>
+
+      {/* 🏷️ Categories Section */}
+      <motion.div
+        className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-indigo-100"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
+      >
+        <div className="flex items-center gap-2 mb-1">
+          <Tags className="text-green-600 w-5 h-5" />
+          <h2 className="text-lg font-medium text-gray-800">Categories</h2>
+        </div>
+        <p className="text-sm text-gray-500 mb-4">
+          Manage your transaction categories
+        </p>
+
+        <div className="flex gap-2 mb-4">
+          <input
+            type="text"
+            value={newCategory}
+            onChange={(e) => setNewCategory(e.target.value)}
+            placeholder="Add new category"
+            className="flex-1 border border-gray-300 rounded-lg px-3 py-2  focus:outline-none"
+          />
+          <button
+            onClick={handleAddCategory}
+            className="bg-green-700 hover:bg-purple-600 text-white rounded-sm px-4 py-2"
+          >
+            + Add
+          </button>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {categories.map((cat) => (
+            <div
+              key={cat.id}
+              className="flex items-center gap-2 bg-white text-gray-800 px-3 py-1 rounded-lg shadow-sm"
+            >
+              {cat.categoryName}
+              <button
+                onClick={() => handleDeleteCategory(cat.id)}
+                className="text-gray-500 hover:text-red-500 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      </motion.div>
+
+      {/* 🚪 Logout */}
+      <div className="text-center pt-6">
+        <button
+          onClick={logout}
+          className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-medium border border-red-600 px-6 py-2 rounded-lg hover:bg-red-50 transition"
+        >
+          <LogOut className="w-5 h-5" />
+          Logout
+        </button>
       </div>
     </div>
-  );
+  </div>
+);
+
 };
 
 export default Settings;
