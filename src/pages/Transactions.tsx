@@ -22,14 +22,17 @@ const Transactions: React.FC = () => {
   // ✅ Fetch all transactions
   useEffect(() => {
     const fetchData = async () => {
-      const toastId = toast.loading("Fetching transactions...");
+      const toastId = toast.loading("Fetching transactions");
+
       try {
         const data = await getAllTransactions();
         setTransactions(data);
-        toast.success("Transactions loaded", { id: toastId });
+        toast.dismiss(toastId);
       } catch (error) {
         toast.error("Failed to fetch transactions", { id: toastId });
       }
+
+
     };
     fetchData();
   }, []);
@@ -182,7 +185,7 @@ const Transactions: React.FC = () => {
           paginated.map((tx, index) => {
             const isIncome = tx.type === TransactionType.Income;
             const sign = isIncome ? "+" : "-";
-            const color = isIncome ? "text-green-600" : "text-red-600";
+            const color = isIncome ? "text-gray-600" : "text-gray-600";
 
             return (
               <motion.div

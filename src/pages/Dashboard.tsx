@@ -167,7 +167,7 @@ const Dashboard: React.FC = () => {
             onClick={() => navigate("/transactions")}
             className="text-green-600 text-sm font-medium hover:underline"
           >
-            View All
+            View All &gt;
           </button>
         </div>
 

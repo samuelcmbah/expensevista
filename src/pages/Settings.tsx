@@ -137,7 +137,7 @@ return (
         transition={{ duration: 0.3 }}
       >
         <div className="flex items-center gap-2 mb-4">
-          <User className="text-blue-600 w-5 h-5" />
+          <User className="text-green-600 w-5 h-5" />
           <h2 className="text-lg font-medium text-gray-800">Profile Information</h2>
         </div>
 

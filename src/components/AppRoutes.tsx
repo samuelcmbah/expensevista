@@ -5,7 +5,7 @@ import Reports from "../pages/Reports";
 import Settings from "../pages/Settings";
 import Transactions from "../pages/Transactions";
 import ProtectedRoute from "./ProtectedRoute";
-import MainLayout from "../layouts/MainLayout";
+import MainLayout from "./layouts/MainLayout";
 import EditTransaction from "../pages/EditTransaction";
 import AddTransaction from "../pages/AddTransaction";
 

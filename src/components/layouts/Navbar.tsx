@@ -1,6 +1,6 @@
 // src/components/Navbar.tsx
 import { Menu } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 interface NavbarProps {
   onMenuClick: () => void;

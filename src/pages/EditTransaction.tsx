@@ -106,7 +106,7 @@ const EditTransaction: React.FC = () => {
       description: formData.description ?? "",
     };
 
-    const toastId = toast.loading("Updating transaction...");
+    const toastId = toast.loading("Updating transaction");
     try {
       await updateTransaction(Number(id), payload);
       toast.success("Transaction updated successfully!", { id: toastId });
