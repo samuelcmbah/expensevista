@@ -11,7 +11,6 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
 
 export const getAllTransactions = async (): Promise<TransactionDTO[]> => {
   const response = await apiClient.get<TransactionDTO[]>("/transactions");
-  console.log("✅ Fetched recent transactions:", response.data);
   return response.data;
 };
 

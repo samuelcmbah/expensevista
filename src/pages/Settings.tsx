@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { getUserProfile } from "../services/userService";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { getBudgetStatus, updateMonthlyBudget } from "../services/budgetServices";
+import { createMonthlyBudget, getBudgetStatus, updateMonthlyBudget } from "../services/budgetServices";
 import type { CategoryDTO } from "../types/Category/CategoryDTO";
 import { createCategory, deleteCategory, getAllCategories } from "../services/categoryService";
 import type { CreateCategoryDTO } from "../types/Category/CreateCategoryDTO";
@@ -22,26 +22,53 @@ const Settings: React.FC = () => {
   const [newCategory, setNewCategory] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = await getUserProfile();
+  const fetchData = async () => {
+    try {
+      const [budgetResult, userResult] = await Promise.allSettled([
+        getBudgetStatus(),
+        getUserProfile(),
+      ]);
+
+      // ✅ Handle user fetch result
+      if (userResult.status === "fulfilled") {
+        const user = userResult.value;
         setFullName(user.fullName);
         setEmail(user.email);
+      } else {
+        console.error("Failed to load user profile:", userResult.reason);
+        toast.error("Failed to load user profile");
+      }
 
-        const budget = await getBudgetStatus();
+      // ✅ Handle budget fetch result
+      if (budgetResult.status === "fulfilled") {
+        const budget = budgetResult.value;
         setMonthlyBudget(budget.monthlyLimit);
         setBudgetId(budget.id);
-      } catch {
-        toast.error("Failed to load user or budget data");
+      } else {
+        const error = budgetResult.reason;
+        if (error.response?.status === 404) {
+          // ℹ️ Expected case: no budget yet
+          toast.error("You have not set a budget for this month yet.");
+          setMonthlyBudget(0);
+        } else {
+          console.error("Failed to load budget data:", error);
+          toast.error("Failed to load budget data");
+        }
       }
-    };
-    fetchData();
-  }, []);
+    } catch (error) {
+      console.error("Unexpected error while loading settings:", error);
+      toast.error("Failed to load user or budget data");
+    }
+  };
 
-  useEffect(() => {
-    // Fetch categories if needed in future
-    loadcategories();
-  }, []);
+  fetchData();
+}, []);
+
+useEffect(() => {
+  // ✅ Load categories safely
+  loadcategories();
+}, []);
+
   
   
   const loadcategories = async () => {
@@ -94,20 +121,30 @@ const Settings: React.FC = () => {
 
 
   const handleBudgetUpdate = async () => {
+  const currentMonth = new Date().toISOString().slice(0, 7) + "-01"; // e.g. 2025-10-01
+  const toastId = "budget-update";
+
+  try {
+    setIsEditingBudget(true);
+
     if (!budgetId) {
-      toast.error("Budget ID is missing");
-      return;
-    }
-    const toastId = "budget-update";
-    toast.loading("Updating monthly budget...", { id: toastId });
+      // 💡 No budget yet → create one
+      toast.loading("Creating monthly budget...", { id: toastId });
 
-    try {
-      setIsEditingBudget(true);
+      await createMonthlyBudget({
+        monthlyLimit: monthlyBudget,
+        budgetMonth: currentMonth,
+      });
 
-      const currentMonth = new Date().toISOString().slice(0, 7) + "-01"; // e.g. 2025-10-01
+      toast.success(`Monthly budget set to ₦${monthlyBudget.toLocaleString()}`, {
+        id: toastId,
+      });
+    } else {
+      // 💡 Budget exists → update it
+      toast.loading("Updating monthly budget...", { id: toastId });
 
       await updateMonthlyBudget(budgetId, {
-        id: budgetId!,
+        id: budgetId,
         monthlyLimit: monthlyBudget,
         budgetMonth: currentMonth,
       });
@@ -115,12 +152,18 @@ const Settings: React.FC = () => {
       toast.success(`Monthly budget updated to ₦${monthlyBudget.toLocaleString()}`, {
         id: toastId,
       });
-    } catch (error) {
-      toast.error("Failed to update budget", { id: toastId });
-    } finally {
-      setIsEditingBudget(false);
     }
-  };
+
+    // ✅ Once successful, close editing mode
+    setIsEditingBudget(false);
+
+  } catch (error: any) {
+    console.error("Budget update failed:", error);
+    toast.error("Failed to update budget", { id: toastId });
+    setIsEditingBudget(false);
+  }
+};
+
 
 
 
@@ -239,7 +282,7 @@ return (
           />
           <button
             onClick={handleAddCategory}
-            className="bg-green-700 hover:bg-purple-600 text-white rounded-sm px-4 py-2"
+            className="bg-green-700 hover:bg-green-600 text-white rounded-sm px-4 py-2"
           >
             + Add
           </button>

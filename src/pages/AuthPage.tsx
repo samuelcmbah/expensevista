@@ -22,12 +22,12 @@ export default function AuthPage() {
   const [rememberMe, setRememberMe] = useState(false);
 
   useEffect(() => {
-  if (location.pathname === "/login") {
-    setIsLogin(true);
-  } else if (location.pathname === "/register") {
-    setIsLogin(false);
-  }
-}, [location.pathname]);
+    if (location.pathname === "/login") {
+      setIsLogin(true);
+    } else if (location.pathname === "/register") {
+      setIsLogin(false);
+    }
+  }, [location.pathname]);
 
   const resetForm = () => {
     setFirstName("");
@@ -102,8 +102,8 @@ export default function AuthPage() {
       // store token and user in auth context
       login(token, user, rememberMe);
 
-      // redirect to dashboard
-      navigate("/");
+      // redirect to welcome page or dashboard
+      navigate("/welcome");
     } catch (err: any) {
       const msg =
         err?.response?.data?.message ??

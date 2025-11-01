@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -23,23 +24,45 @@ const Dashboard: React.FC = () => {
 
   // ✅ Fetch dashboard data when component mounts
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [budgetData, transactionData] = await Promise.all([
-          getBudgetStatus(),
-          getAllTransactions(),
-        ]);
-        setBudget(budgetData);
-        setTransactions(transactionData.slice(0, 5)); // Show only the 5 most recent transactions
-      } catch (error) {
-        console.error("❌ Failed to load dashboard data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchData = async () => {
+    try {
+      const [budgetResult, transactionResult] = await Promise.allSettled([
+        getBudgetStatus(),
+        getAllTransactions(),
+      ]);
 
-    fetchData();
-  }, []);
+      // ✅ Handle Budget Result
+      if (budgetResult.status === "fulfilled") {
+        setBudget(budgetResult.value);
+      } else {
+        const error = budgetResult.reason;
+        if (error.response?.status === 404) {
+          // show toast here
+          toast.error("You have not set a budget for this month yet.");
+        } else {
+          console.warn("⚠️ Budget fetch failed:", error);
+        }
+      }
+
+      // ✅ Handle Transaction Result
+      if (transactionResult.status === "fulfilled") {
+        console.log(transactionResult.value);
+        setTransactions(transactionResult.value.slice(0, 5));
+      } else {
+        console.warn("⚠️ Transactions fetch failed:", transactionResult.reason);
+      }
+
+    } catch (error) {
+      console.error("❌ Unexpected error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchData();
+}, []);
+
+
 
   if (loading) {
     return <p className="p-6 text-gray-500">Loading dashboard...</p>;
@@ -100,7 +123,7 @@ const Dashboard: React.FC = () => {
           transition={{ type: 'spring', stiffness: 200 }}
         >
           <div>
-            <h3 className="text-gray-600 text-sm font-medium">Balance</h3>
+            <h3 className="text-gray-600 text-sm font-medium">Budget Balance</h3>
             <p className="text-xl font-semibold text-black-500">
               ₦{budget?.remainingAmount?.toLocaleString() ?? '0'}
             </p>
