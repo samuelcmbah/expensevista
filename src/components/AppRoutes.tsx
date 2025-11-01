@@ -8,7 +8,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import EditTransaction from "../pages/EditTransaction";
 import AddTransaction from "../pages/AddTransaction";
-import { ReportsAnalytics } from "../pages/Reports";
 import Welcome from "../pages/Welcome";
 
 
