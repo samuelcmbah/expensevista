@@ -8,7 +8,7 @@ import { createCategory, deleteCategory, getAllCategories } from "../services/ca
 import type { CreateCategoryDTO } from "../types/Category/CreateCategoryDTO";
 import type { AxiosError } from "axios";
 import { motion } from "framer-motion";
-import { User, Wallet2, Tags, LogOut } from "lucide-react";
+import { User, Wallet2, Tags, LogOut, Plus } from "lucide-react";
 
 const Settings: React.FC = () => {
   const { logout } = useAuth();
@@ -241,7 +241,7 @@ return (
             onClick={handleAddCategory}
             className="bg-green-700 hover:bg-purple-600 text-white rounded-sm px-4 py-2"
           >
-            + Add
+            <Plus size={18} className="md:mr-1" />
           </button>
         </div>
 
