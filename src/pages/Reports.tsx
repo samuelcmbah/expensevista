@@ -68,10 +68,12 @@ export const ReportsAnalytics: React.FC = () => {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-2xl font-semibold text-gray-800">Reports & Analytics</h2>
-          <p className="text-gray-500 text-sm mb-4">Visualize your financial trends and insights</p>
+          <p className="text-gray-500 text-sm mb-4">
+            Visualize your financial trends and insights
+          </p>
         </motion.div>
 
-        {/* Period Selector Card */}
+        {/* Period Selector */}
         <motion.div
           className="bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center"
           initial={{ opacity: 0, y: 10 }}
@@ -124,7 +126,7 @@ export const ReportsAnalytics: React.FC = () => {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
               Spending by Category
             </h3>
-            <div className="w-full h-[250px] sm:h-[300px]">
+            <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -139,10 +141,7 @@ export const ReportsAnalytics: React.FC = () => {
                     }
                   >
                     {data.spendingByCategory.map((_, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={PIE_COLORS[index % PIE_COLORS.length]}
-                      />
+                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip formatter={(v: number) => `₦${v.toLocaleString()}`} />
@@ -160,7 +159,7 @@ export const ReportsAnalytics: React.FC = () => {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
               Income vs Expenses 💰
             </h3>
-            <div className="w-full h-[250px] sm:h-[300px]">
+            <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={data.incomeVsExpenses}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
@@ -221,7 +220,7 @@ export const ReportsAnalytics: React.FC = () => {
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
               Financial Trend
             </h3>
-            <div className="w-full h-[250px] sm:h-[300px]">
+            <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart data={data.financialTrend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
