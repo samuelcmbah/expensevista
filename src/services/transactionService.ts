@@ -1,3 +1,5 @@
+import type { PagedResponse } from "../types/PagedResponse";
+import type { PaginationDTO } from "../types/PaginationDTO";
 import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
 import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
@@ -9,8 +11,10 @@ export const createTransaction = async (data: CreateTransactionDTO): Promise<Tra
   return response.data;
 }
 
-export const getAllTransactions = async (): Promise<TransactionDTO[]> => {
-  const response = await apiClient.get<TransactionDTO[]>("/transactions");
+export const getPaginatedTransactions = async (pagination: PaginationDTO): Promise<PagedResponse< TransactionDTO>> => {
+  const { page, recordsPerPage } = pagination;
+  const response = await apiClient.get<PagedResponse< TransactionDTO>>("/transactions", {params: { page, recordsPerPage }});
+  console.log(`paginated transaction: ${response.data}`);
   return response.data;
 };
 

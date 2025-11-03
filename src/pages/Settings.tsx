@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { getUserProfile } from "../services/userService";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { createMonthlyBudget, getBudgetStatus, updateMonthlyBudget } from "../services/budgetServices";
@@ -11,7 +10,7 @@ import { motion } from "framer-motion";
 import { User, Wallet2, Tags, LogOut, Plus } from "lucide-react";
 
 const Settings: React.FC = () => {
-  const { logout } = useAuth();
+  const {user, logout } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,23 +20,21 @@ const Settings: React.FC = () => {
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
   const [newCategory, setNewCategory] = useState("");
 
+   useEffect(() => {
+    if (user) {
+      const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
+      setFullName(name);
+      setEmail(user.email);
+    }
+  }, [user]);
+
   useEffect(() => {
   const fetchData = async () => {
     try {
-      const [budgetResult, userResult] = await Promise.allSettled([
-        getBudgetStatus(),
-        getUserProfile(),
+      const [budgetResult] = await Promise.allSettled([
+        getBudgetStatus()
       ]);
 
-      // ✅ Handle user fetch result
-      if (userResult.status === "fulfilled") {
-        const user = userResult.value;
-        setFullName(user.fullName);
-        setEmail(user.email);
-      } else {
-        console.error("Failed to load user profile:", userResult.reason);
-        toast.error("Failed to load user profile");
-      }
 
       // ✅ Handle budget fetch result
       if (budgetResult.status === "fulfilled") {
@@ -57,7 +54,7 @@ const Settings: React.FC = () => {
       }
     } catch (error) {
       console.error("Unexpected error while loading settings:", error);
-      toast.error("Failed to load user or budget data");
+      toast.error("Failed to load  budget data");
     }
   };
 

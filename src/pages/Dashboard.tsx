@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAllTransactions } from "../services/transactionService";
+import { getPaginatedTransactions } from "../services/transactionService";
 import type { BudgetDTO } from "../types/Budget/BudgetDTO";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import { TransactionType } from "../types/transaction/TransactionType";
@@ -28,7 +28,7 @@ const Dashboard: React.FC = () => {
     try {
       const [budgetResult, transactionResult] = await Promise.allSettled([
         getBudgetStatus(),
-        getAllTransactions(),
+        getPaginatedTransactions({page:1, recordsPerPage:3}),
       ]);
 
       // ✅ Handle Budget Result
@@ -47,7 +47,7 @@ const Dashboard: React.FC = () => {
       // ✅ Handle Transaction Result
       if (transactionResult.status === "fulfilled") {
         console.log(transactionResult.value);
-        setTransactions(transactionResult.value.slice(0, 5));
+        setTransactions(transactionResult.value.data);
       } else {
         console.warn("⚠️ Transactions fetch failed:", transactionResult.reason);
       }

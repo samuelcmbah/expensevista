@@ -18,16 +18,16 @@ const Welcome: React.FC = () => {
       icon: "📂",
     },
     {
-      title: "View Dashboard",
-      description: "Track your expenses and insights",
-      action: () => navigate("/dashboard"),
-      icon: "📊",
+      title: "Add Transactions",
+      description: "Track your expenses and income",
+      action: () => navigate("/transactions"),
+      icon: "🧾",
     },
   ];
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-4">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-2">
+      <h1 className="text-2xl font-semibold text-gray-800 mb-2 text-center">
         Hi there, welcome to ExpenseVista!
       </h1>
       <p className="text-gray-600 mb-8 text-center">

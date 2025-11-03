@@ -5,7 +5,8 @@ import { TransactionType } from "../types/transaction/TransactionType";
 import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import {
   deleteTransaction,
-  getAllTransactions,
+  getPaginatedTransactions,
+
 } from "../services/transactionService";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -17,16 +18,19 @@ const Transactions: React.FC = () => {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage] = useState(10);
+  const [totalCount, setTotalCount] = useState(0);
   const pageSize = 10;
 
   // ✅ Fetch all transactions
   useEffect(() => {
     const fetchData = async () => {
-      const toastId = toast.loading("Fetching transactions");
+      const toastId = toast.loading("Fetching transactions...");
 
       try {
-        const data = await getAllTransactions();
-        setTransactions(data);
+        const data = await getPaginatedTransactions({ page: currentPage, recordsPerPage });
+        setTransactions(data.data);
+        setTotalCount(data.totalRecords)
         toast.dismiss(toastId);
       } catch (error) {
         toast.error("Failed to fetch transactions", { id: toastId });
@@ -35,14 +39,14 @@ const Transactions: React.FC = () => {
 
     };
     fetchData();
-  }, []);
+  }, [currentPage, recordsPerPage]);
 
   // ✅ Helper to convert enum number → string
   const getTypeLabel = (type: number) => {
     return type === TransactionType.Income ? "Income" : "Expense";
   };
 
-  // ✅ Filters
+  // Apply Filters on already paginated transactions
   const filtered = transactions.filter((tx) => {
     const matchesSearch =
       tx.description?.toLowerCase().includes(search.toLowerCase()) ||
@@ -58,11 +62,8 @@ const Transactions: React.FC = () => {
   });
 
   // ✅ Pagination
-  const totalPages = Math.ceil(filtered.length / pageSize);
-  const paginated = filtered.slice(
-    (currentPage - 1) * pageSize,
-    currentPage * pageSize
-  );
+  const totalPages = Math.ceil(totalCount / recordsPerPage);
+
 
   const handlePrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
@@ -181,8 +182,8 @@ const Transactions: React.FC = () => {
 
       {/* Card View (Animated) */}
       <div className="space-y-3">
-        {paginated.length > 0 ? (
-          paginated.map((tx, index) => {
+        {filtered.length > 0 ? (
+          filtered.map((tx, index) => {
             const isIncome = tx.type === TransactionType.Income;
             const sign = isIncome ? "+" : "-";
             const color = isIncome ? "text-gray-600" : "text-gray-600";
@@ -255,12 +256,12 @@ const Transactions: React.FC = () => {
         )}
       </div>
 
-      {/* ✅ Pagination */}
+      {/* Pagination */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm text-gray-600">
         <p>
-          Showing {(currentPage - 1) * pageSize + 1} to{" "}
-          {Math.min(currentPage * pageSize, filtered.length)} of{" "}
-          {filtered.length} transactions
+          Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
+          {Math.min(currentPage * recordsPerPage, totalCount)} of {totalCount}{" "}
+          transactions
         </p>
         <div className="flex items-center gap-2">
           <button
@@ -270,7 +271,7 @@ const Transactions: React.FC = () => {
           >
             Previous
           </button>
-          <span>{currentPage}</span>
+          <span>{currentPage} / {totalPages}</span>
           <button
             onClick={handleNext}
             disabled={currentPage === totalPages}
@@ -287,3 +288,4 @@ const Transactions: React.FC = () => {
 };
 
 export default Transactions;
+ 
