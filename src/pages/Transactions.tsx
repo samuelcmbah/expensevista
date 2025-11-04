@@ -5,8 +5,7 @@ import { TransactionType } from "../types/transaction/TransactionType";
 import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
 import {
   deleteTransaction,
-  getPaginatedTransactions,
-
+  getFilteredPagedTransactions,
 } from "../services/transactionService";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -14,13 +13,17 @@ import { motion } from "framer-motion";
 const Transactions: React.FC = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
+  //filter states
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+
+  // pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
-  const pageSize = 10;
 
   // ✅ Fetch all transactions
   useEffect(() => {
@@ -28,7 +31,20 @@ const Transactions: React.FC = () => {
       const toastId = toast.loading("Fetching transactions...");
 
       try {
-        const data = await getPaginatedTransactions({ page: currentPage, recordsPerPage });
+        const filters ={
+          description: search || undefined,
+          categoryId: categoryFilter !== "All" ? Number(categoryFilter) : undefined,
+          type: typeFilter === "All" ? undefined : typeFilter === "Income" ? TransactionType.Income : TransactionType.Expense,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+        }
+
+        const data = await getFilteredPagedTransactions({
+           page: currentPage, 
+           recordsPerPage,
+           filters
+          });
+
         setTransactions(data.data);
         setTotalCount(data.totalRecords)
         toast.dismiss(toastId);
@@ -39,27 +55,8 @@ const Transactions: React.FC = () => {
 
     };
     fetchData();
-  }, [currentPage, recordsPerPage]);
+  }, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, startDate, endDate]);
 
-  // ✅ Helper to convert enum number → string
-  const getTypeLabel = (type: number) => {
-    return type === TransactionType.Income ? "Income" : "Expense";
-  };
-
-  // Apply Filters on already paginated transactions
-  const filtered = transactions.filter((tx) => {
-    const matchesSearch =
-      tx.description?.toLowerCase().includes(search.toLowerCase()) ||
-      tx.category?.categoryName.toLowerCase().includes(search.toLowerCase());
-
-    const matchesCategory =
-      categoryFilter === "All" || tx.category?.categoryName === categoryFilter;
-
-    const matchesType =
-      typeFilter === "All" || getTypeLabel(tx.type) === typeFilter;
-
-    return matchesSearch && matchesCategory && matchesType;
-  });
 
   // ✅ Pagination
   const totalPages = Math.ceil(totalCount / recordsPerPage);
@@ -176,14 +173,32 @@ const Transactions: React.FC = () => {
             <path d="M7 7l3 3 3-3" />
           </svg>
         </div>
+
+        {/* Date Range Filter */}
+        <div className="flex gap-2 items-center">
+          <input
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
+            className="bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300"
+          />
+          <span className="text-gray-400">to</span>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300"
+          />
+        </div>
+
       </div>
 
 
 
       {/* Card View (Animated) */}
       <div className="space-y-3">
-        {filtered.length > 0 ? (
-          filtered.map((tx, index) => {
+        {transactions.length > 0 ? (
+          transactions.map((tx, index) => {
             const isIncome = tx.type === TransactionType.Income;
             const sign = isIncome ? "+" : "-";
             const color = isIncome ? "text-gray-600" : "text-gray-600";

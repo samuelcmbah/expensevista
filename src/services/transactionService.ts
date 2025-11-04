@@ -1,22 +1,36 @@
 import type { PagedResponse } from "../types/PagedResponse";
-import type { PaginationDTO } from "../types/PaginationDTO";
+import type { PaginationFilterDTO } from "../types/PaginationFilterDTO";
 import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
 import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import apiClient from "./apiClient";
 
 
+
+export async function getFilteredPagedTransactions({page, recordsPerPage, filters}: PaginationFilterDTO): Promise<PagedResponse<TransactionDTO>> {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    recordsPerPage: recordsPerPage.toString(),
+  });
+
+  if (filters) {
+    if (filters.description?.trim()) params.append("description", filters.description);
+    if (filters.categoryId) params.append("categoryId", filters.categoryId.toString());
+    if (filters.type !== undefined) params.append("type", filters.type.toString());
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
+  }
+
+  const response = await apiClient.get<PagedResponse<TransactionDTO>>("/transactions/filter", { params });
+  return response.data;
+};
+
+
 export const createTransaction = async (data: CreateTransactionDTO): Promise<TransactionDTO> => {
   const response = await apiClient.post("/transactions", data);
   return response.data;
-}
-
-export const getPaginatedTransactions = async (pagination: PaginationDTO): Promise<PagedResponse< TransactionDTO>> => {
-  const { page, recordsPerPage } = pagination;
-  const response = await apiClient.get<PagedResponse< TransactionDTO>>("/transactions", {params: { page, recordsPerPage }});
-  console.log(`paginated transaction: ${response.data}`);
-  return response.data;
 };
+
 
 export const getTransactionById = async (id: number): Promise<TransactionDTO> => {
   const response = await apiClient.get(`/transactions/${id}`);
