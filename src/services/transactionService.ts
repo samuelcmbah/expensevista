@@ -14,14 +14,15 @@ export async function getFilteredPagedTransactions({page, recordsPerPage, filter
   });
 
   if (filters) {
-    if (filters.description?.trim()) params.append("description", filters.description);
-    if (filters.categoryId) params.append("categoryId", filters.categoryId.toString());
+    if (filters.searchTerm?.trim()) params.append("searchTerm", filters.searchTerm);
+    if (filters.categoryName?.trim()) params.append("categoryName", filters.categoryName);
     if (filters.type !== undefined) params.append("type", filters.type.toString());
     if (filters.startDate) params.append("startDate", filters.startDate);
     if (filters.endDate) params.append("endDate", filters.endDate);
   }
 
   const response = await apiClient.get<PagedResponse<TransactionDTO>>("/transactions/filter", { params });
+  console.log(response.data);
   return response.data;
 };
 

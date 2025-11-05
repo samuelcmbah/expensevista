@@ -9,10 +9,12 @@ import {
 } from "../services/transactionService";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
+import { getAllCategories } from "../services/categoryService";
 
 const Transactions: React.FC = () => {
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
+  const [allCategories, setAllCategories] = useState<string[]>([]);
   //filter states
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
@@ -25,38 +27,56 @@ const Transactions: React.FC = () => {
   const [recordsPerPage] = useState(10);
   const [totalCount, setTotalCount] = useState(0);
 
-  // ✅ Fetch all transactions
+  // fetch all categories
+
   useEffect(() => {
-    const fetchData = async () => {
-      const toastId = toast.loading("Fetching transactions...");
-
+    const fetchCategories = async () => {
       try {
-        const filters ={
-          description: search || undefined,
-          categoryId: categoryFilter !== "All" ? Number(categoryFilter) : undefined,
-          type: typeFilter === "All" ? undefined : typeFilter === "Income" ? TransactionType.Income : TransactionType.Expense,
-          startDate: startDate || undefined,
-          endDate: endDate || undefined,
-        }
-
-        const data = await getFilteredPagedTransactions({
-           page: currentPage, 
-           recordsPerPage,
-           filters
-          });
-
-        setTransactions(data.data);
-        setTotalCount(data.totalRecords)
-        toast.dismiss(toastId);
+        const categories = await getAllCategories();
+        setAllCategories(categories.map((cat) => cat.categoryName));
       } catch (error) {
-        toast.error("Failed to fetch transactions", { id: toastId });
+        console.error("Failed to fetch categories", error);
       }
-
-
     };
-    fetchData();
-  }, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, startDate, endDate]);
 
+    fetchCategories();
+  }, []);
+
+  // Fetch all or filtered transactions
+  useEffect(() => {
+  const fetchData = async () => {
+    const toastId = toast.loading("Fetching transactions...");
+
+    try {
+      const filters = {
+        searchTerm: search || undefined, // ✅ matches C# DTO
+        categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // ✅ use name, not ID
+        type:
+          typeFilter === "All"
+            ? undefined
+            : typeFilter === "Income"
+            ? TransactionType.Income
+            : TransactionType.Expense,
+        startDate: startDate || undefined,
+        endDate: endDate || undefined,
+      };
+
+      const data = await getFilteredPagedTransactions({
+        page: currentPage,
+        recordsPerPage,
+        filters,
+      });
+
+      setTransactions(data.data);
+      setTotalCount(data.totalRecords);
+      toast.dismiss(toastId);
+    } catch (error) {
+      toast.error("Failed to fetch transactions", { id: toastId });
+    }
+  };
+
+  fetchData();
+}, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, startDate, endDate]);
 
   // ✅ Pagination
   const totalPages = Math.ceil(totalCount / recordsPerPage);
@@ -132,14 +152,16 @@ const Transactions: React.FC = () => {
             className="appearance-none bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300 cursor-pointer transition"
           >
             <option>All</option>
-            {[...new Set(transactions.map((t) => t.category?.categoryName))].map(
-              (cat) =>
-                cat && (
-                  <option key={cat} value={cat}>
-                    {cat}
-                  </option>
-                )
+            {allCategories.length === 0 ? (
+              <option disabled>No categories</option>
+            ) : (
+              allCategories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))
             )}
+
           </select>
           <svg
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
@@ -175,7 +197,7 @@ const Transactions: React.FC = () => {
         </div>
 
         {/* Date Range Filter */}
-        <div className="flex gap-2 items-center">
+        <div className="relative">
           <input
             type="date"
             value={startDate}
