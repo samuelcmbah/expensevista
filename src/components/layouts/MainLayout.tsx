@@ -27,7 +27,7 @@ export default function MainLayout() {
         <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
         {/* main scrolls independently */}
-        <main className="flex-1 p-6 mt-14 md:mt-0 overflow-y-auto">
+        <main className="flex-1 p-2 mt-14 md:mt-0 overflow-y-auto">
           <Outlet />
         </main>
       </div>

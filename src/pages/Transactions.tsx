@@ -149,9 +149,10 @@ const Transactions: React.FC = () => {
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
-            className="appearance-none bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300 cursor-pointer transition"
+            className="appearance-none bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full 
+                      focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300 cursor-pointer transition"
           >
-            <option>All</option>
+            <option value={"All"}>All Categories</option>
             {allCategories.length === 0 ? (
               <option disabled>No categories</option>
             ) : (
@@ -165,8 +166,8 @@ const Transactions: React.FC = () => {
           </select>
           <svg
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-            width="16"
-            height="16"
+            width="40"
+            height="40"
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -181,14 +182,14 @@ const Transactions: React.FC = () => {
             onChange={(e) => setTypeFilter(e.target.value)}
             className="appearance-none bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300 cursor-pointer transition"
           >
-            <option>All</option>
+            <option value="All">All Types</option>
             <option value="Income">Income</option>
             <option value="Expense">Expense</option>
           </select>
           <svg
             className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-            width="16"
-            height="16"
+            width="40"
+            height="40"
             fill="currentColor"
             viewBox="0 0 20 20"
           >

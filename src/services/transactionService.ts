@@ -22,7 +22,6 @@ export async function getFilteredPagedTransactions({page, recordsPerPage, filter
   }
 
   const response = await apiClient.get<PagedResponse<TransactionDTO>>("/transactions/filter", { params });
-  console.log(response.data);
   return response.data;
 };
 

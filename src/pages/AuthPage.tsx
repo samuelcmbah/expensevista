@@ -6,7 +6,6 @@ import { useAuth } from "../context/AuthContext";
 export default function AuthPage() {
   const { login } = useAuth();
 
-
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

@@ -6,5 +6,5 @@ export interface EditTransactionDTO {
   type: TransactionType; // 0 = Expense, 1 = Income
   transactionDate: string;
   categoryId: number;
-  description: string;
+  description?: string;
 }
