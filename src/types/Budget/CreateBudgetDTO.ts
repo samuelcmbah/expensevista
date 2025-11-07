@@ -1,4 +1,4 @@
 export interface CreateBudgetDTO {
-  monthlyLimit: number;
+  monthlyLimit: string;
   budgetMonth: string;
 }

@@ -14,7 +14,7 @@ const Settings: React.FC = () => {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
-  const [monthlyBudget, setMonthlyBudget] = useState<number>(0);
+  const [monthlyBudget, setMonthlyBudget] = useState<string>("0");
   const [isEditingBudget, setIsEditingBudget] = useState(false);
   const [budgetId, setBudgetId] = useState<number>(0);
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
@@ -46,7 +46,7 @@ const Settings: React.FC = () => {
         if (error.response?.status === 404) {
           // ℹ️ Expected case: no budget yet
           toast.error("You have not set a budget for this month yet.");
-          setMonthlyBudget(0);
+          setMonthlyBudget("0");
         } else {
           console.error("Failed to load budget data:", error);
           toast.error("Failed to load budget data");
@@ -232,9 +232,9 @@ return (
         {isEditingBudget ? (
           <div className="flex items-center gap-3">
             <input
-              type="number"
+              type="string"
               value={monthlyBudget}
-              onChange={(e) => setMonthlyBudget(Number(e.target.value))}
+              onChange={(e) => setMonthlyBudget(e.target.value)}
               className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-green-500"
             />
             <button

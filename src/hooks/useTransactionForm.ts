@@ -20,7 +20,7 @@ export const useTransactionForm = ({ initialData = null }: UseTransactionFormPro
   // Make formData a union so both shapes are allowed
   const [formData, setFormData] = useState<CreateTransactionDTO | EditTransactionDTO>({
   id: 0,
-  amount: 0,
+  amount: "0",
   type: TransactionType.Expense,
   transactionDate: new Date().toISOString(),
   categoryId: 0,

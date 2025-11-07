@@ -1,5 +1,5 @@
 export interface EditBudgetDTO {
   id: number;
-  monthlyLimit: number;
+  monthlyLimit: string;
   budgetMonth: string;
 }

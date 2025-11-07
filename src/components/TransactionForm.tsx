@@ -6,7 +6,7 @@ import type { CategoryDTO } from "../types/Category/CategoryDTO";
 
 
 export interface FormValues {
-  amount: number;
+  amount: string;
   type: TransactionType;
   transactionDate: string; // ISO string or empty
   categoryId: number | "" | null;
@@ -60,8 +60,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
       <div>
         <label className="block text-gray-600 mb-1">Amount</label>
         <input
-          type="number"
-          step="0.01"
+          type="text"
           name="amount"
           value={amountValue}
           onChange={handleChange}
@@ -108,6 +107,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         <label className="block text-gray-600 mb-1">Date</label>
         <input
           type="date"
+          max={new Date().toISOString().split("T")[0]}//limit to today
           name="transactionDate"
           value={dateValue}
           onChange={handleChange}

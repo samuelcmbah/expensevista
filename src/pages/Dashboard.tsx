@@ -46,7 +46,6 @@ const Dashboard: React.FC = () => {
 
       // ✅ Handle Transaction Result
       if (transactionResult.status === "fulfilled") {
-        console.log(transactionResult.value);
         setTransactions(transactionResult.value.data);
       } else {
         console.warn("⚠️ Transactions fetch failed:", transactionResult.reason);
@@ -76,11 +75,19 @@ const Dashboard: React.FC = () => {
     return 'Good evening';
   };
 
-  // ✅ Format amount helper
-  const formatAmount = (amount: number) => {
-    if (amount >= 1_000_000_000) return (amount / 1_000_000_000).toFixed(2) + "B";
-    return amount.toLocaleString();
-  };
+  // ✅ Safe formatAmount helper for string inputs
+const formatAmount = (amount: string) => {
+  const num = parseFloat(amount);
+
+  if (isNaN(num)) return amount; // fallback in case of invalid number
+
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + "M";
+  if (num >= 1_000) return num.toLocaleString();
+
+  return num.toFixed(2);
+};
+
 
   return (
     <motion.div
@@ -125,7 +132,7 @@ const Dashboard: React.FC = () => {
           <div>
             <h3 className="text-gray-600 text-sm font-medium">Budget Balance</h3>
             <p className="text-xl font-semibold text-black-500">
-              ₦{budget?.remainingAmount?.toLocaleString() ?? '0'}
+              ₦{budget?.remainingAmount?.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <Wallet className="text-blue-500 w-8 h-8" />
@@ -139,7 +146,7 @@ const Dashboard: React.FC = () => {
           <div>
             <h3 className="text-gray-600 text-sm font-medium">Total Income</h3>
             <p className="text-xl font-semibold text-black-500">
-              ₦{budget?.totalIncome?.toLocaleString() ?? '0'}
+              ₦{budget?.totalIncome?.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <ArrowUpCircle className="text-green-500 w-8 h-8" />
@@ -153,7 +160,7 @@ const Dashboard: React.FC = () => {
           <div>
             <h3 className="text-gray-600 text-sm font-medium">Total Expense</h3>
             <p className="text-xl font-semibold text-black-500">
-              ₦{budget?.currentUsage?.toLocaleString() ?? '0'}
+              ₦{budget?.currentUsage?.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <ArrowDownCircle className="text-red-500 w-8 h-8" />
@@ -167,10 +174,10 @@ const Dashboard: React.FC = () => {
           <div>
             <h4 className="text-gray-600 text-sm font-medium">Budget Status</h4>
             <p className="text-xl font-semibold text-gray-600">
-              {budget?.percentageUsed?.toFixed(1) ?? 0}%
+              {budget?.percentageUsed ?? 0.00}%
             </p>
             <p className="text-sm text-gray-700 mt-1 truncate">
-              of ₦{budget?.monthlyLimit.toLocaleString() ?? '0'}
+              of ₦{budget?.monthlyLimit.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <TrendingUp className="text-purple-500 w-8 h-8" />

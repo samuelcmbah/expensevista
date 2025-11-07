@@ -1,9 +1,9 @@
 export interface BudgetDTO {
   id: number;
-  monthlyLimit: number;
+  monthlyLimit: string;
   budgetMonth: string;
-  currentUsage: number;
-  remainingAmount: number;
-  percentageUsed: number;
-  totalIncome?: number;
+  currentUsage: string;
+  remainingAmount: string;
+  percentageUsed: string;
+  totalIncome?: string;
 }

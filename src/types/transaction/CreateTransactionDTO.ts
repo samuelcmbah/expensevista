@@ -1,7 +1,7 @@
 import type { TransactionType } from "./TransactionType";
 
 export default interface CreateTransactionDTO {
-  amount: number;
+  amount: string;
   type: TransactionType;
   transactionDate: string; // ISO string
   categoryId: number;

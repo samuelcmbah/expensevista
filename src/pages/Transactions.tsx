@@ -104,11 +104,18 @@ const Transactions: React.FC = () => {
     }
   };
 
-  // ✅ Format amount helper
-  const formatAmount = (amount: number) => {
-    if (amount >= 1_000_000_000) return (amount / 1_000_000_000).toFixed(2) + "B";
-    return amount.toLocaleString();
-  };
+   // ✅ Safe formatAmount helper for string inputs
+const formatAmount = (amount: string) => {
+  const num = parseFloat(amount);
+
+  if (isNaN(num)) return amount; // fallback in case of invalid number
+
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
+  if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + "M";
+  if (num >= 1_000) return num.toFixed(2).toLocaleString();
+
+  return num.toFixed(2);
+};
 
 
 
