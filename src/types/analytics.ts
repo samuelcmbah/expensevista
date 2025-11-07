@@ -1,28 +1,28 @@
 export interface SpendingCategory {
   name: string;
-  value: number;
-  percentage: number;
-  [key: string]: string | number; // ✅ Allow Recharts to read dynamic keys
+  value: string;
+  percentage: string;
+  [key: string]: string | string; // ✅ Allow Recharts to read dynamic keys
 }
 
 export interface BudgetProgress {
-  spent: number;
-  total: number;
-  percentage: number;
+  spent: string;
+  total: string;
+  percentage: string;
 }
 
 export interface IncomeExpenseData {
   month: string;
-  income: number;
-  expenses: number;
+  income: string;
+  expenses: string;
 }
 
 export interface KeyInsights {
   topSpendingCategory: string;
-  topSpendingAmount: number;
-  totalTransactions: number;
-  totalIncomeTransactions: number;
-  totalExpenseTransactions: number;
+  topSpendingAmount: string;
+  totalTransactions: string;
+  totalIncomeTransactions: string;
+  totalExpenseTransactions: string;
 }
 
 export interface FinancialData {

@@ -53,6 +53,35 @@ export const ReportsAnalytics: React.FC = () => {
   if (!data)
     return <div className="p-6 text-center text-red-600">No data available</div>;
 
+  // ✅ Convert numeric strings to numbers before charts
+  const spendingByCategory = data.spendingByCategory.map((item) => ({
+    ...item,
+    value: parseFloat(item.value),
+  }));
+
+  const incomeVsExpenses = data.incomeVsExpenses.map((item) => ({
+    ...item,
+    income: parseFloat(item.income),
+    expenses: parseFloat(item.expenses),
+  }));
+
+  const financialTrend = data.financialTrend.map((item) => ({
+    ...item,
+    income: parseFloat(item.income),
+    expenses: parseFloat(item.expenses),
+  }));
+
+  const budgetProgress = {
+    spent: parseFloat(data.budgetProgress.spent),
+    total: parseFloat(data.budgetProgress.total),
+    percentage: parseFloat(data.budgetProgress.percentage),
+  };
+
+  const keyInsights = {
+    ...data.keyInsights,
+    topSpendingAmount: parseFloat(data.keyInsights.topSpendingAmount),
+  };
+
   return (
     <motion.div
       className="p-4 sm:p-5 md:p-6 bg-gray-50 min-h-screen"
@@ -102,18 +131,18 @@ export const ReportsAnalytics: React.FC = () => {
           >
             <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">Budget Progress</h3>
             <p className="text-2xl font-bold text-blue-600 mb-2">
-              ₦{data.budgetProgress.spent.toLocaleString()}
+              ₦{budgetProgress.spent.toLocaleString()}
               <span className="text-gray-500 text-base font-medium ml-2">
-                of ₦{data.budgetProgress.total.toLocaleString()}
+                of ₦{budgetProgress.total.toLocaleString()}
               </span>
             </p>
             <div className="w-full bg-gray-200 rounded-full h-2.5 relative mt-3">
               <div
                 className="h-2.5 rounded-full bg-green-500 transition-all duration-700 ease-in-out"
-                style={{ width: `${data.budgetProgress.percentage}%` }}
+                style={{ width: `${budgetProgress.percentage}%` }}
               />
               <span className="absolute top-0 right-0 -mt-5 text-sm font-medium text-gray-700">
-                {data.budgetProgress.percentage}%
+                {budgetProgress.percentage}%
               </span>
             </div>
           </motion.div>
@@ -130,7 +159,7 @@ export const ReportsAnalytics: React.FC = () => {
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
-                    data={data.spendingByCategory}
+                    data={spendingByCategory}
                     dataKey="value"
                     nameKey="name"
                     cx="50%"
@@ -140,7 +169,7 @@ export const ReportsAnalytics: React.FC = () => {
                       `${(Number(percent ?? 0) * 100).toFixed(0)}%`
                     }
                   >
-                    {data.spendingByCategory.map((_, index) => (
+                    {spendingByCategory.map((_, index) => (
                       <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
                     ))}
                   </Pie>
@@ -161,7 +190,7 @@ export const ReportsAnalytics: React.FC = () => {
             </h3>
             <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.incomeVsExpenses}>
+                <BarChart data={incomeVsExpenses}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="month" />
                   <YAxis tickFormatter={(v: number) => `₦${(v / 1000).toFixed(0)}k`} />
@@ -186,10 +215,10 @@ export const ReportsAnalytics: React.FC = () => {
                   Top spending category this period:
                 </p>
                 <p className="text-lg font-bold text-yellow-800">
-                  {data.keyInsights.topSpendingCategory}
+                  {keyInsights.topSpendingCategory}
                 </p>
                 <p className="text-sm text-yellow-700 mt-1">
-                  ₦{data.keyInsights.topSpendingAmount.toLocaleString()} spent
+                  ₦{keyInsights.topSpendingAmount.toLocaleString()} spent
                 </p>
               </div>
               <div className="p-4 rounded-lg bg-blue-50 border-l-4 border-blue-600">
@@ -197,15 +226,15 @@ export const ReportsAnalytics: React.FC = () => {
                   Total transactions this period:
                 </p>
                 <p className="text-lg font-bold text-blue-800">
-                  {data.keyInsights.totalTransactions}
+                  {keyInsights.totalTransactions}
                 </p>
                 <p className="text-sm text-blue-700 mt-1">
                   <span className="font-semibold text-green-600">
-                    {data.keyInsights.totalIncomeTransactions} income
+                    {keyInsights.totalIncomeTransactions} income
                   </span>{" "}
                   |{" "}
                   <span className="font-semibold text-red-600">
-                    {data.keyInsights.totalExpenseTransactions} expenses
+                    {keyInsights.totalExpenseTransactions} expenses
                   </span>
                 </p>
               </div>
@@ -222,7 +251,7 @@ export const ReportsAnalytics: React.FC = () => {
             </h3>
             <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={data.financialTrend}>
+                <LineChart data={financialTrend}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
                   <XAxis dataKey="month" />
                   <YAxis tickFormatter={(v: number) => `₦${(v / 1000).toFixed(0)}k`} />
