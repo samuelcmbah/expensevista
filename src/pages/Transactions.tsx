@@ -20,7 +20,7 @@ const Transactions: React.FC = () => {
   const [search, setSearch] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [typeFilter, setTypeFilter] = useState("All");
-  const [startDate, setStartDate] = useState("");
+  // const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
 
   // pagination states
@@ -58,7 +58,7 @@ const Transactions: React.FC = () => {
               : typeFilter === "Income"
                 ? TransactionType.Income
                 : TransactionType.Expense,
-          startDate: startDate || undefined,
+          // startDate: startDate || undefined,
           endDate: endDate || undefined,
         };
 
@@ -77,7 +77,7 @@ const Transactions: React.FC = () => {
     };
 
     fetchData();
-  }, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, startDate, endDate]);
+  }, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, endDate]);
 
   // ✅ Pagination
   const totalPages = Math.ceil(totalCount / recordsPerPage);
@@ -190,16 +190,17 @@ const Transactions: React.FC = () => {
 
         {/* Date Range Filter */}
         <div className="relative">
-          <input
+          {/* <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
             className="bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300"
           />
-          <span className="text-gray-400">to</span>
+          <span className="text-gray-400">to</span> */}
           <input
             type="date"
             value={endDate}
+            max={new Date().toISOString().split("T")[0]}//limit to today
             onChange={(e) => setEndDate(e.target.value)}
             className="bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300"
           />
