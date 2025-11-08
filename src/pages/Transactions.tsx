@@ -1,19 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import { TransactionType } from "../types/transaction/TransactionType";
 import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
-import {
-  deleteTransaction,
-  getFilteredPagedTransactions,
-} from "../services/transactionService";
+import {deleteTransaction, getFilteredPagedTransactions,} from "../services/transactionService";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { getAllCategories } from "../services/categoryService";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
+import TransactionDialog from "../components/TransactionDialog";
 
 const Transactions: React.FC = () => {
-  const navigate = useNavigate();
+
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
   const [allCategories, setAllCategories] = useState<string[]>([]);
   //filter states
@@ -29,7 +26,6 @@ const Transactions: React.FC = () => {
   const [totalCount, setTotalCount] = useState(0);
 
   // fetch all categories
-
   useEffect(() => {
     const fetchCategories = async () => {
       try {
@@ -44,14 +40,13 @@ const Transactions: React.FC = () => {
   }, []);
 
   // Fetch all or filtered transactions
-  useEffect(() => {
-    const fetchData = async () => {
+  const fetchData = async () => {
       const toastId = toast.loading("Fetching transactions...");
 
       try {
         const filters = {
-          searchTerm: search || undefined, // ✅ matches C# DTO
-          categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // ✅ use name, not ID
+          searchTerm: search || undefined, // matches C# DTO
+          categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // use name, not ID
           type:
             typeFilter === "All"
               ? undefined
@@ -76,21 +71,15 @@ const Transactions: React.FC = () => {
       }
     };
 
+  useEffect(() => {
     fetchData();
   }, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, endDate]);
 
   // ✅ Pagination
   const totalPages = Math.ceil(totalCount / recordsPerPage);
-
-
   const handlePrev = () => setCurrentPage((p) => Math.max(p - 1, 1));
   const handleNext = () => setCurrentPage((p) => Math.min(p + 1, totalPages));
 
-  // ✅ Handlers
-  const handleEdit = (id: number) => {
-    toast("Editing transaction...", { icon: "✏️" });
-    navigate(`/edit-transaction/${id}`);
-  };
 
   const handleDelete = async (id: number) => {
     if (window.confirm("Are you sure you want to delete this transaction?")) {
@@ -118,8 +107,6 @@ const Transactions: React.FC = () => {
     return num.toFixed(2);
   };
 
-
-
   return (
     <div className="p-4 space-y-6">
       {/* ✅ Header */}
@@ -129,13 +116,20 @@ const Transactions: React.FC = () => {
           <p className="text-gray-500 text-sm">Manage all your records</p>
         </div>
 
-        <button
-          onClick={() => navigate("/add-transaction")}
-          className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-xl shadow-sm transition active:scale-95"
-        >
-          <Plus size={18} className="md:mr-1" />
-          <span className="hidden md:inline">Add Transaction</span>
-        </button>
+        <TransactionDialog
+          triggerLabel={
+            <div className="flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition">
+              <Plus size={18} className="md:mr-1" />
+              <span className="hidden md:inline">Add Transaction</span>
+            </div>
+          }
+          onSubmitSuccess={() => {
+            // ✅ Re-fetch transactions after adding one
+            setCurrentPage(1);
+            fetchData();
+          }}
+        />
+
       </div>
 
       {/* ✅ Search & Filters */}
@@ -258,13 +252,16 @@ const Transactions: React.FC = () => {
                   </p>
 
                   <div className="flex gap-3">
-                    <button
-                      onClick={() => handleEdit(tx.id)}
-                      className="text-gray-600 hover:text-green-600"
-                      title="Edit"
-                    >
-                      <Pencil size={18} />
-                    </button>
+                    <TransactionDialog
+                      triggerLabel={<Pencil size={18} />}
+                      initialData={tx}
+                      onSubmitSuccess={() => {
+                        // refetch updated list after editing
+                        setCurrentPage(1);
+                        fetchData();
+                      }}
+                    />
+
                     <button
                       onClick={() => handleDelete(tx.id)}
                       className="text-gray-600 hover:text-red-600"

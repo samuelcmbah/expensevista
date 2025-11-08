@@ -48,7 +48,6 @@ useEffect(() => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        console.log(formData)
         const data = await getAllCategories();
         setCategories(data);
       } catch {

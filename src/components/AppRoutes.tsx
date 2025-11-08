@@ -7,7 +7,6 @@ import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import { ReportsAnalytics } from "../pages/Reports";
 import Welcome from "../pages/Welcome";
-import TransactionPage from "../pages/TransactionPage";
 
 
 export default function AppRoutes() {
@@ -24,8 +23,6 @@ export default function AppRoutes() {
           <Route path="welcome" element={<Welcome />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="transactions" element={<Transactions />} />
-          <Route path="/edit-transaction/:id" element={<TransactionPage />} />
-          <Route path="/add-transaction" element={<TransactionPage />} />
           <Route path="reports" element={<ReportsAnalytics />} />
           <Route path="settings" element={<Settings />} />
         </Route>
