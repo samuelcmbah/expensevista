@@ -10,6 +10,7 @@ import {
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { getAllCategories } from "../services/categoryService";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 
 const Transactions: React.FC = () => {
   const navigate = useNavigate();
@@ -44,39 +45,39 @@ const Transactions: React.FC = () => {
 
   // Fetch all or filtered transactions
   useEffect(() => {
-  const fetchData = async () => {
-    const toastId = toast.loading("Fetching transactions...");
+    const fetchData = async () => {
+      const toastId = toast.loading("Fetching transactions...");
 
-    try {
-      const filters = {
-        searchTerm: search || undefined, // ✅ matches C# DTO
-        categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // ✅ use name, not ID
-        type:
-          typeFilter === "All"
-            ? undefined
-            : typeFilter === "Income"
-            ? TransactionType.Income
-            : TransactionType.Expense,
-        startDate: startDate || undefined,
-        endDate: endDate || undefined,
-      };
+      try {
+        const filters = {
+          searchTerm: search || undefined, // ✅ matches C# DTO
+          categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // ✅ use name, not ID
+          type:
+            typeFilter === "All"
+              ? undefined
+              : typeFilter === "Income"
+                ? TransactionType.Income
+                : TransactionType.Expense,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+        };
 
-      const data = await getFilteredPagedTransactions({
-        page: currentPage,
-        recordsPerPage,
-        filters,
-      });
+        const data = await getFilteredPagedTransactions({
+          page: currentPage,
+          recordsPerPage,
+          filters,
+        });
 
-      setTransactions(data.data);
-      setTotalCount(data.totalRecords);
-      toast.dismiss(toastId);
-    } catch (error) {
-      toast.error("Failed to fetch transactions", { id: toastId });
-    }
-  };
+        setTransactions(data.data);
+        setTotalCount(data.totalRecords);
+        toast.dismiss(toastId);
+      } catch (error) {
+        toast.error("Failed to fetch transactions", { id: toastId });
+      }
+    };
 
-  fetchData();
-}, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, startDate, endDate]);
+    fetchData();
+  }, [currentPage, recordsPerPage, search, categoryFilter, typeFilter, startDate, endDate]);
 
   // ✅ Pagination
   const totalPages = Math.ceil(totalCount / recordsPerPage);
@@ -104,18 +105,18 @@ const Transactions: React.FC = () => {
     }
   };
 
-   // ✅ Safe formatAmount helper for string inputs
-const formatAmount = (amount: string) => {
-  const num = parseFloat(amount);
+  // ✅ Safe formatAmount helper for string inputs
+  const formatAmount = (amount: string) => {
+    const num = parseFloat(amount);
 
-  if (isNaN(num)) return amount; // fallback in case of invalid number
+    if (isNaN(num)) return amount; // fallback in case of invalid number
 
-  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
-  if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + "M";
-  if (num >= 1_000) return num.toFixed(2).toLocaleString();
+    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
+    if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + "M";
+    if (num >= 1_000) return num.toFixed(2).toLocaleString();
 
-  return num.toFixed(2);
-};
+    return num.toFixed(2);
+  };
 
 
 
@@ -153,55 +154,38 @@ const formatAmount = (amount: string) => {
 
         {/* Category Filter */}
         <div className="relative">
-          <select
-            value={categoryFilter}
-            onChange={(e) => setCategoryFilter(e.target.value)}
-            className="appearance-none bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full 
-                      focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300 cursor-pointer transition"
-          >
-            <option value={"All"}>All Categories</option>
-            {allCategories.length === 0 ? (
-              <option disabled>No categories</option>
-            ) : (
-              allCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))
-            )}
+          <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Categories</SelectItem>
+              {allCategories.length === 0 ? (
+                <SelectItem value="none" disabled>No categories</SelectItem>
+              ) : (
+                allCategories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {cat}
+                  </SelectItem>
+                ))
+              )}
+            </SelectContent>
+          </Select>
 
-          </select>
-          <svg
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-            width="40"
-            height="40"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M7 7l3 3 3-3" />
-          </svg>
         </div>
 
         {/* Type Filter */}
         <div className="relative">
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="appearance-none bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300 cursor-pointer transition"
-          >
-            <option value="All">All Types</option>
-            <option value="Income">Income</option>
-            <option value="Expense">Expense</option>
-          </select>
-          <svg
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none"
-            width="40"
-            height="40"
-            fill="currentColor"
-            viewBox="0 0 20 20"
-          >
-            <path d="M7 7l3 3 3-3" />
-          </svg>
+          <Select value={typeFilter} onValueChange={setTypeFilter}>
+            <SelectTrigger>
+              <SelectValue placeholder="All Types" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All Types</SelectItem>
+              <SelectItem value="Income">Income</SelectItem>
+              <SelectItem value="Expense">Expense</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
 
         {/* Date Range Filter */}
@@ -333,4 +317,3 @@ const formatAmount = (amount: string) => {
 };
 
 export default Transactions;
- 

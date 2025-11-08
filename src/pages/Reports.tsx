@@ -18,6 +18,7 @@ import {
 import type { FinancialData } from "../types/analytics";
 import { getAnalyticsReport } from "../services/reportsAnalyticsServices";
 import { motion } from "framer-motion";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 
 const PIE_COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#AF19FF"];
 
@@ -110,16 +111,22 @@ export const ReportsAnalytics: React.FC = () => {
           transition={{ duration: 0.5, delay: 0.1 }}
         >
           <p className="text-gray-700 font-medium mb-2 sm:mb-0">Select Time Period:</p>
-          <select
+          <Select
             value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value as FinancialData["timePeriod"])}
-            className="border border-gray-300 rounded-md p-2 bg-white shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base"
+            onValueChange={(value) =>
+              setSelectedPeriod(value as FinancialData["timePeriod"])
+            }
           >
-            <option value="This Month">This Month</option>
-            <option value="Last 3 Months">Last 3 Months</option>
-            <option value="Last 6 Months">Last 6 Months</option>
-            <option value="This Year">This Year</option>
-          </select>
+            <SelectTrigger className="w-[180px] border border-gray-300 rounded-md p-2 bg-white shadow-sm focus:ring-green-200 focus:border-green-200 text-sm sm:text-base">
+              <SelectValue placeholder="Select period" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="This Month">This Month</SelectItem>
+              <SelectItem value="Last 3 Months">Last 3 Months</SelectItem>
+              <SelectItem value="Last 6 Months">Last 6 Months</SelectItem>
+              <SelectItem value="This Year">This Year</SelectItem>
+            </SelectContent>
+          </Select>
         </motion.div>
 
         {/* Dashboard Grid */}
