@@ -21,9 +21,9 @@ export const useTransactionForm = ({ initialData = null }: UseTransactionFormPro
   const [formData, setFormData] = useState<CreateTransactionDTO | EditTransactionDTO>({
   id: 0,
   amount: "0",
-  type: TransactionType.Expense,
+  type: "",
   transactionDate: new Date().toISOString(),
-  categoryId: 0,
+  categoryId: "",
   description: "",
 });
 

@@ -14,7 +14,7 @@ export const DialogOverlay = React.forwardRef<React.ComponentRef<typeof DialogPr
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 bg-black/50 backdrop-blur-sm z-50 data-[state=open]:animate-in data-[state=closed]:animate-out",
+      "fixed inset-0 bg-black/50  z-50 data-[state=open]:animate-in data-[state=closed]:animate-out",
       className
     )}
     {...props}
@@ -22,13 +22,24 @@ export const DialogOverlay = React.forwardRef<React.ComponentRef<typeof DialogPr
 ));
 DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
-export const DialogContent = React.forwardRef<React.ComponentRef<typeof DialogPrimitive.Content>, React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>>(({ className, children, ...props }, ref) => (
+export const DialogContent = React.forwardRef<
+  React.ComponentRef<typeof DialogPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
+      aria-describedby={undefined}
       ref={ref}
       className={cn(
-        "fixed left-1/2 top-1/2 z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out",
+        // Position + sizing
+        "fixed left-1/2 top-1/2 z-50 grid w-[90vw] max-w-lg -translate-x-1/2 -translate-y-1/2",
+        // Layout + spacing
+        "gap-4 rounded-2xl border border-gray-100 bg-white p-6 shadow-xl duration-200",
+        // Animations
+        "data-[state=open]:animate-in data-[state=closed]:animate-out",
+        // Mobile-friendly spacing
+        "sm:mx-auto sm:my-12",
         className
       )}
       {...props}
@@ -40,6 +51,7 @@ export const DialogContent = React.forwardRef<React.ComponentRef<typeof DialogPr
     </DialogPrimitive.Content>
   </DialogPortal>
 ));
+
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 export const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (

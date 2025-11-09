@@ -2,6 +2,7 @@
 import React from "react";
 import { TransactionType } from "../types/transaction/TransactionType";
 import type { CategoryDTO } from "../types/Category/CategoryDTO";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 
 
 
@@ -45,73 +46,85 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
     <form onSubmit={onSubmit} className="space-y-4">
       {/* Description */}
       <div>
-        <label className="block text-gray-600 mb-1">Description</label>
+        <label className="block text-black-600 mb-1">Description</label>
         <input
           type="text"
           name="description"
           value={descriptionValue}
           onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full rounded-lg px-3 py-2 bg-gray-100 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-green-200"
           placeholder="Optional description"
         />
       </div>
 
       {/* Amount */}
       <div>
-        <label className="block text-gray-600 mb-1">Amount</label>
+        <label className="block text-black-600 mb-1">Amount</label>
         <input
           type="text"
           name="amount"
           value={amountValue}
           onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full rounded-lg px-3 py-2 bg-gray-100 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-green-200"
           required
         />
       </div>
 
       {/* Type */}
       <div>
-        <label className="block text-gray-600 mb-1">Type</label>
-        <select
-          name="type"
+        <label className="block text-black-600 mb-1">Type</label>
+        <Select
           value={String(formData.type)}
-          onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
+          onValueChange={(value) =>
+            handleChange({
+              target: { name: "type", value },
+            } as React.ChangeEvent<HTMLSelectElement>)
+          }
         >
-          <option value={String(TransactionType.Income)}>Income</option>
-          <option value={String(TransactionType.Expense)}>Expense</option>
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select type" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={String(TransactionType.Income)}>Income</SelectItem>
+            <SelectItem value={String(TransactionType.Expense)}>Expense</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Category */}
       <div>
-        <label className="block text-gray-600 mb-1">Category</label>
-        <select
-          name="categoryId"
+        <label className="block text-black-600 mb-1">Category</label>
+        <Select
           value={categoryValue}
-          onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
-          required
+          onValueChange={(value) =>
+            handleChange({
+              target: { name: "categoryId", value },
+            } as React.ChangeEvent<HTMLSelectElement>)
+          }
         >
-          <option value="">Select a category</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={String(cat.id)}>
-              {cat.categoryName}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger>
+            <SelectValue placeholder="Select a category" />
+          </SelectTrigger>
+          <SelectContent>
+            {categories.map((cat) => (
+              <SelectItem key={cat.id} value={String(cat.id)}>
+                {cat.categoryName}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Date */}
       <div>
-        <label className="block text-gray-600 mb-1">Date</label>
+        <label className="block text-black-600 mb-1">Date</label>
         <input
           type="date"
           max={new Date().toISOString().split("T")[0]}//limit to today
           name="transactionDate"
           value={dateValue}
           onChange={handleChange}
-          className="w-full border rounded-lg px-3 py-2"
+          className="w-full rounded-lg px-3 py-2 bg-gray-100 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-green-200"
         />
       </div>
 

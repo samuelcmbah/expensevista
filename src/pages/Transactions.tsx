@@ -135,7 +135,7 @@ const Transactions: React.FC = () => {
       {/* ✅ Search & Filters */}
       <div className="bg-white p-3 shadow-sm rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5 border border-gray-100">
         {/* Search */}
-        <div className="flex items-center bg-gray-50 rounded-xl px-3 py-2 w-full focus-within:ring-2 focus-within:ring-green-100 transition">
+        <div className="flex items-center bg-gray-50 rounded-xl px-3 py-2 w-full focus-within:ring-2 focus-within:ring-green-200 transition">
           <Search size={18} className="text-gray-500 mr-2" />
           <input
             type="text"
@@ -150,7 +150,7 @@ const Transactions: React.FC = () => {
         <div className="relative">
           <Select value={categoryFilter} onValueChange={setCategoryFilter}>
             <SelectTrigger>
-              <SelectValue placeholder="All Categories" />
+              <SelectValue placeholder="Select a Category" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Categories</SelectItem>
@@ -172,7 +172,7 @@ const Transactions: React.FC = () => {
         <div className="relative">
           <Select value={typeFilter} onValueChange={setTypeFilter}>
             <SelectTrigger>
-              <SelectValue placeholder="All Types" />
+              <SelectValue placeholder="Select Transaction type" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All">All Types</SelectItem>
@@ -196,7 +196,7 @@ const Transactions: React.FC = () => {
             value={endDate}
             max={new Date().toISOString().split("T")[0]}//limit to today
             onChange={(e) => setEndDate(e.target.value)}
-            className="bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300"
+            className="bg-gray-50 text-gray-700 rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
           />
         </div>
 

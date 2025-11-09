@@ -14,6 +14,7 @@ interface TransactionDialogProps {
 
 const TransactionDialog: React.FC<TransactionDialogProps> = ({ triggerLabel, initialData, onSubmitSuccess }) => {
 
+  const [open, setOpen] = React.useState(false);
   const { formData, handleChange, getCreatePayload, getEditPayload, categories, loading, isEdit } =
     useTransactionForm({ initialData })
 
@@ -29,7 +30,8 @@ const TransactionDialog: React.FC<TransactionDialogProps> = ({ triggerLabel, ini
         await createTransaction(getCreatePayload());
         toast.success("Transaction added successfully!", { id: toastId });
       }
-      onSubmitSuccess()
+      onSubmitSuccess();
+      setOpen(false);
     } catch (error: any) {
       if (error.response?.status === 400 && error.response.data?.errors) {
         //get all error messages and join them
@@ -45,7 +47,7 @@ const TransactionDialog: React.FC<TransactionDialogProps> = ({ triggerLabel, ini
   };
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <button>
           {triggerLabel}
