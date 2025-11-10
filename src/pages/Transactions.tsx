@@ -2,12 +2,13 @@ import React, { useEffect, useState } from "react";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import { TransactionType } from "../types/transaction/TransactionType";
 import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
-import {deleteTransaction, getFilteredPagedTransactions,} from "../services/transactionService";
+import { deleteTransaction, getFilteredPagedTransactions, } from "../services/transactionService";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { getAllCategories } from "../services/categoryService";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import TransactionDialog from "../components/TransactionDialog";
+import StickyPageLayout from "../components/layouts/StickyPageLayout";
 
 const Transactions: React.FC = () => {
 
@@ -41,35 +42,35 @@ const Transactions: React.FC = () => {
 
   // Fetch all or filtered transactions
   const fetchData = async () => {
-      const toastId = toast.loading("Fetching transactions...");
+    const toastId = toast.loading("Fetching transactions...");
 
-      try {
-        const filters = {
-          searchTerm: search || undefined, // matches C# DTO
-          categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // use name, not ID
-          type:
-            typeFilter === "All"
-              ? undefined
-              : typeFilter === "Income"
-                ? TransactionType.Income
-                : TransactionType.Expense,
-          // startDate: startDate || undefined,
-          endDate: endDate || undefined,
-        };
+    try {
+      const filters = {
+        searchTerm: search || undefined, // matches C# DTO
+        categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // use name, not ID
+        type:
+          typeFilter === "All"
+            ? undefined
+            : typeFilter === "Income"
+              ? TransactionType.Income
+              : TransactionType.Expense,
+        // startDate: startDate || undefined,
+        endDate: endDate || undefined,
+      };
 
-        const data = await getFilteredPagedTransactions({
-          page: currentPage,
-          recordsPerPage,
-          filters,
-        });
+      const data = await getFilteredPagedTransactions({
+        page: currentPage,
+        recordsPerPage,
+        filters,
+      });
 
-        setTransactions(data.data);
-        setTotalCount(data.totalRecords);
-        toast.dismiss(toastId);
-      } catch (error) {
-        toast.error("Failed to fetch transactions", { id: toastId });
-      }
-    };
+      setTransactions(data.data);
+      setTotalCount(data.totalRecords);
+      toast.dismiss(toastId);
+    } catch (error) {
+      toast.error("Failed to fetch transactions", { id: toastId });
+    }
+  };
 
   useEffect(() => {
     fetchData();
@@ -107,9 +108,10 @@ const Transactions: React.FC = () => {
     return num.toFixed(2);
   };
 
-  return (
-    <div className="p-4 space-y-6">
-      {/* ✅ Header */}
+  const header = (
+    <>
+      {/* Header + Filters */}
+      {/* Header */}
       <div className="flex flex-wrap justify-between items-center gap-3">
         <div>
           <h2 className="text-2xl font-semibold">Transactions</h2>
@@ -124,15 +126,13 @@ const Transactions: React.FC = () => {
             </div>
           }
           onSubmitSuccess={() => {
-            // ✅ Re-fetch transactions after adding one
             setCurrentPage(1);
             fetchData();
           }}
         />
-
       </div>
 
-      {/* ✅ Search & Filters */}
+      {/* Filters */}
       <div className="bg-white p-3 shadow-sm rounded-2xl grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-5 border border-gray-100">
         {/* Search */}
         <div className="flex items-center bg-gray-50 rounded-xl px-3 py-2 w-full focus-within:ring-2 focus-within:ring-green-200 transition">
@@ -155,7 +155,9 @@ const Transactions: React.FC = () => {
             <SelectContent>
               <SelectItem value="All">All Categories</SelectItem>
               {allCategories.length === 0 ? (
-                <SelectItem value="none" disabled>No categories</SelectItem>
+                <SelectItem value="none" disabled>
+                  No categories
+                </SelectItem>
               ) : (
                 allCategories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
@@ -165,7 +167,6 @@ const Transactions: React.FC = () => {
               )}
             </SelectContent>
           </Select>
-
         </div>
 
         {/* Type Filter */}
@@ -182,30 +183,26 @@ const Transactions: React.FC = () => {
           </Select>
         </div>
 
-        {/* Date Range Filter */}
+        {/* Date Filter */}
         <div className="relative">
-          {/* <input
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-            className="bg-gray-50 text-gray-700 border border-transparent rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-100 focus:border-green-300"
-          />
-          <span className="text-gray-400">to</span> */}
           <input
             type="date"
             value={endDate}
-            max={new Date().toISOString().split("T")[0]}//limit to today
+            max={new Date().toISOString().split("T")[0]}
             onChange={(e) => setEndDate(e.target.value)}
             className="bg-gray-50 text-gray-700 rounded-xl px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-green-200"
           />
         </div>
-
       </div>
+    </>
+  );
 
+  return (
+    <StickyPageLayout header={header}>
 
 
       {/* Card View (Animated) */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         {transactions.length > 0 ? (
           transactions.map((tx, index) => {
             const isIncome = tx.type === TransactionType.Income;
@@ -272,8 +269,6 @@ const Transactions: React.FC = () => {
                   </div>
                 </div>
               </motion.div>
-
-
             );
           })
         ) : (
@@ -308,9 +303,9 @@ const Transactions: React.FC = () => {
           </button>
         </div>
       </div>
-    </div>
-  );
+    </StickyPageLayout>
 
+  );
 
 };
 

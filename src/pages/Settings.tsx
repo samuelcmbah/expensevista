@@ -8,6 +8,7 @@ import type { CreateCategoryDTO } from "../types/Category/CreateCategoryDTO";
 import type { AxiosError } from "axios";
 import { motion } from "framer-motion";
 import { User, Wallet2, Tags, LogOut, Plus } from "lucide-react";
+import StickyPageLayout from "../components/layouts/StickyPageLayout";
 
 const Settings: React.FC = () => {
   const {user, logout } = useAuth();
@@ -157,13 +158,17 @@ useEffect(() => {
   }
 };
 
-
-
+const header = (
+  <>
+      <h1 className="text-2xl font-semibold text-gray-800 mb-4">Settings</h1>
+  </>
+);
 
 return (
+  <StickyPageLayout header={header} scrollable={true}>
+
   <div className="min-h-screen bg-gray-50 p-6">
     <div className="max-w-3xl mx-auto space-y-6">
-      <h1 className="text-2xl font-semibold text-gray-800 mb-4">Settings</h1>
 
       {/* 👤 Profile Section */}
       <motion.div
@@ -311,6 +316,8 @@ return (
       </div>
     </div>
   </div>
+    </StickyPageLayout>
+
 );
 
 };

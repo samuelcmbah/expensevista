@@ -14,6 +14,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import StickyPageLayout from "../components/layouts/StickyPageLayout";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -88,14 +89,9 @@ const formatAmount = (amount: string) => {
   return num.toFixed(2);
 };
 
-
-  return (
-    <motion.div
-      className=" p-4 space-y-6"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-    >
+  const header=(
+    
+    <>
       {/* ✅ Greeting and Month */}
       <motion.div
         initial={{ opacity: 0, y: 15 }}
@@ -115,6 +111,18 @@ const formatAmount = (amount: string) => {
             : "this month"}
         </p>
       </motion.div>
+    </>
+  );
+
+  return (
+    <StickyPageLayout header={header} scrollable={false}>
+
+    <motion.div
+      className="space-y-6"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
 
       {/* ✅ Budget Summary Cards */}
       <motion.div
@@ -256,6 +264,7 @@ const formatAmount = (amount: string) => {
         )}
       </motion.div>
     </motion.div>
+      </StickyPageLayout>
   );
 };
 

@@ -6,30 +6,32 @@ import Sidebar from "./Sidebar";
 export default function MainLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  // Lock body scroll only when mobile sidebar is open
+  //lock body scroll when sidebar is open (mobile)
   useEffect(() => {
     if (sidebarOpen) {
       document.body.classList.add("overflow-hidden");
     } else {
       document.body.classList.remove("overflow-hidden");
     }
-    //cleanup, good practice
     return () => document.body.classList.remove("overflow-hidden");
   }, [sidebarOpen]);
 
   return (
-    <div className="flex m-h-screen bg-gray-50">
-      {/* Sidebar */}
+    <div className="flex min-h-screen bg-gray-50">
+      {/* Sidebar (fixed on large screens, overlay on mobile) */}
       <Sidebar isOpen={sidebarOpen} setIsOpen={setSidebarOpen} />
 
-      {/* Main content area */}
-      <div className="flex-1 flex flex-col md:ml-64">
+      {/* Main Content Wrapper */}
+      <div className="flex flex-col flex-1 md:ml-64">
+        {/* Navbar (mobile only) */}
         <Navbar onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
 
-        {/* main scrolls independently */}
-        <main className="flex-1 p-2 mt-14 md:mt-0 overflow-y-auto">
+        {/* Main Section */}
+        <div className="relative flex-1 flex flex-col">
+
           <Outlet />
-        </main>
+
+        </div>
       </div>
     </div>
   );
