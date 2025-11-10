@@ -5,6 +5,7 @@ export const getAnalyticsReport = async (timePeriod: string): Promise<FinancialD
   const response = await apiClient.get<FinancialData>("/analytics", {
     params: { period: timePeriod },
   });
+  console.log("Fetched Analytics Data:", response.data);
   return response.data;
 }
 

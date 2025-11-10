@@ -112,7 +112,7 @@ const formatAmount = (amount: string) => {
               month: "long",
               year: "numeric",
             })
-            : "Loading..."}
+            : "this month"}
         </p>
       </motion.div>
 

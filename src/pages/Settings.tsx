@@ -113,10 +113,6 @@ useEffect(() => {
     }
   };
 
-
-
-
-
   const handleBudgetUpdate = async () => {
   const currentMonth = new Date().toISOString().slice(0, 7) + "-01"; // e.g. 2025-10-01
   const toastId = "budget-update";
@@ -155,7 +151,7 @@ useEffect(() => {
     setIsEditingBudget(false);
 
   } catch (error: any) {
-    console.error("Budget update failed:", error);
+    console.error("Budget update failed:", error as AxiosError);
     toast.error("Failed to update budget", { id: toastId });
     setIsEditingBudget(false);
   }

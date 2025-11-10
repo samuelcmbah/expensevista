@@ -11,6 +11,13 @@ export interface BudgetProgress {
   percentage: string;
 }
 
+export interface Summary{
+  totalIncome: string;
+  totalExpenses: string;
+  netBalance: string;
+  savingsRate: string;
+}
+
 export interface IncomeExpenseData {
   month: string;
   income: string;
@@ -27,6 +34,7 @@ export interface KeyInsights {
 
 export interface FinancialData {
   timePeriod: "This Month" | "Last 3 Months" | "Last 6 Months" | "This Year";
+  summary: Summary;
   budgetProgress: BudgetProgress;
   spendingByCategory: SpendingCategory[];
   incomeVsExpenses: IncomeExpenseData[];

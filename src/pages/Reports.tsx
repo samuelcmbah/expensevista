@@ -129,148 +129,206 @@ export const ReportsAnalytics: React.FC = () => {
           </Select>
         </motion.div>
 
+        {/* Top Summary Cards */}
+        <motion.div
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+        >
+          <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+            <p className="text-sm text-gray-500 mb-1">Total Income</p>
+            <h3 className="text-2xl font-semibold text-green-600">
+              ₦{data.summary.totalIncome.toLocaleString()}
+            </h3>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+            <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
+            <h3 className="text-2xl font-semibold text-red-500">
+              ₦{data.summary.totalExpenses.toLocaleString()}
+            </h3>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+            <p className="text-sm text-gray-500 mb-1">Net Balance</p>
+            <h3 className="text-2xl font-semibold text-blue-600">
+              ₦{data.summary.netBalance.toLocaleString()}
+            </h3>
+          </div>
+
+          <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
+            <p className="text-sm text-gray-500 mb-1">Savings Rate</p>
+            <h3 className="text-2xl font-semibold text-purple-600">
+              {data.summary.savingsRate}%
+            </h3>
+          </div>
+        </motion.div>
+
+
         {/* Dashboard Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
-          {/* Budget Progress */}
-          <motion.div
-            className="bg-white p-5 rounded-xl shadow-md border border-gray-100 transition-transform duration-300 hover:scale-[1.01]"
-            whileHover={{ scale: 1.01 }}
-          >
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">Budget Progress</h3>
-            <p className="text-2xl font-bold text-blue-600 mb-2">
-              ₦{budgetProgress.spent.toLocaleString()}
-              <span className="text-gray-500 text-base font-medium ml-2">
-                of ₦{budgetProgress.total.toLocaleString()}
-              </span>
-            </p>
-            <div className="w-full bg-gray-200 rounded-full h-2.5 relative mt-3">
-              <div
-                className="h-2.5 rounded-full bg-green-500 transition-all duration-700 ease-in-out"
-                style={{ width: `${budgetProgress.percentage}%` }}
-              />
-              <span className="absolute top-0 right-0 -mt-5 text-sm font-medium text-gray-700">
-                {budgetProgress.percentage}%
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Spending by Category (Pie) */}
-          <motion.div
-            className="bg-white p-5 rounded-xl shadow-md border border-gray-100 transition-transform duration-300 hover:scale-[1.01]"
-            whileHover={{ scale: 1.01 }}
-          >
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
-              Spending by Category
-            </h3>
-            <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={spendingByCategory}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius="70%"
-                    label={({ percent }: PieLabelRenderProps) =>
-                      `${(Number(percent ?? 0) * 100).toFixed(0)}%`
-                    }
-                  >
-                    {spendingByCategory.map((_, index) => (
-                      <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(v: number) => `₦${v.toLocaleString()}`} />
-                  <Legend verticalAlign="bottom" align="center" wrapperStyle={{ fontSize: "12px" }} />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          {/* Income vs Expenses */}
-          <motion.div
-            className="bg-white p-5 rounded-xl shadow-md border border-gray-100 transition-transform duration-300 hover:scale-[1.01]"
-            whileHover={{ scale: 1.01 }}
-          >
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
-              Income vs Expenses 💰
-            </h3>
-            <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={incomeVsExpenses}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="month" />
-                  <YAxis tickFormatter={(v: number) => `₦${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(v: number) => `₦${v.toLocaleString()}`} />
-                  <Legend />
-                  <Bar dataKey="income" fill="#4CAF50" name="Income" />
-                  <Bar dataKey="expenses" fill="#F44336" name="Expenses" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </motion.div>
-
-          {/* Key Insights */}
-          <motion.div
-            className="bg-white p-5 rounded-xl shadow-md border border-gray-100 transition-transform duration-300 hover:scale-[1.01]"
-            whileHover={{ scale: 1.01 }}
-          >
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">Key Insights</h3>
-            <div className="space-y-4">
-              <div className="p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-600">
-                <p className="text-sm font-medium text-gray-600">
-                  Top spending category this period:
-                </p>
-                <p className="text-lg font-bold text-yellow-800">
-                  {keyInsights.topSpendingCategory}
-                </p>
-                <p className="text-sm text-yellow-700 mt-1">
-                  ₦{keyInsights.topSpendingAmount.toLocaleString()} spent
-                </p>
-              </div>
-              <div className="p-4 rounded-lg bg-blue-50 border-l-4 border-blue-600">
-                <p className="text-sm font-medium text-gray-600">
-                  Total transactions this period:
-                </p>
-                <p className="text-lg font-bold text-blue-800">
-                  {keyInsights.totalTransactions}
-                </p>
-                <p className="text-sm text-blue-700 mt-1">
-                  <span className="font-semibold text-green-600">
-                    {keyInsights.totalIncomeTransactions} income
-                  </span>{" "}
-                  |{" "}
-                  <span className="font-semibold text-red-600">
-                    {keyInsights.totalExpenseTransactions} expenses
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mt-4">
+          {/* Left Column (2/3 width) */}
+          <div className="xl:col-span-2 space-y-6">
+            {/* Budget Progress & Spending by Category */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Budget Progress */}
+              <motion.div
+                className="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
+                whileHover={{ scale: 1.01 }}
+              >
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
+                  Budget Progress
+                </h3>
+                <p className="text-2xl font-bold text-blue-600 mb-2">
+                  ₦{budgetProgress.spent.toLocaleString()}
+                  <span className="text-gray-500 text-base font-medium ml-2">
+                    of ₦{budgetProgress.total.toLocaleString()}
                   </span>
                 </p>
-              </div>
-            </div>
-          </motion.div>
+                <div className="w-full bg-gray-200 rounded-full h-2.5 relative mt-3">
+                  <div
+                    className="h-2.5 rounded-full bg-green-500 transition-all duration-700 ease-in-out"
+                    style={{ width: `${budgetProgress.percentage}%` }}
+                  />
+                  <span className="absolute top-0 right-0 -mt-5 text-sm font-medium text-gray-700">
+                    {budgetProgress.percentage}%
+                  </span>
+                </div>
+              </motion.div>
 
-          {/* Financial Trend */}
-          <motion.div
-            className="bg-white p-5 rounded-xl shadow-md border border-gray-100 lg:col-span-2 transition-transform duration-300 hover:scale-[1.005]"
-            whileHover={{ scale: 1.005 }}
-          >
-            <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
-              Financial Trend
-            </h3>
-            <div className="w-full min-w-[250px] h-[250px] sm:h-[300px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={financialTrend}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                  <XAxis dataKey="month" />
-                  <YAxis tickFormatter={(v: number) => `₦${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip formatter={(v: number) => `₦${v.toLocaleString()}`} />
-                  <Legend />
-                  <Line type="monotone" dataKey="income" stroke="#4CAF50" strokeWidth={2} />
-                  <Line type="monotone" dataKey="expenses" stroke="#F44336" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
+              {/* Spending by Category (Pie) */}
+              <motion.div
+                className="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
+                whileHover={{ scale: 1.01 }}
+              >
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
+                  Spending by Category
+                </h3>
+                <div className="w-full h-[250px] sm:h-[300px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={spendingByCategory}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius="70%"
+                        label={({ percent }: PieLabelRenderProps) =>
+                          `${(Number(percent ?? 0) * 100).toFixed(0)}%`
+                        }
+                      >
+                        {spendingByCategory.map((_, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={PIE_COLORS[index % PIE_COLORS.length]}
+                          />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(v: number) => `₦${v.toLocaleString()}`} />
+                      <Legend
+                        verticalAlign="bottom"
+                        align="center"
+                        wrapperStyle={{ fontSize: "12px" }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
             </div>
-          </motion.div>
+
+            {/* Income vs Expenses (Full Width) */}
+            <motion.div
+              className="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
+              whileHover={{ scale: 1.01 }}
+            >
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
+                Income vs Expenses 💰
+              </h3>
+              <div className="w-full h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={incomeVsExpenses}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                    <XAxis dataKey="month" />
+                    <YAxis tickFormatter={(v: number) => `₦${(v / 1000).toFixed(0)}k`} />
+                    <Tooltip formatter={(v: number) => `₦${v.toLocaleString()}`} />
+                    <Legend />
+                    <Bar dataKey="income" fill="#4CAF50" name="Income" />
+                    <Bar dataKey="expenses" fill="#F44336" name="Expenses" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Right Column (Key Insights) */}
+          <div className="space-y-6">
+            <motion.div
+              className="bg-white p-5 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300"
+              whileHover={{ scale: 1.01 }}
+            >
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
+                Key Insights
+              </h3>
+              <div className="space-y-4">
+                <div className="p-4 rounded-lg bg-yellow-50 border-l-4 border-yellow-600">
+                  <p className="text-sm font-medium text-gray-600">
+                    Top spending category this period:
+                  </p>
+                  <p className="text-lg font-bold text-yellow-800">
+                    {keyInsights.topSpendingCategory}
+                  </p>
+                  <p className="text-sm text-yellow-700 mt-1">
+                    ₦{keyInsights.topSpendingAmount.toLocaleString()} spent
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-lg bg-blue-50 border-l-4 border-blue-600">
+                  <p className="text-sm font-medium text-gray-600">
+                    Total transactions this period:
+                  </p>
+                  <p className="text-lg font-bold text-blue-800">
+                    {keyInsights.totalTransactions}
+                  </p>
+                  <p className="text-sm text-blue-700 mt-1">
+                    <span className="font-semibold text-green-600">
+                      {keyInsights.totalIncomeTransactions} income
+                    </span>{" "}
+                    |{" "}
+                    <span className="font-semibold text-red-600">
+                      {keyInsights.totalExpenseTransactions} expenses
+                    </span>
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
+
+        {/* Financial Trend (Full width bottom section) */}
+        <motion.div
+          className="bg-white p-5 rounded-xl shadow-md border border-gray-100 mt-6 hover:shadow-lg transition-all duration-300"
+          whileHover={{ scale: 1.005 }}
+        >
+          <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-3">
+            Financial Trend
+          </h3>
+          <div className="w-full h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={financialTrend}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                <XAxis dataKey="month" />
+                <YAxis tickFormatter={(v: number) => `₦${(v / 1000).toFixed(0)}k`} />
+                <Tooltip formatter={(v: number) => `₦${v.toLocaleString()}`} />
+                <Legend />
+                <Line type="monotone" dataKey="income" stroke="#4CAF50" strokeWidth={2} />
+                <Line type="monotone" dataKey="expenses" stroke="#F44336" strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        </motion.div>
+
       </div>
     </motion.div>
   );
