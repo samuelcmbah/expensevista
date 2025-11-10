@@ -183,7 +183,7 @@ export const ReportsAnalytics: React.FC = () => {
                 <p className="text-2xl font-bold text-blue-600 mb-2">
                   ₦{budgetProgress.spent.toLocaleString()}
                   <span className="text-gray-500 text-base font-medium ml-2">
-                    of ₦{budgetProgress.total.toLocaleString()}
+                    of ₦{budgetProgress.total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </span>
                 </p>
                 <div className="w-full bg-gray-200 rounded-full h-2.5 relative mt-3">
