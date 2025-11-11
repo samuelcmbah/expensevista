@@ -5,6 +5,7 @@ import type { CategoryDTO } from "../types/Category/CategoryDTO";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
 import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
+import LoadingButton from "./ui/LoadingButton";
 
 
 /* props */
@@ -25,9 +26,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
   onSubmit,
   submitLabel,
 }) => {
-  if (loading) {
-    return <p className="text-center mt-8 text-gray-500">Loading...</p>;
-  }
 
   // defensive: produce safe strings for inputs
   const dateValue = formData.transactionDate ? String(formData.transactionDate).split("T")[0] : "";
@@ -121,12 +119,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         />
       </div>
 
-      <button
+      <LoadingButton
         type="submit"
-        className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg transition"
-      >
-        {submitLabel}
-      </button>
+        label={submitLabel}
+        loading={loading}
+        loadingLabel="Saving..."
+        className="bg-green-600 hover:bg-green-700 w-full"
+      />
+
     </form>
   );
 };

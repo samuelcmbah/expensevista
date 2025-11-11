@@ -45,7 +45,6 @@ useEffect(() => {
 
 
   const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
   const fetchCategories = async () => {
@@ -62,7 +61,6 @@ useEffect(() => {
 
       console.error("❌ Failed to load categories:", messages);
     } finally {
-      setLoading(false);
     }
   };
 
@@ -143,6 +141,5 @@ useEffect(() => {
     getEditPayload,
     isEdit,
     categories,
-    loading,
   };
 };

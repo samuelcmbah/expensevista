@@ -57,6 +57,7 @@ export default function AuthPage() {
       return;
     }
 
+    //controls loading state when async call is made
     await withLoading(async () => {
       try {
         await registerUser({
@@ -90,7 +91,7 @@ export default function AuthPage() {
 
     if (!email.trim() || !password) return setErrorMessages(["Please provide email and password."]);
 
-
+        //controls loading state when async call is made
     await withLoading(async () => {
     try {
       const data = await loginUser({ email, password });
