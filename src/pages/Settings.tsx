@@ -9,9 +9,10 @@ import type { AxiosError } from "axios";
 import { motion } from "framer-motion";
 import { User, Wallet2, Tags, LogOut, Plus } from "lucide-react";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
+import { handleAxiosError } from "../utilities/handleAxiosError";
 
 const Settings: React.FC = () => {
-  const {user, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -21,7 +22,7 @@ const Settings: React.FC = () => {
   const [categories, setCategories] = useState<CategoryDTO[]>([]);
   const [newCategory, setNewCategory] = useState("");
 
-   useEffect(() => {
+  useEffect(() => {
     if (user) {
       const name = [user.firstName, user.lastName].filter(Boolean).join(" ");
       setFullName(name);
@@ -29,55 +30,45 @@ const Settings: React.FC = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-  const fetchData = async () => {
-    try {
-      const [budgetResult] = await Promise.allSettled([
-        getBudgetStatus()
-      ]);
+  const loadBudget = async () => {
+  try {
+    const [budgetResult] = await Promise.allSettled([getBudgetStatus()]);
 
-
-      // ✅ Handle budget fetch result
-      if (budgetResult.status === "fulfilled") {
-        const budget = budgetResult.value;
-        setMonthlyBudget(budget.monthlyLimit);
-        setBudgetId(budget.id);
+    if (budgetResult.status === "fulfilled") {
+      const budget = budgetResult.value;
+      setMonthlyBudget(budget.monthlyLimit);
+      setBudgetId(budget.id);
+    } else {
+      const error = budgetResult.reason;
+      if (error.response?.status === 404) {
+        toast.error("You have not set a budget for this month yet.", { id: "settings-load" });
+        setMonthlyBudget("0");
       } else {
-        const error = budgetResult.reason;
-        if (error.response?.status === 404) {
-          // ℹ️ Expected case: no budget yet
-          toast.error("You have not set a budget for this month yet.");
-          setMonthlyBudget("0");
-        } else {
-          console.error("Failed to load budget data:", error);
-          toast.error("Failed to load budget data");
-        }
+        handleAxiosError(error, "settings-load");
       }
-    } catch (error) {
-      console.error("Unexpected error while loading settings:", error);
-      toast.error("Failed to load  budget data");
     }
-  };
+  } catch (error) {
+    handleAxiosError(error, "settings-load");
+  }
+};
 
-  fetchData();
-}, []);
+const loadCategories = async () => {
+  try {
+    const data = await getAllCategories();
+    setCategories(data);
+  } catch (error) {
+    handleAxiosError(error, "settings-load");
+  }
+};
 
-useEffect(() => {
-  // ✅ Load categories safely
-  loadcategories();
-}, []);
 
-  
-  
-  const loadcategories = async () => {
-    try {
-      // Placeholder for fetching categories if needed
-      const data = await getAllCategories();
-      setCategories(data);
-    }catch (error) {
-      toast.error("Failed to load categories");
-    }
-  };
+  useEffect(() => {
+    loadBudget();
+  }, []);
+
+  useEffect(() => {
+    loadCategories();
+  }, []);
 
   const handleAddCategory = async () => {
     if (!newCategory.trim()) {
@@ -98,227 +89,227 @@ useEffect(() => {
 
   const handleDeleteCategory = async (id: number) => {
     const toastId = "delete-category";
-    toast.loading("Deleting category...",{ id: toastId });
+    toast.loading("Deleting category...", { id: toastId });
     try {
       await deleteCategory(id);
       setCategories(categories.filter((cat) => cat.id !== id));
       toast.success("Category deleted", { id: toastId });
-    }catch (error) {
+    } catch (error) {
       const axiosError = error as AxiosError;
       console.error(axiosError);
-      if(axiosError.response?.status === 400){
+      if (axiosError.response?.status === 400) {
         toast.error("Cannot delete category with existing transactions", { id: toastId });
-      }else{
+      } else {
         toast.error("Failed to delete category", { id: toastId });
       }
     }
   };
 
   const handleBudgetUpdate = async () => {
-  const currentMonth = new Date().toISOString().slice(0, 7) + "-01"; // e.g. 2025-10-01
-  const toastId = "budget-update";
+    const currentMonth = new Date().toISOString().slice(0, 7) + "-01"; // e.g. 2025-10-01
+    const toastId = "budget-update";
 
-  try {
-    setIsEditingBudget(true);
+    try {
+      setIsEditingBudget(true);
 
-    if (!budgetId) {
-      // 💡 No budget yet → create one
-      toast.loading("Creating monthly budget...", { id: toastId });
+      if (!budgetId) {
+        // 💡 No budget yet → create one
+        toast.loading("Creating monthly budget...", { id: toastId });
 
-      await createMonthlyBudget({
-        monthlyLimit: monthlyBudget,
-        budgetMonth: currentMonth,
-      });
+        await createMonthlyBudget({
+          monthlyLimit: monthlyBudget,
+          budgetMonth: currentMonth,
+        });
 
-      toast.success(`Monthly budget set to ₦${monthlyBudget.toLocaleString()}`, {
-        id: toastId,
-      });
-    } else {
-      // 💡 Budget exists → update it
-      toast.loading("Updating monthly budget...", { id: toastId });
+        toast.success(`Monthly budget set to ₦${monthlyBudget.toLocaleString()}`, {
+          id: toastId,
+        });
+      } else {
+        // 💡 Budget exists → update it
+        toast.loading("Updating monthly budget...", { id: toastId });
 
-      await updateMonthlyBudget(budgetId, {
-        id: budgetId,
-        monthlyLimit: monthlyBudget,
-        budgetMonth: currentMonth,
-      });
+        await updateMonthlyBudget(budgetId, {
+          id: budgetId,
+          monthlyLimit: monthlyBudget,
+          budgetMonth: currentMonth,
+        });
 
-      toast.success(`Monthly budget updated to ₦${monthlyBudget.toLocaleString()}`, {
-        id: toastId,
-      });
+        toast.success(`Monthly budget updated to ₦${monthlyBudget.toLocaleString()}`, {
+          id: toastId,
+        });
+      }
+
+      // ✅ Once successful, close editing mode
+      setIsEditingBudget(false);
+
+    } catch (error: any) {
+      console.error("Budget update failed:", error as AxiosError);
+      toast.error("Failed to update budget", { id: toastId });
+      setIsEditingBudget(false);
     }
+  };
 
-    // ✅ Once successful, close editing mode
-    setIsEditingBudget(false);
-
-  } catch (error: any) {
-    console.error("Budget update failed:", error as AxiosError);
-    toast.error("Failed to update budget", { id: toastId });
-    setIsEditingBudget(false);
-  }
-};
-
-const header = (
-  <>
+  const header = (
+    <>
       <h1 className="text-2xl font-semibold text-gray-800 mb-4">Settings</h1>
-  </>
-);
+    </>
+  );
 
-return (
-  <StickyPageLayout header={header} scrollable={true}>
+  return (
+    <StickyPageLayout header={header} scrollable={true}>
 
-  <div className="min-h-screen bg-gray-50 p-6">
-    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="min-h-screen bg-gray-50 p-6">
+        <div className="max-w-3xl mx-auto space-y-6">
 
-      {/* 👤 Profile Section */}
-      <motion.div
-        className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-blue-100"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="flex items-center gap-2 mb-4">
-          <User className="text-green-600 w-5 h-5" />
-          <h2 className="text-lg font-medium text-gray-800">Profile Information</h2>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              disabled
-              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
-              value={fullName}
-              readOnly
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600 mb-1">
-              Email Address
-            </label>
-            <input
-              type="email"
-              disabled
-              className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
-              value={email}
-              readOnly
-            />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* 💰 Monthly Budget Section */}
-      <motion.div
-        className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-green-100"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.3 }}
-      >
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Wallet2 className="text-green-600 w-5 h-5" />
-            <h2 className="text-lg font-medium text-gray-800">Monthly Budget</h2>
-          </div>
-          <button
-            onClick={() => setIsEditingBudget(!isEditingBudget)}
-            className="text-green-700 hover:underline text-sm font-medium"
+          {/* 👤 Profile Section */}
+          <motion.div
+            className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-blue-100"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
           >
-            {isEditingBudget ? "Close" : "Edit"}
-          </button>
-        </div>
+            <div className="flex items-center gap-2 mb-4">
+              <User className="text-green-600 w-5 h-5" />
+              <h2 className="text-lg font-medium text-gray-800">Profile Information</h2>
+            </div>
 
-        {isEditingBudget ? (
-          <div className="flex items-center gap-3">
-            <input
-              type="string"
-              value={monthlyBudget}
-              onChange={(e) => setMonthlyBudget(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-green-500"
-            />
-            <button
-              onClick={handleBudgetUpdate}
-              className="bg-green-700 text-white px-4 py-2 rounded-sm hover:bg-green-600 transition"
-            >
-              Save
-            </button>
-          </div>
-        ) : (
-          <p className="text-gray-700 text-base">
-            Monthly Budget:{" "}
-            <span className="font-semibold">
-              ₦{monthlyBudget.toLocaleString()}
-            </span>
-          </p>
-        )}
-      </motion.div>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  disabled
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
+                  value={fullName}
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-600 mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  disabled
+                  className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2"
+                  value={email}
+                  readOnly
+                />
+              </div>
+            </div>
+          </motion.div>
 
-      {/* 🏷️ Categories Section */}
-      <motion.div
-        className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-indigo-100"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.3 }}
-      >
-        <div className="flex items-center gap-2 mb-1">
-          <Tags className="text-green-600 w-5 h-5" />
-          <h2 className="text-lg font-medium text-gray-800">Categories</h2>
-        </div>
-        <p className="text-sm text-gray-500 mb-4">
-          Manage your transaction categories
-        </p>
-
-        <div className="flex gap-2 mb-4">
-          <input
-            type="text"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            placeholder="Add new category"
-            className="flex-1 border border-gray-300 rounded-lg px-3 py-2  focus:outline-none"
-          />
-          <button
-            onClick={handleAddCategory}
-            className="bg-green-700 hover:bg-green-600 text-white rounded-sm px-4 py-2"
+          {/* 💰 Monthly Budget Section */}
+          <motion.div
+            className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-green-100"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.3 }}
           >
-            <Plus size={18} className="md:mr-1" />
-          </button>
-        </div>
-
-        <div className="flex flex-wrap gap-2">
-          {categories.map((cat) => (
-            <div
-              key={cat.id}
-              className="flex items-center gap-2 bg-white text-gray-800 px-3 py-1 rounded-lg shadow-sm"
-            >
-              {cat.categoryName}
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Wallet2 className="text-green-600 w-5 h-5" />
+                <h2 className="text-lg font-medium text-gray-800">Monthly Budget</h2>
+              </div>
               <button
-                onClick={() => handleDeleteCategory(cat.id)}
-                className="text-gray-500 hover:text-red-500 text-sm"
+                onClick={() => setIsEditingBudget(!isEditingBudget)}
+                className="text-green-700 hover:underline text-sm font-medium"
               >
-                ✕
+                {isEditingBudget ? "Close" : "Edit"}
               </button>
             </div>
-          ))}
-        </div>
-      </motion.div>
 
-      {/* 🚪 Logout */}
-      <div className="text-center pt-6">
-        <button
-          onClick={logout}
-          className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-medium border border-red-600 px-6 py-2 rounded-lg hover:bg-red-50 transition"
-        >
-          <LogOut className="w-5 h-5" />
-          Logout
-        </button>
+            {isEditingBudget ? (
+              <div className="flex items-center gap-3">
+                <input
+                  type="string"
+                  value={monthlyBudget}
+                  onChange={(e) => setMonthlyBudget(e.target.value)}
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-green-500"
+                />
+                <button
+                  onClick={handleBudgetUpdate}
+                  className="bg-green-700 text-white px-4 py-2 rounded-sm hover:bg-green-600 transition"
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-700 text-base">
+                Monthly Budget:{" "}
+                <span className="font-semibold">
+                  ₦{monthlyBudget.toLocaleString()}
+                </span>
+              </p>
+            )}
+          </motion.div>
+
+          {/* 🏷️ Categories Section */}
+          <motion.div
+            className="bg-gradient-to-r from-green-25 to-green-50 p-6 rounded-2xl shadow-sm border border-indigo-100"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2, duration: 0.3 }}
+          >
+            <div className="flex items-center gap-2 mb-1">
+              <Tags className="text-green-600 w-5 h-5" />
+              <h2 className="text-lg font-medium text-gray-800">Categories</h2>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">
+              Manage your transaction categories
+            </p>
+
+            <div className="flex gap-2 mb-4">
+              <input
+                type="text"
+                value={newCategory}
+                onChange={(e) => setNewCategory(e.target.value)}
+                placeholder="Add new category"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2  focus:outline-none"
+              />
+              <button
+                onClick={handleAddCategory}
+                className="bg-green-700 hover:bg-green-600 text-white rounded-sm px-4 py-2"
+              >
+                <Plus size={18} className="md:mr-1" />
+              </button>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <div
+                  key={cat.id}
+                  className="flex items-center gap-2 bg-white text-gray-800 px-3 py-1 rounded-lg shadow-sm"
+                >
+                  {cat.categoryName}
+                  <button
+                    onClick={() => handleDeleteCategory(cat.id)}
+                    className="text-gray-500 hover:text-red-500 text-sm"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* 🚪 Logout */}
+          <div className="text-center pt-6">
+            <button
+              onClick={logout}
+              className="inline-flex items-center gap-2 text-red-600 hover:text-red-700 font-medium border border-red-600 px-6 py-2 rounded-lg hover:bg-red-50 transition"
+            >
+              <LogOut className="w-5 h-5" />
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
     </StickyPageLayout>
 
-);
+  );
 
 };
 

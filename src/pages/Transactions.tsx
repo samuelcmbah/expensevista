@@ -9,6 +9,8 @@ import { getAllCategories } from "../services/categoryService";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
 import TransactionDialog from "../components/TransactionDialog";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
+import type { AxiosError } from "axios";
+import extractErrors from "../utilities/extractErrors";
 
 const Transactions: React.FC = () => {
 
@@ -42,7 +44,7 @@ const Transactions: React.FC = () => {
 
   // Fetch all or filtered transactions
   const fetchData = async () => {
-    const toastId = toast.loading("Fetching transactions...");
+  toast.loading("Fetching transactions...", { id: "fetch-transactions" });
 
     try {
       const filters = {
@@ -66,9 +68,12 @@ const Transactions: React.FC = () => {
 
       setTransactions(data.data);
       setTotalCount(data.totalRecords);
-      toast.dismiss(toastId);
+      // toast.dismiss(toastId);
     } catch (error) {
-      toast.error("Failed to fetch transactions", { id: toastId });
+      const messages = extractErrors(error as AxiosError);
+      messages.forEach((msg) => {
+        toast.error(msg, { id: `fetch-transactions` });
+      });
     }
   };
 

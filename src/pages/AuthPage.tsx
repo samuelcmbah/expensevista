@@ -2,13 +2,16 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { loginUser, registerUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import toast from "react-hot-toast";
+import axios from "axios";
+import extractErrors from "../utilities/extractErrors";
 
 export default function AuthPage() {
   const { login } = useAuth();
 
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -34,21 +37,21 @@ export default function AuthPage() {
     setEmail("");
     setPassword("");
     setConfirmPassword("");
-    setError(null);
+    setErrorMessages([]);
   };
 
 
   // HANDLE REGISTRATION
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault(); //stop page refresh
-    setError(null);
+    setErrorMessages([]);
 
     if (!firstName.trim() || !lastName.trim() || !email.trim() || !password) {
-      setError("Please fill in all required fields.");
+      setErrorMessages(["Please fill in all required fields."]);
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+      setErrorMessages(["Passwords do not match."]);
       return;
     }
 
@@ -64,16 +67,17 @@ export default function AuthPage() {
       // if successful, switch to login mode and show success message
       resetForm();
       setIsLogin(true);
-      setError("Registration successful. Please login."); // small UX choice
-    } catch (err: any) {
-      // attempt to extract a useful message
-      const msg =
-        err?.response?.data?.message ??
-        err?.response?.data?.errors ??
-        err?.message ??
-        "Registration failed";
-      setError(String(msg));
-    } finally {
+      toast.success("Registration successful. Please login."); // small UX choice
+    } catch (error) {
+      let messages = ["Registration failed, try again later"];
+
+      if (axios.isAxiosError(error)) {
+        messages = extractErrors(error);
+      }
+      setErrorMessages(messages);
+    }
+
+    finally {
       setLoading(false);
     }
   };
@@ -82,9 +86,9 @@ export default function AuthPage() {
   // HANDLE LOGIN
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); //stop page refresh
-    setError(null);
+    setErrorMessages([]);
 
-    if (!email.trim() || !password) return setError("Please provide email and password.");
+    if (!email.trim() || !password) return setErrorMessages(["Please provide email and password."]);
 
 
     setLoading(true);
@@ -103,12 +107,14 @@ export default function AuthPage() {
 
       // redirect to welcome page or dashboard
       navigate("/welcome");
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.message ??
-        err?.message ??
-        "Login failed";
-      setError(String(msg));
+    } catch (error) {
+      let messages = ["Login failed, try again later"];
+
+      if (axios.isAxiosError(error)) {
+        messages = extractErrors(error);
+      }
+
+      setErrorMessages(messages);
     } finally {
       setLoading(false);
     }
@@ -131,9 +137,11 @@ export default function AuthPage() {
             {isLogin ? "Login to ExpenseVista" : "Create an Account"}
           </h2>
 
-          {error && (
-            <div className="mb-4 text-sm text-red-700 bg-red-100 p-3 rounded">
-              {error}
+          {errorMessages.length > 0 && (
+            <div className="mb-4 text-sm text-red-700 bg-red-100 p-3 rounded ">
+              {errorMessages.map((msg, idx) => (
+                <div key={idx}>{msg}</div>
+              ))}
             </div>
           )}
 
@@ -236,7 +244,7 @@ export default function AuthPage() {
                 <input
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  type="password"
+                  type="text"
                   placeholder="At least 8 characters"
                   className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
@@ -249,7 +257,7 @@ export default function AuthPage() {
                 <input
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  type="password"
+                  type="text"
                   placeholder="Retype password"
                   className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
                 />
@@ -272,7 +280,7 @@ export default function AuthPage() {
                 <button
                   onClick={() => {
                     setIsLogin(false);
-                    setError(null);
+                    setErrorMessages([]);
                     resetForm();
                     navigate("/register");
                   }}
@@ -287,7 +295,7 @@ export default function AuthPage() {
                 <button
                   onClick={() => {
                     setIsLogin(true);
-                    setError(null);
+                    setErrorMessages([]);
                     resetForm();
                     navigate("/login");
                   }}

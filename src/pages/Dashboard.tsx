@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
+import type { AxiosError } from "axios";
+import extractErrors from "../utilities/extractErrors";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -29,19 +31,25 @@ const Dashboard: React.FC = () => {
     try {
       const [budgetResult, transactionResult] = await Promise.allSettled([
         getBudgetStatus(),
-        getFilteredPagedTransactions({page:1, recordsPerPage:3}),
+        getFilteredPagedTransactions({ page: 1, recordsPerPage: 3 }),
       ]);
 
       // ✅ Handle Budget Result
       if (budgetResult.status === "fulfilled") {
         setBudget(budgetResult.value);
       } else {
-        const error = budgetResult.reason;
+        const error = budgetResult.reason as AxiosError;
+        const messages = extractErrors(error);
+
         if (error.response?.status === 404) {
-          // show toast here
-          toast.error("You have not set a budget for this month yet.");
+          toast.error("You have not set a budget for this month yet.", {
+            id: "budget-404",
+          });
         } else {
-          console.warn("⚠️ Budget fetch failed:", error);
+          messages.forEach((msg) =>
+            toast.error(msg, { id: `budget-${msg}` }) // ✅ prevent duplicate messages
+          );
+          console.warn("⚠️ Budget fetch failed:", messages);
         }
       }
 
@@ -49,11 +57,21 @@ const Dashboard: React.FC = () => {
       if (transactionResult.status === "fulfilled") {
         setTransactions(transactionResult.value.data);
       } else {
-        console.warn("⚠️ Transactions fetch failed:", transactionResult.reason);
-      }
+        const error = transactionResult.reason as AxiosError;
+        const messages = extractErrors(error);
 
+        messages.forEach((msg) =>
+          toast.error(msg, { id: `txn-${msg}` }) // ✅ unique per message
+        );
+      }
     } catch (error) {
-      console.error("❌ Unexpected error:", error);
+      const messages = extractErrors(error as AxiosError);
+
+      messages.forEach((msg) =>
+        toast.error(msg, { id: `catch-${msg}` }) // ✅ prevents duplicates even in catch
+      );
+
+      console.error("❌ Unexpected error:", messages);
     } finally {
       setLoading(false);
     }

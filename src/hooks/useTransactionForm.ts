@@ -6,6 +6,8 @@ import { TransactionType } from "../types/transaction/TransactionType";
 import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
+import extractErrors from "../utilities/extractErrors";
+import type { AxiosError } from "axios";
 
 interface Category {
   id: number;
@@ -46,19 +48,26 @@ useEffect(() => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const data = await getAllCategories();
-        setCategories(data);
-      } catch {
-        toast.error("Failed to load categories.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCategories();
-  }, []);
+  const fetchCategories = async () => {
+    try {
+      const data = await getAllCategories();
+      setCategories(data);
+    } catch (error) {
+      const messages = extractErrors(error as AxiosError);
 
+      // ✅ Use toast IDs to prevent duplicates
+      messages.forEach((msg) => {
+        toast.error(msg, { id: `fetch-transactions` });//id seeems weird but it helps prevent duplicates when fetchinig transactions
+      });
+
+      console.error("❌ Failed to load categories:", messages);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCategories();
+}, []);
   //This function updates the form state (formData)
   //  whenever a user changes an input field in the transaction form.
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

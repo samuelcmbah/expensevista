@@ -3,20 +3,13 @@ import React from "react";
 import { TransactionType } from "../types/transaction/TransactionType";
 import type { CategoryDTO } from "../types/Category/CategoryDTO";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
+import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
 
-
-
-export interface FormValues {
-  amount: string;
-  type: TransactionType;
-  transactionDate: string; // ISO string or empty
-  categoryId: number | "" | null;
-  description?: string | null;
-}
 
 /* props */
 interface TransactionFormProps {
-  formData: FormValues;
+  formData: CreateTransactionDTO | EditTransactionDTO;
   handleChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   categories: CategoryDTO[];
   loading: boolean;
