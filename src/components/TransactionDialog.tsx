@@ -6,6 +6,7 @@ import type { TransactionDTO } from "../types/transaction/TransactionDTO"
 import { createTransaction, updateTransaction } from "../services/transactionService"
 import toast from "react-hot-toast"
 import useLoadingButton from "../hooks/useLoadingButton"
+import { handleAxiosError } from "../utilities/handleAxiosError"
 
 interface TransactionDialogProps {
   triggerLabel: React.ReactNode;//so it can be string or element
@@ -39,11 +40,6 @@ const TransactionDialog: React.FC<TransactionDialogProps> = ({ triggerLabel, ini
       onSubmitSuccess();
       setOpen(false);
     } catch (error: any) {
-      if (error.response?.status === 400 && error.response.data?.errors) {
-        const messages = Object.values(error.response.data.errors).flat().join("\n");
-        toast.error(messages, { id: toastId });
-        return;
-      }
 
       toast.error(
         isEdit ? "Failed to update transaction." : "Failed to add transaction.",
