@@ -5,12 +5,14 @@ import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import axios from "axios";
 import extractErrors from "../utilities/extractErrors";
+import useLoadingButton from "../hooks/useLoadingButton";
+import LoadingButton from "../components/ui/LoadingButton";
 
 export default function AuthPage() {
   const { login } = useAuth();
+  const { loading, withLoading } = useLoadingButton();
 
   const [isLogin, setIsLogin] = useState(true);
-  const [loading, setLoading] = useState(false);
   const [errorMessages, setErrorMessages] = useState<string[]>([]);
   const navigate = useNavigate();
   const location = useLocation();
@@ -55,31 +57,29 @@ export default function AuthPage() {
       return;
     }
 
-    setLoading(true);
-    try {
-      await registerUser({
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
-      });
-      // if successful, switch to login mode and show success message
-      resetForm();
-      setIsLogin(true);
-      toast.success("Registration successful. Please login."); // small UX choice
-    } catch (error) {
-      let messages = ["Registration failed, try again later"];
+    await withLoading(async () => {
+      try {
+        await registerUser({
+          firstName,
+          lastName,
+          email,
+          password,
+          confirmPassword,
+        });
+        // if successful, switch to login mode and show success message
+        resetForm();
+        setIsLogin(true);
+        toast.success("Registration successful. Please login."); // small UX choice
+      } catch (error) {
+        let messages = ["Registration failed, try again later"];
 
-      if (axios.isAxiosError(error)) {
-        messages = extractErrors(error);
+        if (axios.isAxiosError(error)) {
+          messages = extractErrors(error);
+        }
+        setErrorMessages(messages);
       }
-      setErrorMessages(messages);
-    }
 
-    finally {
-      setLoading(false);
-    }
+    });
   };
 
 
@@ -91,7 +91,7 @@ export default function AuthPage() {
     if (!email.trim() || !password) return setErrorMessages(["Please provide email and password."]);
 
 
-    setLoading(true);
+    await withLoading(async () => {
     try {
       const data = await loginUser({ email, password });
       // assume backend returns: { token: 'jwt', user: { ... } }
@@ -115,9 +115,8 @@ export default function AuthPage() {
       }
 
       setErrorMessages(messages);
-    } finally {
-      setLoading(false);
-    }
+    } 
+    });
   };
 
   return (
@@ -156,7 +155,9 @@ export default function AuthPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   placeholder="samuelcmbah@gmail.com"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                  className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
+                    ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+                  `}
                 />
               </div>
 
@@ -169,7 +170,9 @@ export default function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   type="text"
                   placeholder="••••••••"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                  className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
+                    ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+                  `}
                 />
               </div>
 
@@ -188,13 +191,13 @@ export default function AuthPage() {
                 </a>
               </div>
 
-              <button
+              <LoadingButton
                 type="submit"
-                disabled={loading}
-                className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                {loading ? "Logging in..." : "Login"}
-              </button>
+                loading={loading}
+                label="Login"
+                loadingLabel="Logging in..."
+              />
+
             </form>
           ) : (
             <form onSubmit={handleRegister} className="space-y-4">
@@ -207,7 +210,9 @@ export default function AuthPage() {
                   onChange={(e) => setFirstName(e.target.value)}
                   type="text"
                   placeholder="Samuel"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                  className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
+                    ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+                  `}
                 />
               </div>
 
@@ -220,7 +225,9 @@ export default function AuthPage() {
                   onChange={(e) => setLastName(e.target.value)}
                   type="text"
                   placeholder="Mbah"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                  className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
+                    ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+                  `}
                 />
               </div>
 
@@ -233,7 +240,9 @@ export default function AuthPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
                   placeholder="samuelcmbah@gmail.com"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                  className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
+                    ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+                  `}
                 />
               </div>
 
@@ -246,7 +255,9 @@ export default function AuthPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   type="text"
                   placeholder="At least 8 characters"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                  className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
+                    ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+                  `}
                 />
               </div>
 
@@ -259,17 +270,18 @@ export default function AuthPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   type="text"
                   placeholder="Retype password"
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500"
+                  className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
+                    ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+                  `}
                 />
               </div>
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition-colors"
-              >
-                {loading ? "Creating account..." : "Sign up"}
-              </button>
+                <LoadingButton
+                  type="submit"
+                  loading={loading}
+                  label="Sign Up"
+                  loadingLabel="Creating account..."
+                />
             </form>
           )}
 
@@ -279,6 +291,7 @@ export default function AuthPage() {
                 Don’t have an account?{" "}
                 <button
                   onClick={() => {
+                    if(loading) return; // prevent switching during loading
                     setIsLogin(false);
                     setErrorMessages([]);
                     resetForm();
@@ -294,6 +307,7 @@ export default function AuthPage() {
                 Already have an account?{" "}
                 <button
                   onClick={() => {
+                    if(loading) return; // prevent switching during loading
                     setIsLogin(true);
                     setErrorMessages([]);
                     resetForm();
