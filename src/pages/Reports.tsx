@@ -154,16 +154,16 @@ export const ReportsAnalytics: React.FC = () => {
         {!loading && !error && !data && (
           <p className="text-gray-600 text-base">No data available for the selected period.</p>
         )}
-      </motion.div>
 
 
       {!loading && !error && data && (
 
         <motion.div
-          className="bg-gray-50 min-h-screen"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6 }}
+          className="w-full bg-gray-50 max-w-7xl mx-auto space-y-6 "
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            visible: { opacity: 1, y: 0 },
+          }}
         >
           <div className="max-w-7xl mx-auto space-y-6">
 
@@ -373,6 +373,7 @@ export const ReportsAnalytics: React.FC = () => {
         </motion.div>
       )}
 
+      </motion.div>
 
     </StickyPageLayout>
 
