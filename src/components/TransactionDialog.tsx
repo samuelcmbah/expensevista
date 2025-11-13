@@ -16,7 +16,7 @@ interface TransactionDialogProps {
 const TransactionDialog: React.FC<TransactionDialogProps> = ({ triggerLabel, initialData, onSubmitSuccess }) => {
 
   const [open, setOpen] = React.useState(false);
-  const { formData, handleChange, getCreatePayload, getEditPayload, categories, isEdit } =
+  const { formData, handleChange, getCreatePayload, getEditPayload, validateFields, categories, isEdit } =
     useTransactionForm({ initialData })
   const { loading, withLoading } = useLoadingButton();
   
@@ -24,6 +24,8 @@ const TransactionDialog: React.FC<TransactionDialogProps> = ({ triggerLabel, ini
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
+  validateFields();
+  
   await withLoading(async () => {
     const toastId = toast.loading(isEdit ? "Updating transaction..." : "Adding transaction...");
 

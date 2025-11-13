@@ -22,7 +22,7 @@ export const useTransactionForm = ({ initialData = null }: UseTransactionFormPro
   // Make formData a union so both shapes are allowed
   const [formData, setFormData] = useState<CreateTransactionDTO | EditTransactionDTO>({
   id: 0,
-  amount: "0",
+  amount: "",
   type: "",
   transactionDate: new Date().toISOString(),
   categoryId: "",
@@ -76,9 +76,10 @@ useEffect(() => {
       const next = { ...(prev as any) };
 
       if (name === "amount") {
-        next.amount = value === "" ? 0 : parseFloat(value);
+        next.amount = value; // always keep as string
         return next;
       }
+
       if (name === "type") {
         next.type = Number(value) as TransactionType;
         return next;
@@ -96,6 +97,30 @@ useEffect(() => {
       next[name] = value;
       return next;
     });
+  };
+
+  const validateFields = (): void => {
+    const numericAmount = parseFloat(formData.amount.trim());
+
+  if (isNaN(numericAmount) || numericAmount <= 0) {
+    toast.error("Please enter a valid amount greater than 0.");
+    return;
+  }
+
+  if (formData.type === null || formData.type === undefined) {
+    toast.error("Please select a transaction type.");
+    return;
+  }
+
+  if (formData.categoryId === null || formData.categoryId === 0) {
+    toast.error("Please select a category.");
+    return;
+  }
+
+  if (!formData.transactionDate) {
+    toast.error("Please select a date.");
+    return;
+  }
   };
 
   // helper to normalize/clean description
@@ -139,6 +164,7 @@ useEffect(() => {
     handleChange,
     getCreatePayload,
     getEditPayload,
+    validateFields,
     isEdit,
     categories,
   };

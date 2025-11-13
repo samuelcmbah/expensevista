@@ -29,9 +29,18 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   // defensive: produce safe strings for inputs
   const dateValue = formData.transactionDate ? String(formData.transactionDate).split("T")[0] : "";
-  const amountValue = formData.amount !== undefined && formData.amount !== null ? String(formData.amount) : "0";
-  const categoryValue = formData.categoryId === null || formData.categoryId === "" ? "" : String(formData.categoryId);
+  const amountValue = formData.amount.trim();
+  const categoryValue =
+    formData.categoryId === null || formData.categoryId === 0 ? "" : String(formData.categoryId);
   const descriptionValue = formData.description ?? "";
+
+  const hasAmount = amountValue !== "";
+  const hasType = formData.type !== null && formData.type !== undefined;
+  const hasCategory = formData.categoryId !== null && formData.categoryId !== 0;
+
+  const isFormValid = hasAmount && hasType && hasCategory; // true only when all required fields are filled
+
+console.log(isFormValid);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">
@@ -124,6 +133,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         label={submitLabel}
         loading={loading}
         loadingLabel="Saving..."
+        disabled={!isFormValid}
         className="bg-green-600 hover:bg-green-700 w-full"
       />
 
