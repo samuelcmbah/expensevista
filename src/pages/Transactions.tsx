@@ -67,7 +67,11 @@ const Transactions: React.FC = () => {
 
       setTransactions(data.data);
       setTotalCount(data.totalRecords);
+      if(transactions.length > 0){
       toast.success("Transactions loaded successfully!", { id: "fetch-transactions", duration: 2000 });
+      }else{
+        toast.success("No transactions found", {id: "fetch-transactions"})
+      }
     } catch (error) {
       handleAxiosError(error, "fetch-transactions");
     }

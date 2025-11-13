@@ -42,9 +42,7 @@ const Dashboard: React.FC = () => {
         const messages = extractErrors(error);
 
         if (error.response?.status === 404) {
-          toast.error("You have not set a budget for this month yet.", {
-            id: "budget-404",
-          });
+          setBudget(null);
         } else {
           messages.forEach((msg) =>
             toast.error(msg, { id: `budget-${msg}` }) // ✅ prevent duplicate messages

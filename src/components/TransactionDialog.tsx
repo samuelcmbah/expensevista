@@ -6,7 +6,6 @@ import type { TransactionDTO } from "../types/transaction/TransactionDTO"
 import { createTransaction, updateTransaction } from "../services/transactionService"
 import toast from "react-hot-toast"
 import useLoadingButton from "../hooks/useLoadingButton"
-import { handleAxiosError } from "../utilities/handleAxiosError"
 
 interface TransactionDialogProps {
   triggerLabel: React.ReactNode;//so it can be string or element
