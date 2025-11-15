@@ -40,7 +40,6 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   const isFormValid = hasAmount && hasType && hasCategory; // true only when all required fields are filled
 
-console.log(isFormValid);
 
   return (
     <form onSubmit={onSubmit} className="space-y-4">

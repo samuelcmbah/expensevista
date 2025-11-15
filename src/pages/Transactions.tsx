@@ -277,14 +277,31 @@ const Transactions: React.FC = () => {
             );
           })
         ) : (
-          <p className="text-center py-6 text-gray-500 text-sm">
-            No transactions found.
-          </p>
+          <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className="w-16 h-16 mb-4 text-gray-400"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="text-lg font-medium">No transactions available yet</p>
+            <p className="text-sm mt-1">
+              Start adding your income and expenses to see your transactions here.
+            </p>
+          </div>
         )}
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 text-sm text-gray-600">
+      <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center gap-4 text-sm text-gray-600">
         <p>
           Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
           {Math.min(currentPage * recordsPerPage, totalCount)} of {totalCount}{" "}

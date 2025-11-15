@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
-import { createMonthlyBudget, getBudgetStatus, updateMonthlyBudget } from "../services/budgetServices";
+import { createMonthlyBudget, updateMonthlyBudget } from "../services/budgetServices";
 import type { CategoryDTO } from "../types/Category/CategoryDTO";
 import { createCategory, deleteCategory, getAllCategories } from "../services/categoryService";
 import type { CreateCategoryDTO } from "../types/Category/CreateCategoryDTO";
@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { User, Wallet2, Tags, LogOut, Plus } from "lucide-react";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import { handleAxiosError } from "../utilities/handleAxiosError";
+import { getDashboardData } from "../services/dashboardServices";
 
 const Settings: React.FC = () => {
   const { user, logout } = useAuth();
@@ -31,26 +32,16 @@ const Settings: React.FC = () => {
   }, [user]);
 
   const loadBudget = async () => {
-  try {
-    const [budgetResult] = await Promise.allSettled([getBudgetStatus()]);
+    try {
+      const result = await getDashboardData();
 
-    if (budgetResult.status === "fulfilled") {
-      const budget = budgetResult.value;
-      setMonthlyBudget(budget.monthlyLimit);
-      setBudgetId(budget.id);
-    } else {
-      const error = budgetResult.reason;
-      if (error.response?.status === 404) {
-        toast.error("You have not set a budget for this month yet.", { id: "settings-load" });
-        setMonthlyBudget("0");
-      } else {
-        handleAxiosError(error, "settings-load");
-      }
+      setMonthlyBudget(result.budget.monthlyLimit);
+      setBudgetId(result.budget.id);
+
+    } catch (error) {
+      handleAxiosError(error, "settings-load");
     }
-  } catch (error) {
-    handleAxiosError(error, "settings-load");
-  }
-};
+  };
 
 const loadCategories = async () => {
   try {

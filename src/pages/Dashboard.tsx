@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getFilteredPagedTransactions } from "../services/transactionService";
-import type { BudgetDTO } from "../types/Budget/BudgetDTO";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import { TransactionType } from "../types/transaction/TransactionType";
-import { getBudgetStatus } from "../services/budgetServices";
 import { useAuth } from "../context/AuthContext";
 import {
   Wallet,
@@ -17,10 +15,12 @@ import toast from "react-hot-toast";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import type { AxiosError } from "axios";
 import extractErrors from "../utilities/extractErrors";
+import { getDashboardData } from "../services/dashboardServices";
+import type { DashboardDTO } from "../types/dashboardDTO";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const [budget, setBudget] = useState<BudgetDTO | null>(null);
+  const [dashboard, setDashboard] = useState<DashboardDTO| null>(null);
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -29,27 +29,23 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
   const fetchData = async () => {
     try {
-      const [budgetResult, transactionResult] = await Promise.allSettled([
-        getBudgetStatus(),
+      const [dashboardResult, transactionResult] = await Promise.allSettled([
+        getDashboardData(),
         getFilteredPagedTransactions({ page: 1, recordsPerPage: 3 }),
       ]);
 
       // ✅ Handle Budget Result
-      if (budgetResult.status === "fulfilled") {
-        setBudget(budgetResult.value);
+      if (dashboardResult.status === "fulfilled") {
+        setDashboard(dashboardResult.value);
       } else {
-        const error = budgetResult.reason as AxiosError;
+        const error = dashboardResult.reason as AxiosError;
         const messages = extractErrors(error);
 
-        if (error.response?.status === 404) {
-          setBudget(null);
-        } else {
-          messages.forEach((msg) =>
-            toast.error(msg, { id: `budget-${msg}` }) // ✅ prevent duplicate messages
-          );
-          console.warn("⚠️ Budget fetch failed:", messages);
-        }
+        messages.forEach((msg) =>
+          toast.error(msg, { id: `dashboard-${msg}` }) // ✅ prevent duplicate messages
+        );
       }
+
 
       // ✅ Handle Transaction Result
       if (transactionResult.status === "fulfilled") {
@@ -119,8 +115,8 @@ const formatAmount = (amount: string) => {
         </h2>
         <p className="text-gray-500">
           Your financial overview for{" "}
-          {budget?.budgetMonth
-            ? new Date(budget.budgetMonth).toLocaleString("default", {
+          {dashboard?.budget.budgetMonth
+            ? new Date(dashboard.budget.budgetMonth).toLocaleString("default", {
               month: "long",
               year: "numeric",
             })
@@ -156,7 +152,7 @@ const formatAmount = (amount: string) => {
           <div>
             <h3 className="text-gray-600 text-sm font-medium">Budget Balance</h3>
             <p className="text-xl font-semibold text-black-500">
-              ₦{budget?.remainingAmount?.toLocaleString() ?? '0.00'}
+              ₦{dashboard?.budget.remainingAmount?.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <Wallet className="text-blue-500 w-8 h-8" />
@@ -170,7 +166,7 @@ const formatAmount = (amount: string) => {
           <div>
             <h3 className="text-gray-600 text-sm font-medium">Total Income</h3>
             <p className="text-xl font-semibold text-black-500">
-              ₦{budget?.totalIncome?.toLocaleString() ?? '0.00'}
+              ₦{dashboard?.summary.totalIncome?.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <ArrowUpCircle className="text-green-500 w-8 h-8" />
@@ -184,7 +180,7 @@ const formatAmount = (amount: string) => {
           <div>
             <h3 className="text-gray-600 text-sm font-medium">Total Expense</h3>
             <p className="text-xl font-semibold text-black-500">
-              ₦{budget?.currentUsage?.toLocaleString() ?? '0.00'}
+              ₦{dashboard?.summary.totalExpenses?.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <ArrowDownCircle className="text-red-500 w-8 h-8" />
@@ -198,10 +194,10 @@ const formatAmount = (amount: string) => {
           <div>
             <h4 className="text-gray-600 text-sm font-medium">Budget Status</h4>
             <p className="text-xl font-semibold text-gray-600">
-              {budget?.percentageUsed ?? 0.00}%
+              {dashboard?.budget.percentageUsed ?? 0.00}%
             </p>
             <p className="text-sm text-gray-700 mt-1 truncate">
-              of ₦{budget?.monthlyLimit.toLocaleString() ?? '0.00'}
+              of ₦{dashboard?.budget.monthlyLimit.toLocaleString() ?? '0.00'}
             </p>
           </div>
           <TrendingUp className="text-purple-500 w-8 h-8" />
