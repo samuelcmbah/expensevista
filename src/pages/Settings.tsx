@@ -63,6 +63,7 @@ const loadCategories = async () => {
   }, []);
 
   const handleAddCategory = async () => {
+    const toastId = toast.loading("Saving...")
     if (!newCategory.trim()) {
       toast.error("Category name cannot be empty");
       return;
@@ -73,9 +74,10 @@ const loadCategories = async () => {
 
       setCategories([...categories, category]);
       setNewCategory("");
-      toast.success("Category added successfully");
+      toast.success("Category added successfully", { id: toastId });
     } catch (error) {
-      toast.error("Failed to add category");
+      handleAxiosError(error, toastId)
+      // toast.error("Failed to add category");
     }
   };
 
