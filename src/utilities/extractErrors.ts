@@ -1,49 +1,59 @@
 import type { AxiosError } from "axios";
 
-// Defines the expected backend error structure
 interface ErrorResponse {
   message?: string;
-  errors?: {
-    [field: string]: string[];
-  };
+  errors?: any;
 }
 
-export default function extractErrors(obj: AxiosError): string[] {
-  const data = obj.response?.data as ErrorResponse | undefined;
+export default function extractErrors(error: AxiosError): string[] {
+  // No response → network error, timeout, CORS failure, offline, etc.
+  if (!error.response) {
+    return ["Network error: Please check your internet connection."];
+  }
+
+  const data = error.response.data as ErrorResponse | string | undefined;
   let messages: string[] = [];
 
   if (!data) {
-    return ["An unexpected network error occurred. Please try again later."];
+    return ["An unexpected error occurred. Please try again later."];
   }
 
-  // Handle field-level errors
+  // CASE 1: Backend returned simple string error
+  // e.g., return BadRequest("Category already exists")
+  if (typeof data === "string") {
+    return [data];
+  }
+
+  // CASE 2: Backend returned { message: "...", errors: ... }
+  // Handle field-level validation errors
   if (data.errors) {
-    if (Array.isArray(data.errors)) {
-      // Case 1: errors is a simple array
-      messages = [...messages, ...data.errors];
-    } else if (typeof data.errors === "object") {
-      // Case 2: errors is an object with field names
-      for (const field in data.errors) {
-        const fieldErrors = data.errors[field];
+    const err = data.errors;
+
+    // When errors is an array
+    if (Array.isArray(err)) {
+      messages.push(...err);
+    }
+
+    // When errors is an object { field: [msg1, msg2] }
+    else if (typeof err === "object") {
+      for (const field in err) {
+        const fieldErrors = err[field];
         if (Array.isArray(fieldErrors)) {
-          const formatted = fieldErrors.map(msg => `${field}: ${msg}`);
-          messages = [...messages, ...formatted];
+          messages.push(...fieldErrors.map(msg => `${field}: ${msg}`));
         }
       }
     }
   }
 
-  // Handle global or general message (e.g. "Email already exists")
-  if (data.message && !messages.includes(data.message)) {
+  // CASE 3: Global "message" key
+  if (typeof data.message === "string") {
     messages.unshift(data.message);
   }
 
-  // Fallback in case everything else fails
+  // Final fallback
   if (messages.length === 0) {
     messages.push("An unexpected error occurred.");
   }
 
   return messages;
 }
-
-

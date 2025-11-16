@@ -76,7 +76,7 @@ const loadCategories = async () => {
       setNewCategory("");
       toast.success("Category added successfully", { id: toastId });
     } catch (error) {
-      handleAxiosError(error, toastId)
+      handleAxiosError(error, toastId);
       // toast.error("Failed to add category");
     }
   };
@@ -89,13 +89,7 @@ const loadCategories = async () => {
       setCategories(categories.filter((cat) => cat.id !== id));
       toast.success("Category deleted", { id: toastId });
     } catch (error) {
-      const axiosError = error as AxiosError;
-      console.error(axiosError);
-      if (axiosError.response?.status === 400) {
-        toast.error("Cannot delete category with existing transactions", { id: toastId });
-      } else {
-        toast.error("Failed to delete category", { id: toastId });
-      }
+     handleAxiosError(error, toastId);
     }
   };
 
@@ -278,12 +272,15 @@ const loadCategories = async () => {
                   className="flex items-center gap-2 bg-white text-gray-800 px-3 py-1 rounded-lg shadow-sm"
                 >
                   {cat.categoryName}
-                  <button
-                    onClick={() => handleDeleteCategory(cat.id)}
-                    className="text-gray-500 hover:text-red-500 text-sm"
-                  >
-                    ✕
-                  </button>
+                  {!cat.isDefault && (
+
+                    <button
+                      onClick={() => handleDeleteCategory(cat.id)}
+                      className="text-gray-500 hover:text-red-500 text-sm"
+                    >
+                      ✕
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
