@@ -67,10 +67,9 @@ const Transactions: React.FC = () => {
 
       setTransactions(data.data);
       setTotalCount(data.totalRecords);
-      if(transactions.length > 0){
-      toast.success("Transactions loaded successfully!", { id: "fetch-transactions", duration: 2000 });
-      }else{
-        toast.success("No transactions found", {id: "fetch-transactions"})
+      toast.dismiss("fetch-transactions");
+      if (data.data.length === 0) {
+        toast.success("No transactions found", { id: "fetch-transactions" });
       }
     } catch (error) {
       handleAxiosError(error, "fetch-transactions");
@@ -102,16 +101,18 @@ const Transactions: React.FC = () => {
 
   // ✅ Safe formatAmount helper for string inputs
   const formatAmount = (amount: string) => {
-    const num = parseFloat(amount);
+  const num = parseFloat(amount);
 
-    if (isNaN(num)) return amount; // fallback in case of invalid number
+  if (isNaN(num)) return amount; // fallback in case of invalid number
 
-    if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
-    if (num >= 1_000_000) return (num / 1_000_000).toFixed(2) + "M";
-    if (num >= 1_000) return num.toFixed(2).toLocaleString();
+  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
+  else{
 
-    return num.toFixed(2);
-  };
+    return num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+  }
+
+  
+};
 
   const header = (
     <>

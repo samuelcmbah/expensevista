@@ -11,6 +11,7 @@ import { User, Wallet2, Tags, LogOut, Plus } from "lucide-react";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import { handleAxiosError } from "../utilities/handleAxiosError";
 import { getDashboardData } from "../services/dashboardServices";
+import { formatAmount } from "../utilities/formatAmount";
 
 const Settings: React.FC = () => {
   const { user, logout } = useAuth();
@@ -106,7 +107,7 @@ const loadCategories = async () => {
       if (!budgetId) {
         // 💡 No budget yet → create one
         toast.loading("Creating monthly budget...", { id: toastId });
-
+        console.log( `this is budgetId ${budgetId}`)
         await createMonthlyBudget({
           monthlyLimit: monthlyBudget,
           budgetMonth: currentMonth,
@@ -218,7 +219,7 @@ const loadCategories = async () => {
                   type="string"
                   value={monthlyBudget}
                   onChange={(e) => setMonthlyBudget(e.target.value)}
-                  className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:ring-2 focus:ring-green-500"
+                  className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <button
                   onClick={handleBudgetUpdate}
@@ -231,7 +232,7 @@ const loadCategories = async () => {
               <p className="text-gray-700 text-base">
                 Monthly Budget:{" "}
                 <span className="font-semibold">
-                  ₦{monthlyBudget.toLocaleString()}
+                  ₦{formatAmount(monthlyBudget)}
                 </span>
               </p>
             )}
@@ -258,7 +259,7 @@ const loadCategories = async () => {
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 placeholder="Add new category"
-                className="flex-1 border border-gray-300 rounded-lg px-3 py-2  focus:outline-none"
+                className="flex-1 border border-gray-300 rounded-lg px-3 py-2  focus:outline-none focus:ring-2 focus:ring-green-500"
               />
               <button
                 onClick={handleAddCategory}

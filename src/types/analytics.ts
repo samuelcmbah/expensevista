@@ -33,7 +33,7 @@ export interface KeyInsights {
 }
 
 export interface FinancialData {
-  timePeriod: "This Month" | "Last 3 Months" | "Last 6 Months" | "This Year";
+  timePeriod: "This Month" | "Last Month" | "Last 3 Months" | "Last 6 Months" | "This Year";
   summary: Summary;
   budgetProgress: BudgetProgress;
   spendingByCategory: SpendingCategory[];
