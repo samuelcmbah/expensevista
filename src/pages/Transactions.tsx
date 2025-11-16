@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import TransactionDialog from "../components/TransactionDialog";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import { handleAxiosError } from "../utilities/handleAxiosError";
+import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
 
 const Transactions: React.FC = () => {
 
@@ -87,7 +88,6 @@ const Transactions: React.FC = () => {
 
 
   const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this transaction?")) {
       const toastId = toast.loading("Deleting transaction...");
       try {
         await deleteTransaction(id);
@@ -96,7 +96,7 @@ const Transactions: React.FC = () => {
       } catch (error) {
         toast.error("Failed to delete transaction.", { id: toastId });
       }
-    }
+    
   };
 
   // ✅ Safe formatAmount helper for string inputs
@@ -265,13 +265,12 @@ const Transactions: React.FC = () => {
                       }}
                     />
 
-                    <button
-                      onClick={() => handleDelete(tx.id)}
-                      className="text-gray-600 hover:text-red-600"
-                      title="Delete"
-                    >
-                      <Trash2 size={18} />
-                    </button>
+                    <DeleteConfirmationDialog
+                      onConfirm={() => handleDelete(tx.id)}
+                      trigger={<button className="text-gray-600 hover:text-red-600"
+                      ><Trash2 size={18} /></button>}
+                    />
+                      
                   </div>
                 </div>
               </motion.div>
