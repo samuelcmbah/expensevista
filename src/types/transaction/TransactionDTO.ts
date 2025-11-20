@@ -7,4 +7,5 @@ export interface TransactionDTO {
   type: TransactionType;
   transactionDate: string;
   category: CategoryDTO;
+  isAutomatic: boolean;
 }

@@ -213,7 +213,7 @@ const Transactions: React.FC = () => {
           transactions.map((tx, index) => {
             const isIncome = tx.type === TransactionType.Income;
             const sign = isIncome ? "+" : "-";
-            const color = isIncome ? "text-gray-600" : "text-gray-600";
+            const color = isIncome ? "text-green-600" : "text-gray-600";
 
             return (
               <motion.div
