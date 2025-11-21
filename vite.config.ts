@@ -5,4 +5,12 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-})
+server: {
+    host: true, // allow network access
+    port: 5173, // your dev port (optional)
+    strictPort: false,
+    allowedHosts: [
+      "miracidial-kayce-preobediently.ngrok-free.dev",
+    ],
+  },
+});

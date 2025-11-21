@@ -8,6 +8,7 @@ import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO
 import LoadingButton from "./ui/LoadingButton";
 
 
+
 /* props */
 interface TransactionFormProps {
   formData: CreateTransactionDTO | EditTransactionDTO;
@@ -29,14 +30,13 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
 
   // defensive: produce safe strings for inputs
   const dateValue = formData.transactionDate ? String(formData.transactionDate).split("T")[0] : "";
-  const amountValue = formData.amount.trim();
   const categoryValue =
     formData.categoryId === null || formData.categoryId === 0 ? "" : String(formData.categoryId);
   const descriptionValue = formData.description ?? "";
 
-  const hasAmount = amountValue !== "";
-  const hasType = formData.type !== null && formData.type !== undefined;
-  const hasCategory = formData.categoryId !== null && formData.categoryId !== 0;
+  const hasAmount = formData.amount !== "";
+  const hasType = formData.type !== "" && !isNaN(Number(formData.type));
+  const hasCategory = formData.categoryId !== "" && Number(formData.categoryId) > 0;
 
   const isFormValid = hasAmount && hasType && hasCategory; // true only when all required fields are filled
 
@@ -86,7 +86,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         <input
           type="text"
           name="amount"
-          value={amountValue}
+          value={formData.amount}
           onChange={handleChange}
           className="w-full rounded-lg px-3 py-2 bg-gray-100 transition focus-within:outline-none focus-within:ring-2 focus-within:ring-green-200"
           required
