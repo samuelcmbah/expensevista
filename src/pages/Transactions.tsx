@@ -213,7 +213,7 @@ const Transactions: React.FC = () => {
           transactions.map((tx, index) => {
             const isIncome = tx.type === TransactionType.Income;
             const sign = isIncome ? "+" : "-";
-            const color = isIncome ? "text-gray-600" : "text-gray-600";
+            const color = isIncome ? "text-green-500" : "text-gray-600";
 
             return (
               <motion.div
@@ -251,8 +251,12 @@ const Transactions: React.FC = () => {
                 {/* ✅ Amount and Actions */}
                 <div className="flex flex-col items-end gap-2 ml-3 flex-shrink-0 text-right">
                   <p className={`font-medium ${color} text-sm sm:text-base break-all`}>
-                    {sign}₦{formatAmount(tx.amount)}
+                    {sign}₦{tx.currency !== "NGN"
+                      ? formatAmount(tx.convertedAmount)
+                      : formatAmount(tx.amount)
+                    }
                   </p>
+                
 
                   <div className="flex gap-3">
                     <TransactionDialog

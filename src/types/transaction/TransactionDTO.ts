@@ -7,4 +7,6 @@ export interface TransactionDTO {
   type: TransactionType;
   transactionDate: string;
   category: CategoryDTO;
+  currency: string;
+  convertedAmount: string;
 }

@@ -56,6 +56,30 @@ const TransactionForm: React.FC<TransactionFormProps> = ({
         />
       </div>
 
+      {/* Currency */}
+      <div>
+        <label className="block text-black-600 mb-1">Currency</label>
+        <Select
+          value={formData.currency || "NGN"}
+          onValueChange={(value) =>
+            handleChange({
+              target: { name: "currency", value },
+            } as React.ChangeEvent<HTMLSelectElement>)
+          }
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Select currency" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="NGN">NGN</SelectItem>
+            <SelectItem value="USD">USD</SelectItem>
+            <SelectItem value="EUR">EUR</SelectItem>
+            <SelectItem value="GBP">GBP</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+
       {/* Amount */}
       <div>
         <label className="block text-black-600 mb-1">Amount</label>

@@ -6,4 +6,6 @@ export default interface CreateTransactionDTO {
   transactionDate: string; // ISO string
   categoryId: number | null | undefined;
   description?: string;
+  currency?: string; // default NGN
+
 }

@@ -8,11 +8,9 @@ import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
 import extractErrors from "../utilities/extractErrors";
 import type { AxiosError } from "axios";
+import type { CategoryDTO } from "../types/Category/CategoryDTO";
+import { formatAmountForInput } from "../utilities/formatAmountForInputs";
 
-interface Category {
-  id: number;
-  categoryName: string;
-}
 
 interface UseTransactionFormProps {
   initialData?: TransactionDTO | null; // If provided, we’re editing
@@ -22,6 +20,7 @@ export const useTransactionForm = ({ initialData = null }: UseTransactionFormPro
   // Make formData a union so both shapes are allowed
   const [formData, setFormData] = useState<CreateTransactionDTO | EditTransactionDTO>({
   id: 0,
+  currency: "NGN",
   amount: "",
   type: "",
   transactionDate: new Date().toISOString(),
@@ -34,6 +33,7 @@ useEffect(() => {
   if (initialData) {
     setFormData({
       id: initialData.id,
+      currency: initialData.currency,
       amount: initialData.amount,
       type: initialData.type,
       transactionDate: initialData.transactionDate,
@@ -44,7 +44,7 @@ useEffect(() => {
 }, [initialData]);
 
 
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryDTO[]>([]);
 
   useEffect(() => {
   const fetchCategories = async () => {
@@ -76,7 +76,7 @@ useEffect(() => {
       const next = { ...(prev as any) };
 
       if (name === "amount") {
-        next.amount = value; // always keep as string
+        next.amount = formatAmountForInput(value);
         return next;
       }
 
@@ -94,6 +94,7 @@ useEffect(() => {
         return next;
       }
 
+      //currency and description are strings
       next[name] = value;
       return next;
     });
@@ -132,7 +133,8 @@ useEffect(() => {
     // formData may be union; cast safely
     const fd = formData as CreateTransactionDTO;
     return {
-      amount: fd.amount,
+      currency: fd.currency,
+      amount: fd.amount.replace(/,/g, ""),//so database doesnt get commas
       type: fd.type,
       transactionDate: fd.transactionDate,
       categoryId: fd.categoryId,
@@ -148,7 +150,8 @@ useEffect(() => {
     const id = (initialData && initialData.id) ?? (fd.id ?? 0);
     return {
       id,
-      amount: fd.amount,
+      currency: fd.currency,
+      amount: fd.amount.replace(/,/g, ""),
       type: fd.type,
       transactionDate: fd.transactionDate,
       categoryId: fd.categoryId,

@@ -11,12 +11,7 @@ const Welcome: React.FC = () => {
       action: () => navigate("/settings"),
       icon: "💰",
     },
-    {
-      title: "Add Categories",
-      description: "Organize your transactions",
-      action: () => navigate("/settings"),
-      icon: "📂",
-    },
+    
     {
       title: "Add Transactions",
       description: "Track your expenses and income",
@@ -31,7 +26,7 @@ const Welcome: React.FC = () => {
         Hi there, welcome to ExpenseVista!
       </h1>
       <p className="text-gray-600 mb-8 text-center">
-        To get started, create a budget for the month and set up your transaction categories.
+        To get started, create a budget for the month and start adding your transaction records.
       </p>
 
       <div className="w-full max-w-md space-y-4">

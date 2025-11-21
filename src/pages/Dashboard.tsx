@@ -18,15 +18,32 @@ import extractErrors from "../utilities/extractErrors";
 import { getDashboardData } from "../services/dashboardServices";
 import type { DashboardDTO } from "../types/dashboardDTO";
 import { formatAmount } from "../utilities/formatAmount";
+import apiClient from "../services/apiClient";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
+
   const [dashboard, setDashboard] = useState<DashboardDTO | null>(null);
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [usdToNgnRate, setUsdToNgnRate] = useState<string | null>(null);
 
   // ✅ Fetch dashboard data when component mounts
+
+  useEffect(() => {
+  const fetchExchangeRate = async () => {
+    try {
+      const response = await apiClient.get("/currency/rate?from=USD&to=NGN");
+      setUsdToNgnRate(response.data);
+    } catch (error) {
+      console.error("Failed to fetch USD → NGN rate", error);
+    }
+  };
+
+  fetchExchangeRate();
+}, []);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,29 +109,47 @@ const Dashboard: React.FC = () => {
 
 
   const header = (
-
     <>
-      {/* ✅ Greeting and Month */}
       <motion.div
+        className="flex flex-col md:flex-row md:justify-between md:items-center gap-2"
         initial={{ opacity: 0, y: 15 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2, duration: 0.5 }}
       >
-        <h2 className="text-2xl font-semibold">
-          {getGreeting()}, {user?.firstName || "User"} 👋
-        </h2>
-        <p className="text-gray-500">
-          Your financial overview for{" "}
-          {dashboard?.budget.budgetMonth
-            ? new Date(dashboard.budget.budgetMonth).toLocaleString("default", {
-              month: "long",
-              year: "numeric",
-            })
-            : "this month"}
-        </p>
+        <div>
+          <h2 className="text-2xl font-semibold">
+            {getGreeting()}, {user?.firstName || "User"}
+          </h2>
+          <p className="text-gray-500">
+            Your financial overview for{" "}
+            {dashboard?.budget.budgetMonth
+              ? new Date(dashboard.budget.budgetMonth).toLocaleString("default", {
+                month: "long",
+                year: "numeric",
+              })
+              : "this month"}
+          </p>
+        </div>
+
+        {usdToNgnRate !== null && (
+          <div className="
+            text-sm 
+            text-gray-700 
+            bg-gray-100 
+            px-3 py-1 
+            rounded-full 
+            text-center md:text-right 
+            font-medium 
+            shadow-sm
+          ">
+            Dollar exchange rate → ₦{formatAmount(usdToNgnRate)}
+          </div>
+
+        )}
       </motion.div>
     </>
   );
+
 
   return (
     <StickyPageLayout header={header} scrollable={false}>
@@ -249,15 +284,19 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <p
-                    className={`font-medium ${tx.type === TransactionType.Income
-                      ? "text-gray-600"
+                 
+                    <p className={`font-medium ${tx.type === TransactionType.Income
+                      ? "text-green-500"
                       : "text-gray-600"
-                      }`}
-                  >
-                    {tx.type === TransactionType.Income ? "+" : "-"}₦{formatAmount(tx.amount)}
+                      }`}>
+                      {tx.type === TransactionType.Income ? "+" : "-"}
+                      {tx.currency !== "NGN"
+                        ? `₦${formatAmount(tx.convertedAmount)}`
+                        : `₦${formatAmount(tx.amount)}`
+                      }
+                    </p>
 
-                  </p>
+
                 </motion.li>
               ))}
             </ul>

@@ -7,4 +7,5 @@ export interface EditTransactionDTO {
   transactionDate: string;
   categoryId: number | "";
   description?: string;
+  currency?: string; // default NGN
 }
