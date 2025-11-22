@@ -7,7 +7,7 @@ import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 import { getAllCategories } from "../services/categoryService";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../components/ui/select";
-import TransactionDialog from "../components/TransactionDialog";
+import TransactionDialog from "../components/Transaction/TransactionDialog";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import { handleAxiosError } from "../utilities/handleAxiosError";
 import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";

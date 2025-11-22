@@ -1,11 +1,12 @@
 import React from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "./ui/dialog"
-import { useTransactionForm } from "../hooks/useTransactionForm"
-import type { TransactionDTO } from "../types/transaction/TransactionDTO"
-import { createTransaction, updateTransaction } from "../services/transactionService"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog"
+import TransactionForm from "./TransactionForm"
+import { useTransactionForm } from "../../hooks/useTransactionForm"
+import type { TransactionDTO } from "../../types/transaction/TransactionDTO"
+import { createTransaction, updateTransaction } from "../../services/transactionService"
 import toast from "react-hot-toast"
-import useLoadingButton from "../hooks/useLoadingButton"
-import TransactionForm from "./Transaction/TransactionForm"
+import useLoadingButton from "../../hooks/useLoadingButton"
+
 interface TransactionDialogProps {
   triggerLabel: React.ReactNode;//so it can be string or element
   initialData?: TransactionDTO | null

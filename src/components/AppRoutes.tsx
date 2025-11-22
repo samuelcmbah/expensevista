@@ -6,8 +6,8 @@ import ProtectedRoute from "./ProtectedRoute";
 import MainLayout from "./layouts/MainLayout";
 import { ReportsAnalytics } from "../pages/Reports";
 import Welcome from "../pages/Welcome";
-import VerifyEmailSent from "./VerifyEmailSent";
-import VerifyEmail from "./VerifyEmail";
+import VerifyEmailSent from "./Auth/VerifyEmailSent";
+import VerifyEmail from "./Auth/VerifyEmail";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 
