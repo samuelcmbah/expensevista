@@ -67,10 +67,11 @@ export default function AuthPage() {
           password,
           confirmPassword,
         });
-        // if successful, switch to login mode and show success message
+        // if successful, verify email page
         resetForm();
-        setIsLogin(true);
-        toast.success("Registration successful. Please login."); // small UX choice
+        navigate(`/verify-email-sent?email=${email}`);
+
+        toast.success("Registration successful! Check your email for a verification link.");
       } catch (error) {
         let messages = ["Registration failed, try again later"];
 

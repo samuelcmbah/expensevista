@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
 server: {
     host: true, // allow network access
-    port: 5173, // your dev port (optional)
+    port: 5000, // your dev port (optional)
     strictPort: false,
     allowedHosts: [
       "miracidial-kayce-preobediently.ngrok-free.dev",

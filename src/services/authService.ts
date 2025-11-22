@@ -14,3 +14,12 @@ export const loginUser = async (data: LoginDTO) => {
   const response = await apiClient.post("/auth/login", data);
   return response.data;
 };
+
+
+export async function confirmEmail(email: string, token: string) {
+  return apiClient.post("/auth/confirm-email", { email, token });
+}
+
+export async function resendEmailVerification(email: string) {
+  return apiClient.post("/auth/resend-verification", { email });
+}
