@@ -1,9 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { resendEmailVerification } from "../services/authService";
+import { resendEmailVerification } from "../../services/authService";
 import toast from "react-hot-toast";
-import LoadingButton from "../components/ui/LoadingButton";
-import useLoadingButton from "../hooks/useLoadingButton";
+import LoadingButton from "../../components/ui/LoadingButton";
+import useLoadingButton from "../../hooks/useLoadingButton";
 
 export default function VerifyEmailSent() {
   const { loading, withLoading } = useLoadingButton();

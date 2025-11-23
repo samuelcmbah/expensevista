@@ -1,11 +1,11 @@
 // src/components/TransactionForm.tsx
 import React from "react";
-import { TransactionType } from "../types/transaction/TransactionType";
-import type { CategoryDTO } from "../types/Category/CategoryDTO";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import type CreateTransactionDTO from "../types/transaction/CreateTransactionDTO";
-import type { EditTransactionDTO } from "../types/transaction/EditTransactionDTO";
-import LoadingButton from "./ui/LoadingButton";
+import { TransactionType } from "../../types/transaction/TransactionType";
+import type { CategoryDTO } from "../../types/Category/CategoryDTO";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import type CreateTransactionDTO from "../../types/transaction/CreateTransactionDTO";
+import type { EditTransactionDTO } from "../../types/transaction/EditTransactionDTO";
+import LoadingButton from "../ui/LoadingButton";
 
 
 

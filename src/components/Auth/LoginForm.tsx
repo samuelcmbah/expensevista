@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
@@ -102,9 +102,12 @@ export default function LoginForm({ setErrorMessages, loading, withLoading }: Lo
           />
           Remember me
         </label>
-        <a className="text-green-600 hover:underline" href="#">
+        <Link
+          to="/forgot-password"
+          className="text-green-600 hover:underline"
+        >
           Forgot password?
-        </a>
+        </Link>
       </div>
 
       <LoadingButton

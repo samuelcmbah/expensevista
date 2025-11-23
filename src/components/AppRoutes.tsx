@@ -10,6 +10,9 @@ import VerifyEmailSent from "./Auth/VerifyEmailSent";
 import VerifyEmail from "./Auth/VerifyEmail";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
+import { ExpenseVistaLogo } from "./ExpenseVistaLogo";
+import ForgotPassword from "./Auth/ForgotPassword";
+import ResetPassword from "./Auth/ResetPassword";
 
 
 export default function AppRoutes() {
@@ -21,6 +24,9 @@ export default function AppRoutes() {
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/logo" element={<ExpenseVistaLogo />} />
 
 
       {/* Protected routes */}

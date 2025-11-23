@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { confirmEmail } from "../services/authService";
+import { confirmEmail } from "../../services/authService";
 import toast from "react-hot-toast";
 
 export default function VerifyEmail() {
