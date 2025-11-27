@@ -1,0 +1,6 @@
+{
+  "_comment": "This tells Vercel: For ANY path → serve /index.html → then React Router handles the route.",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
+}
