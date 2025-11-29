@@ -94,7 +94,6 @@ const loadCategories = async () => {
   };
 
   const handleBudgetUpdate = async () => {
-    const currentMonth = new Date().toISOString().slice(0, 7) + "-01"; // e.g. 2025-10-01
     const toastId = "budget-update";
 
     try {
@@ -105,8 +104,7 @@ const loadCategories = async () => {
         toast.loading("Creating monthly budget...", { id: toastId });
         console.log( `this is budgetId ${budgetId}`)
         await createMonthlyBudget({
-          monthlyLimit: monthlyBudget,
-          budgetMonth: currentMonth,
+          monthlyLimit: monthlyBudget
         });
 
         toast.success(`Monthly budget set to ₦${monthlyBudget.toLocaleString()}`, {
@@ -118,8 +116,7 @@ const loadCategories = async () => {
 
         await updateMonthlyBudget(budgetId, {
           id: budgetId,
-          monthlyLimit: monthlyBudget,
-          budgetMonth: currentMonth,
+          monthlyLimit: monthlyBudget
         });
 
         toast.success(`Monthly budget updated to ₦${monthlyBudget.toLocaleString()}`, {

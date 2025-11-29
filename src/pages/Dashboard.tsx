@@ -19,6 +19,7 @@ import { getDashboardData } from "../services/dashboardServices";
 import type { DashboardDTO } from "../types/dashboardDTO";
 import { formatAmount } from "../utilities/formatAmount";
 import apiClient from "../services/apiClient";
+import { handleAxiosError } from "../utilities/handleAxiosError";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -57,11 +58,9 @@ const Dashboard: React.FC = () => {
           setDashboard(dashboardResult.value);
         } else {
           const error = dashboardResult.reason as AxiosError;
-          const messages = extractErrors(error);
 
-          messages.forEach((msg) =>
-            toast.error(msg, { id: `dashboard-${msg}` }) // ✅ prevent duplicate messages
-          );
+          handleAxiosError(error, "Failed to fetch dashboard data.");
+         
         }
 
 
