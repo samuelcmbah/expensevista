@@ -1,11 +1,15 @@
 
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../../services/authService";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import extractErrors from "../../utilities/extractErrors";
 import LoadingButton from "../ui/LoadingButton";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { type LoginSchemaType, loginSchema } from "../../schemas/auth";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { EyeOff, Eye } from "lucide-react";
 
 // Assuming AuthFormProps for shared props like setting errors/switching modes
 interface LoginFormProps {
@@ -17,36 +21,44 @@ interface LoginFormProps {
 export default function LoginForm({ setErrorMessages, loading, withLoading }: LoginFormProps) {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Login form state
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginSchemaType>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+    mode: "onChange",
+  });
 
   // HANDLE LOGIN
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: LoginSchemaType) => {
     setErrorMessages([]);
-
-    if (!email.trim() || !password) {
-      return setErrorMessages(["Please provide email and password."]);
-    }
 
     await withLoading(async () => {
       try {
-        const data = await loginUser({ email, password });
-        // assume backend returns: { token: 'jwt', user: { ... } }
-        const token = data?.token ?? data?.accessToken ?? null;
-        const user = data?.user ?? data?.applicationUser ?? null;
+        const data = await loginUser(values);
 
-        if (!token) {
-          throw new Error("No token received from server.");
-        }
+        const token =
+          data?.token ||
+          data?.accessToken ||
+          null;
 
-        // store token and user in auth context
-        login(token, user, rememberMe);
+        const user =
+          data?.user ||
+          data?.applicationUser ||
+          null;
 
-        // redirect to welcome page or dashboard
+        if (!token) throw new Error("No token received.");
+
+        login(token, user, values.rememberMe);
+
         navigate("/welcome");
       } catch (error) {
         let messages = ["Login failed, try again later"];
@@ -61,43 +73,64 @@ export default function LoginForm({ setErrorMessages, loading, withLoading }: Lo
   };
 
   return (
-    <form onSubmit={handleLogin} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label className="block text-sm font-medium text-gray-700">
           Email
         </label>
         <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          {...register("email")}
           type="email"
-          placeholder="samuelcmbah@gmail.com"
+          placeholder="you@example.com"
           className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
             ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
           `}
         />
+        {errors.email && (
+          <p className="text-red-600 text-sm">{errors.email.message}</p>
+        )}
       </div>
 
+      {/* PASSWORD */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password" // Changed to password type for security
-          placeholder="••••••••"
-          className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
-            ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
-          `}
-        />
+        <label className="text-sm font-medium text-gray-700">Password</label>
+
+        {/* input wrapper is relative and only wraps the input */}
+        <div className="relative mt-1">
+          <input
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            className={`w-full border border-gray-300 outline-none rounded-lg px-4 py-2 pr-10 
+        focus:ring-2 focus:ring-green-500
+        ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+      `}
+            aria-invalid={!!errors.password}
+          />
+
+          {/* centered icon using inset-y-0 + flex */}
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+
+        {errors.password && (
+          <p className="text-red-600 text-sm mt-2">{errors.password.message}</p>
+        )}
       </div>
 
+
+      {/* REMEMBER ME */}
       <div className="flex items-center justify-between text-sm">
         <label className="flex items-center gap-2">
           <input
+            {...register("rememberMe")}
             type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
             className="h-4 w-4"
           />
           Remember me

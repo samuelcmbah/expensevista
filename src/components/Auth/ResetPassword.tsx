@@ -4,6 +4,7 @@ import { z } from "zod";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../../services/authService";
 import { toast } from "react-hot-toast";
+import { handleAxiosError } from "../../utilities/handleAxiosError";
 
 const schema = z
   .object({
@@ -27,11 +28,12 @@ type FormData = z.infer<typeof schema>;
 
 
 export default function ResetPassword() {
+  //get token and email from query params
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") || "";
   const email = searchParams.get("email") || "";
 
-
+// REACT HOOK FORM SETUP
   const { register, handleSubmit, formState} = useForm<FormData>({ resolver: zodResolver(schema), mode: "onChange" });
   const { errors, isSubmitting } = formState;
   const navigate = useNavigate();
@@ -43,14 +45,12 @@ export default function ResetPassword() {
       return;
     }
 
-
     try {
       await resetPassword({ email, token, newPassword: values.newPassword });
       toast.success("Password reset successfully. You can now log in.");
       navigate("/login");
-    } catch (err: any) {
-      console.error(err);
-      toast.error(err?.response?.data?.message || "Invalid or expired token.");
+    } catch (err) {
+      handleAxiosError("Invalid or expired token.", "reset-password-error" );
     }
   }
 

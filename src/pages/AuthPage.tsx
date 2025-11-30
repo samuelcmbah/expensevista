@@ -56,7 +56,7 @@ export default function AuthPage() {
           <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
             {isLogin ? "Login to ExpenseVista" : "Create an Account"}
           </h2>
-
+          {/*server error messages*/}
           {errorMessages.length > 0 && (
             <div className="mb-4 text-sm text-red-700 bg-red-100 p-3 rounded ">
               {errorMessages.map((msg, idx) => (

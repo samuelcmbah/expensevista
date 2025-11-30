@@ -1,11 +1,16 @@
 
-import { useState } from "react";
+
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/authService";
 import toast from "react-hot-toast";
 import axios from "axios";
 import extractErrors from "../../utilities/extractErrors";
 import LoadingButton from "../ui/LoadingButton";
+import { registerSchema, type RegisterSchemaType } from "../../schemas/auth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 interface RegisterFormProps {
   setErrorMessages: (messages: string[]) => void;
@@ -14,92 +19,86 @@ interface RegisterFormProps {
 }
 
 export default function RegisterForm({ setErrorMessages, loading, withLoading }: RegisterFormProps) {
+  // form state with react hook form
+
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
 
-  // Register form state
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<RegisterSchemaType>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+    },
+    mode: "onTouched",
+  });
 
-  const resetFormFields = () => {
-    setFirstName("");
-    setLastName("");
-    setEmail("");
-    setPassword("");
-    setConfirmPassword("");
-  };
+
 
   // HANDLE REGISTRATION
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (values: RegisterSchemaType) => {
     setErrorMessages([]);
-
-    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password) {
-      setErrorMessages(["Please fill in all required fields."]);
-      return;
-    }
-    if (password !== confirmPassword) {
-      setErrorMessages(["Passwords do not match."]);
-      return;
-    }
 
     await withLoading(async () => {
       try {
-        await registerUser({
-          firstName,
-          lastName,
-          email,
-          password,
-          confirmPassword,
-        });
-        
-        resetFormFields();
-        navigate(`/verify-email-sent?email=${email}`);
+        await registerUser(values);
 
-        toast.success("Registration successful! Check your email for a verification link.");
+        reset();
+        navigate(`/verify-email-sent?email=${values.email}`);
+
+        toast.success("Registration successful! Check your email.");
       } catch (error) {
         let messages = ["Registration failed, try again later"];
 
         if (axios.isAxiosError(error)) {
           messages = extractErrors(error);
         }
+
         setErrorMessages(messages);
       }
     });
   };
 
+
   return (
-    <form onSubmit={handleRegister} className="space-y-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          First name
-        </label>
+        {/* FIRST NAME */}
+        <label className="block text-sm font-medium text-gray-700">First name</label>
         <input
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          type="text"
-          placeholder="Samuel"
+          {...register("firstName")}
+          placeholder="John"
           className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
             ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
           `}
         />
+        {errors.firstName && (
+          <p className="text-red-600 text-sm">{errors.firstName.message}</p>
+        )}
       </div>
 
+      {/* LAST NAME */}
       <div>
         <label className="block text-sm font-medium text-gray-700">
           Last name
         </label>
         <input
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          type="text"
-          placeholder="Mbah"
+          {...register("lastName")}
+          placeholder="Doe"
           className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
             ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
           `}
         />
+        {errors.lastName && (
+          <p className="text-red-600 text-sm">{errors.lastName.message}</p>
+        )}
       </div>
 
       <div>
@@ -107,45 +106,49 @@ export default function RegisterForm({ setErrorMessages, loading, withLoading }:
           Email
         </label>
         <input
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          {...register("email")}
           type="email"
-          placeholder="samuelcmbah@gmail.com"
+          placeholder="johndoe@example.com"
           className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
             ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
           `}
         />
       </div>
 
+      {/* PASSWORD */}
       <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Password
-        </label>
-        <input
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          type="password" // Changed to password type for security
-          placeholder="At least 8 characters"
-          className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
-            ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
-          `}
-        />
+        <label className="text-sm font-medium text-gray-700">Password</label>
+
+        {/* input wrapper is relative and only wraps the input */}
+        <div className="relative mt-1">
+          <input
+            {...register("password")}
+            type={showPassword ? "text" : "password"}
+            placeholder="••••••••"
+            className={`w-full border border-gray-300 outline-none rounded-lg px-4 py-2 pr-10 
+        focus:ring-2 focus:ring-green-500
+        ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+      `}
+            aria-invalid={!!errors.password}
+          />
+
+          {/* centered icon using inset-y-0 + flex */}
+          <button
+            type="button"
+            onClick={() => setShowPassword((prev) => !prev)}
+            className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-gray-700"
+            aria-label={showPassword ? "Hide password" : "Show password"}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+
+        {errors.password && (
+          <p className="text-red-600 text-sm mt-2">{errors.password.message}</p>
+        )}
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700">
-          Confirm password
-        </label>
-        <input
-          value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
-          type="password" // Changed to password type for security
-          placeholder="Retype password"
-          className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
-            ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
-          `}
-        />
-      </div>
+
 
       <LoadingButton
         type="submit"
