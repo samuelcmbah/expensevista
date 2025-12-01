@@ -44,7 +44,7 @@ const [showVerificationPrompt, setShowVerificationPrompt] = useState(false);
   try {
     await resendEmailVerification(email); 
     toast.success("Verification email sent."); 
-    setErrorMessages(["Verification email sent!"]);
+    setErrorMessages(["Click the link in your email to verify your account."]);
      setShowVerificationPrompt(false);
   } catch {
     setErrorMessages(["Failed to resend verification email"]);
