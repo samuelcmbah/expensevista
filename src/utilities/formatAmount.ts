@@ -4,7 +4,13 @@ export const formatAmount = (value: string | number | undefined | null): string 
   if (value === null || value === undefined) return "--";
 
   // Convert to number safely
-  const num = typeof value === "string" ? parseFloat(value) : value;
+   let num: number;
+  if (typeof value === "string") {
+    const cleaned = value.replace(/,/g, ""); // remove commas
+    num = parseFloat(cleaned);
+  } else {
+    num = value;
+  }
 
   if (isNaN(num)) return "0.00";
 

@@ -12,6 +12,7 @@ import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import { handleAxiosError } from "../utilities/handleAxiosError";
 import { getDashboardData } from "../services/dashboardServices";
 import { formatAmount } from "../utilities/formatAmount";
+import  { formatAmountForInput } from "../utilities/formatAmountForInputs";
 
 const Settings: React.FC = () => {
   const { user, logout } = useAuth();
@@ -211,7 +212,7 @@ const loadCategories = async () => {
                 <input
                   type="string"
                   value={monthlyBudget}
-                  onChange={(e) => setMonthlyBudget(e.target.value)}
+                  onChange={(e) => setMonthlyBudget(formatAmountForInput(e.target.value))}
                   className="border border-gray-300 rounded-lg px-3 py-2 w-1/2 focus:outline-none focus:ring-2 focus:ring-green-500"
                 />
                 <button
