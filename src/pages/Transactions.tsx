@@ -47,6 +47,11 @@ const Transactions: React.FC = () => {
   toast.loading("Loading transactions...", { id: "fetch-transactions" });
 
     try {
+      function toUtcDate(dateStr: string) {
+        if (!dateStr) return undefined;
+        const [year, month, day] = dateStr.split("-").map(Number);
+        return new Date(Date.UTC(year, month - 1, day)).toISOString();
+      }
       const filters = {
         searchTerm: search || undefined, // matches C# DTO
         categoryName: categoryFilter !== "All" ? categoryFilter : undefined, // use name, not ID
@@ -56,10 +61,9 @@ const Transactions: React.FC = () => {
             : typeFilter === "Income"
               ? TransactionType.Income
               : TransactionType.Expense,
-        // startDate: startDate || undefined,
-        endDate: endDate || undefined,
+        // startDate: toUtcDate(startDate),
+        endDate: toUtcDate(endDate),
       };
-
       const data = await getFilteredPagedTransactions({
         page: currentPage,
         recordsPerPage,
