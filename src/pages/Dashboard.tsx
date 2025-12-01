@@ -128,7 +128,7 @@ const Dashboard: React.FC = () => {
         transition={{ delay: 0.2, duration: 0.5 }}
       >
         <div>
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-xl font-semibold">
             {getGreeting()}, {user?.firstName || "User"}
           </h2>
           <p className="text-gray-500">

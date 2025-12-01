@@ -4,26 +4,26 @@ import { useLocation, useNavigate } from "react-router-dom";
 import useLoadingButton from "../hooks/useLoadingButton";
 import LoginForm from "../components/Auth/LoginForm";
 import RegisterForm from "../components/Auth/RegisterForm";
+import { resendEmailVerification } from "../services/authService";
+import toast from "react-hot-toast";
 
 export default function AuthPage() {
   const { loading, withLoading } = useLoadingButton(); // Shared loading hook
 
   // State to determine which form to show
   const [isLogin, setIsLogin] = useState(true);
-  const [errorMessages, setErrorMessages] = useState<string[]>([]);
+  const [errorMessages, setErrorMessages] = useState<string[]>([]);  
+const [showVerificationPrompt, setShowVerificationPrompt] = useState(false);
+
   
   const navigate = useNavigate();
   const location = useLocation();
 
   // Logic to determine initial form based on URL
   useEffect(() => {
-    if (location.pathname === "/login") {
-      setIsLogin(true);
-    } else if (location.pathname === "/register") {
-      setIsLogin(false);
-    }
-    // Clear errors when URL changes
-    setErrorMessages([]); 
+    setIsLogin(location.pathname === "/login");//false for /register
+    setErrorMessages([]);     // Clear errors when URL changes
+    setShowVerificationPrompt(false);
   }, [location.pathname]);
 
 
@@ -35,9 +35,21 @@ export default function AuthPage() {
     setErrorMessages([]);
     navigate(mode === 'login' ? "/login" : "/register");
     
-    // Note: Form fields state is now managed inside LoginForm/RegisterForm
+    // Note: Form fields state is  managed inside LoginForm/RegisterForm
     // and is naturally reset when they unmount/remount on mode switch.
   }, [loading, navigate]);
+  
+  // Handler to resend verification email
+  const handleResendVerification = async (email: string) => {
+  try {
+    await resendEmailVerification(email); 
+    toast.success("Verification email sent."); 
+    setErrorMessages(["Verification email sent!"]);
+     setShowVerificationPrompt(false);
+  } catch {
+    setErrorMessages(["Failed to resend verification email"]);
+  }
+}
 
 
   return (
@@ -56,6 +68,7 @@ export default function AuthPage() {
           <h2 className="text-2xl font-semibold text-center mb-6 text-gray-800">
             {isLogin ? "Login to ExpenseVista" : "Create an Account"}
           </h2>
+
           {/*server error messages*/}
           {errorMessages.length > 0 && (
             <div className="mb-4 text-sm text-red-700 bg-red-100 p-3 rounded ">
@@ -65,11 +78,17 @@ export default function AuthPage() {
             </div>
           )}
 
+          
+
           {/* Conditional Rendering of Forms */}
           {isLogin ? (
-            <LoginForm 
-              setErrorMessages={setErrorMessages} 
+            <LoginForm
+              setErrorMessages={setErrorMessages}
               loading={loading}
+              setShowVerificationPrompt={setShowVerificationPrompt}
+                showVerificationPrompt={showVerificationPrompt} // new
+
+              onResendVerification={handleResendVerification}
               withLoading={withLoading}
             />
           ) : (

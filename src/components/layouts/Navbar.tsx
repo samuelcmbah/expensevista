@@ -10,7 +10,7 @@ export default function Navbar({ onMenuClick }: NavbarProps) {
   const { user } = useAuth();
 
   return (
-    <header className="md:hidden fixed top-0 left-0 right-0 bg-white border-b shadow-sm flex items-center justify-between px-4 py-3 z-40">
+    <header className="md:hidden fixed top-0 left-0 right-0 bg-white shadow-sm flex items-center justify-between px-4 py-3 z-40">
       {/* Left: Menu Button */}
       <button
         onClick={onMenuClick}

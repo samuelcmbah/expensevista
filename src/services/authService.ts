@@ -23,7 +23,6 @@ export async function confirmEmail(email: string, token: string) {
 
 export async function resendEmailVerification(email: string) {
   const response = apiClient.post("/auth/resend-verification", { email });
-  console.log("Resend email response:", response);
   return response;
 }
 

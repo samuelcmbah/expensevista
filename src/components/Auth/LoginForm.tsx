@@ -15,17 +15,24 @@ import { EyeOff, Eye } from "lucide-react";
 interface LoginFormProps {
   setErrorMessages: (messages: string[]) => void;
   loading: boolean;
+  setShowVerificationPrompt: (val: boolean) => void;
+    showVerificationPrompt: boolean; 
+
+  onResendVerification?: (email: string) => void;
   withLoading: <T>(callback: () => Promise<T>) => Promise<T | void>;
 }
 
-export default function LoginForm({ setErrorMessages, loading, withLoading }: LoginFormProps) {
+export default function LoginForm(props: LoginFormProps) {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
+
+
   const {
     register,
     handleSubmit,
+    getValues,
     formState: { errors },
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -39,9 +46,9 @@ export default function LoginForm({ setErrorMessages, loading, withLoading }: Lo
 
   // HANDLE LOGIN
   const onSubmit = async (values: LoginSchemaType) => {
-    setErrorMessages([]);
+    props.setErrorMessages([]);
 
-    await withLoading(async () => {
+    await props.withLoading(async () => {
       try {
         const data = await loginUser(values);
 
@@ -64,11 +71,20 @@ export default function LoginForm({ setErrorMessages, loading, withLoading }: Lo
         let messages = ["Login failed, try again later"];
 
         if (axios.isAxiosError(error)) {
+          const backendMessage = error.response?.data?.message;
+
+          if (backendMessage === "EMAIL_NOT_CONFIRMED") {
+            props.setErrorMessages(["Your email is not verified."]);
+            props.setShowVerificationPrompt(true);
+            return;
+          }
+
           messages = extractErrors(error);
         }
 
-        setErrorMessages(messages);
+        props.setErrorMessages(messages);
       }
+
     });
   };
 
@@ -83,12 +99,24 @@ export default function LoginForm({ setErrorMessages, loading, withLoading }: Lo
           type="email"
           placeholder="you@example.com"
           className={`mt-1 w-full border border-gray-300 outline-none rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500
-            ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+            ${props.loading ? "bg-gray-100 cursor-not-allowed" : ""}
           `}
         />
         {errors.email && (
           <p className="text-red-600 text-sm">{errors.email.message}</p>
         )}
+
+        {/* Resend verification button */}
+        {props.onResendVerification && props.showVerificationPrompt && (
+          <button
+            type="button"
+            onClick={() => props.onResendVerification?.(getValues("email"))}
+            className="mt-2 text-green-700 font-medium hover:underline text-sm"
+          >
+            Resend verification email
+          </button>
+        )}
+
       </div>
 
       {/* PASSWORD */}
@@ -103,7 +131,7 @@ export default function LoginForm({ setErrorMessages, loading, withLoading }: Lo
             placeholder="••••••••"
             className={`w-full border border-gray-300 outline-none rounded-lg px-4 py-2 pr-10 
         focus:ring-2 focus:ring-green-500
-        ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
+        ${props.loading ? "bg-gray-100 cursor-not-allowed" : ""}
       `}
             aria-invalid={!!errors.password}
           />
@@ -145,7 +173,7 @@ export default function LoginForm({ setErrorMessages, loading, withLoading }: Lo
 
       <LoadingButton
         type="submit"
-        loading={loading}
+        loading={props.loading}
         label="Login"
         loadingLabel="Logging in..."
       />
