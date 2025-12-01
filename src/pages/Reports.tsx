@@ -197,12 +197,15 @@ export const ReportsAnalytics: React.FC = () => {
         transition={{ duration: 0.4 }}
       >
         {loading && (
-          <div className="flex items-center justify-center space-x-3 p-4 bg-gray-50 rounded-md ">
+          <div className="flex flex-col items-center justify-center space-x-3 p-4 bg-gray-50 rounded-md ">
             <Loader2 className="animate-spin h-6 w-6 text-green-500" />
             <p className="text-gray-700 text-sm font-medium">
               Loading reports and analytics...
             </p>
+
+            
           </div>
+
         )}
 
 
@@ -233,24 +236,37 @@ export const ReportsAnalytics: React.FC = () => {
               {/* Summary Cards */}
               <motion.div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.15 }}>
                 <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                  <p className="text-sm text-gray-500 mb-1">Total Income</p>
+                  <p className="text-sm text-gray-500 mb-1 font-medium">Total Income</p>
                   <h3 className="text-2xl font-semibold text-green-600">₦{formatAmount(data.summary.totalIncome)}</h3>
                 </div>
 
                 <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                  <p className="text-sm text-gray-500 mb-1">Total Expenses</p>
+                  <p className="text-sm text-gray-500 mb-1 font-medium">Total Expenses</p>
                   <h3 className="text-2xl font-semibold text-red-500">₦{formatAmount(data.summary.totalExpenses)}</h3>
                 </div>
 
                 <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                  <p className="text-sm text-gray-500 mb-1">Net Balance</p>
+                  <p className="text-sm text-gray-500 mb-1 font-medium">Cash Flow</p>
                   <h3 className="text-2xl font-semibold text-blue-600">₦{formatAmount(data.summary.netBalance)}</h3>
                 </div>
 
                 <div className="bg-white p-5 rounded-xl shadow-md border border-gray-100">
-                  <p className="text-sm text-gray-500 mb-1">Savings Rate</p>
-                  <h3 className="text-2xl font-semibold text-purple-600">{data.summary.savingsRate}%</h3>
+                  {Number(data.summary.budgetBalance) < 0 ? (
+                    <>
+                      <h3 className="text-sm text-gray-500 mb-1 font-medium">Overspent </h3>
+
+                      <p className="text-2xl font-semibold text-red-600">
+                        ₦{formatAmount(data.summary.overSpent)}
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <h3 className="text-sm text-gray-500 mb-1 font-medium">Budget Remaining</h3>
+                      <p className="text-2xl font-semibold text-purple-600">₦{formatAmount(data.summary.budgetBalance)}</p>
+                    </>
+                  )}
                 </div>
+
               </motion.div>
 
               {/* Budget Progress full-width (optional) */}

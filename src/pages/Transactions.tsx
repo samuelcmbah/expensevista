@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { TransactionDTO } from "../types/transaction/TransactionDTO";
 import { TransactionType } from "../types/transaction/TransactionType";
-import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
+import { Plus, Search, Pencil, Trash2, ArrowUpCircle, ArrowDownCircle, Loader2 } from "lucide-react";
 import { deleteTransaction, getFilteredPagedTransactions, } from "../services/transactionService";
 import toast from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -11,8 +11,11 @@ import TransactionDialog from "../components/Transaction/TransactionDialog";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import { handleAxiosError } from "../utilities/handleAxiosError";
 import DeleteConfirmationDialog from "../components/DeleteConfirmationDialog";
+import { formatAmount } from "../utilities/formatAmount";
 
 const Transactions: React.FC = () => {
+
+    const [loading, setLoading] = useState(true);
 
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
   const [allCategories, setAllCategories] = useState<string[]>([]);
@@ -44,8 +47,7 @@ const Transactions: React.FC = () => {
 
   // Fetch all or filtered transactions
   const fetchData = async () => {
-  toast.loading("Loading transactions...", { id: "fetch-transactions" });
-
+setLoading(true);
     try {
       function toUtcDate(dateStr: string) {
         if (!dateStr) return undefined;
@@ -78,6 +80,8 @@ const Transactions: React.FC = () => {
       }
     } catch (error) {
       handleAxiosError(error, "fetch-transactions");
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -103,20 +107,7 @@ const Transactions: React.FC = () => {
     
   };
 
-  // ✅ Safe formatAmount helper for string inputs
-  const formatAmount = (amount: string) => {
-  const num = parseFloat(amount);
 
-  if (isNaN(num)) return amount; // fallback in case of invalid number
-
-  if (num >= 1_000_000_000) return (num / 1_000_000_000).toFixed(2) + "B";
-  else{
-
-    return num.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
-  }
-
-  
-};
 
   const header = (
     <>
@@ -209,130 +200,137 @@ const Transactions: React.FC = () => {
 
   return (
     <StickyPageLayout header={header}>
-
-
-      {/* Card View (Animated) */}
-      <div className="space-y-2">
-        {transactions.length > 0 ? (
-          transactions.map((tx, index) => {
-            const isIncome = tx.type === TransactionType.Income;
-            const sign = isIncome ? "+" : "-";
-            const color = isIncome ? "text-green-500" : "text-gray-600";
-
-            return (
-              <motion.div
-                key={tx.id}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05, duration: 0.3 }}
-                className="p-4 bg-white rounded-lg shadow flex items-center justify-between gap-4"
-              >
-                {/* ✅ Transaction Type Icon */}
-                <div
-                  className={`w-8 h-8 flex items-center justify-center rounded-full ${tx.type === TransactionType.Income ? "bg-green-100" : "bg-red-100"
-                    }`}
-                >
-                  {tx.type === TransactionType.Income ? (
-                    <ArrowUpCircle className="text-green-600 w-5 h-5" />
-                  ) : (
-                    <ArrowDownCircle className="text-red-600 w-5 h-5" />
-                  )}
-                </div>
-
-                {/* ✅ Description and Details */}
-                <div className="flex-1 min-w-0">
-                  <p className="font-normal truncate max-w-[180px] sm:max-w-[250px] md:max-w-[300px]">
-                    {tx.description && tx.description.length > 40
-                      ? `${tx.description.slice(0, 37)}...`
-                      : tx.description}
-                  </p>
-                  <p className="text-sm text-gray-500 truncate">
-                    {tx.category?.categoryName || "—"} •{" "}
-                    {new Date(tx.transactionDate).toLocaleDateString()}
-                  </p>
-                </div>
-
-                {/* ✅ Amount and Actions */}
-                <div className="flex flex-col items-end gap-2 ml-3 flex-shrink-0 text-right">
-                  <p className={`font-medium ${color} text-sm sm:text-base break-all`}>
-                    {sign}₦{tx.currency !== "NGN"
-                      ? formatAmount(tx.convertedAmount)
-                      : formatAmount(tx.amount)
-                    }
-                  </p>
-                
-
-                  <div className="flex gap-3">
-                    <TransactionDialog
-                      triggerLabel={<Pencil size={18} />}
-                      initialData={tx}
-                      onSubmitSuccess={() => {
-                        // refetch updated list after editing
-                        setCurrentPage(1);
-                        fetchData();
-                      }}
-                    />
-
-                    <DeleteConfirmationDialog
-                      onConfirm={() => handleDelete(tx.id)}
-                      trigger={<button className="text-gray-600 hover:text-red-600"
-                      ><Trash2 size={18} /></button>}
-                    />
-                      
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-16 h-16 mb-4 text-gray-400"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p className="text-lg font-medium">No transactions available yet</p>
-            <p className="text-sm mt-1">
-              Start adding your income and expenses to see your transactions here.
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Pagination */}
-      <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center gap-4 text-sm text-gray-600">
-        <p>
-          Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
-          {Math.min(currentPage * recordsPerPage, totalCount)} of {totalCount}{" "}
-          transactions
-        </p>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handlePrev}
-            disabled={currentPage === 1}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Previous
-          </button>
-          <span>{currentPage} / {totalPages}</span>
-          <button
-            onClick={handleNext}
-            disabled={currentPage === totalPages}
-            className="px-3 py-1 border rounded disabled:opacity-50"
-          >
-            Next
-          </button>
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-24 text-gray-500 min-h-[300px]">
+          <Loader2 className="animate-spin h-8 w-8 text-green-600" />
+          <p className="mt-4 font-medium">Loading transactions...</p>
         </div>
-      </div>
+      ) : (
+        <>
+          {/* Card View (Animated) */}
+          <div className="space-y-2">
+            {transactions.length > 0 ? (
+              transactions.map((tx, index) => {
+                const isIncome = tx.type === TransactionType.Income;
+                const sign = isIncome ? "+" : "-";
+                const color = isIncome ? "text-green-500" : "text-gray-600";
+
+                return (
+                  <motion.div
+                    key={tx.id}
+                    initial={{ opacity: 0, y: 15 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05, duration: 0.3 }}
+                    className="p-4 bg-white rounded-lg shadow flex items-center justify-between gap-4"
+                  >
+                    {/* ✅ Transaction Type Icon */}
+                    <div
+                      className={`w-8 h-8 flex items-center justify-center rounded-full ${tx.type === TransactionType.Income ? "bg-green-100" : "bg-red-100"
+                        }`}
+                    >
+                      {tx.type === TransactionType.Income ? (
+                        <ArrowUpCircle className="text-green-600 w-5 h-5" />
+                      ) : (
+                        <ArrowDownCircle className="text-red-600 w-5 h-5" />
+                      )}
+                    </div>
+
+                    {/* ✅ Description and Details */}
+                    <div className="flex-1 min-w-0">
+                      <p className="font-normal truncate max-w-[180px] sm:max-w-[250px] md:max-w-[300px]">
+                        {tx.description && tx.description.length > 40
+                          ? `${tx.description.slice(0, 37)}...`
+                          : tx.description}
+                      </p>
+                      <p className="text-sm text-gray-500 truncate">
+                        {tx.category?.categoryName || "—"} •{" "}
+                        {new Date(tx.transactionDate).toLocaleDateString()}
+                      </p>
+                    </div>
+
+                    {/* ✅ Amount and Actions */}
+                    <div className="flex flex-col items-end gap-2 ml-3 flex-shrink-0 text-right">
+                      <p className={`font-medium ${color} text-sm sm:text-base break-all`}>
+                        {sign}₦{tx.currency !== "NGN"
+                          ? formatAmount(tx.convertedAmount)
+                          : formatAmount(tx.amount)
+                        }
+                      </p>
+
+
+                      <div className="flex gap-3">
+                        <TransactionDialog
+                          triggerLabel={<Pencil size={18} />}
+                          initialData={tx}
+                          onSubmitSuccess={() => {
+                            // refetch updated list after editing
+                            setCurrentPage(1);
+                            fetchData();
+                          }}
+                        />
+
+                        <DeleteConfirmationDialog
+                          onConfirm={() => handleDelete(tx.id)}
+                          trigger={<button className="text-gray-600 hover:text-red-600"
+                          ><Trash2 size={18} /></button>}
+                        />
+
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-16 h-16 mb-4 text-gray-400"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <p className="text-lg font-medium">No transactions available yet</p>
+                <p className="text-sm mt-1">
+                  Start adding your income and expenses to see your transactions here.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Pagination */}
+          <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center gap-4 text-sm text-gray-600">
+            <p>
+              Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
+              {Math.min(currentPage * recordsPerPage, totalCount)} of {totalCount}{" "}
+              transactions
+            </p>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handlePrev}
+                disabled={currentPage === 1}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <span>{currentPage} / {totalPages}</span>
+              <button
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 border rounded disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </>
+      )}
     </StickyPageLayout>
 
   );

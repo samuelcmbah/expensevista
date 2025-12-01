@@ -8,6 +8,8 @@ import {
   ArrowUpCircle,
   ArrowDownCircle,
   TrendingUp,
+  Loader2,
+  AlertTriangle,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -33,17 +35,17 @@ const Dashboard: React.FC = () => {
   // ✅ Fetch dashboard data when component mounts
 
   useEffect(() => {
-  const fetchExchangeRate = async () => {
-    try {
-      const response = await apiClient.get("/currency/rate?from=USD&to=NGN");
-      setUsdToNgnRate(response.data);
-    } catch (error) {
-      console.error("Failed to fetch USD → NGN rate", error);
-    }
-  };
+    const fetchExchangeRate = async () => {
+      try {
+        const response = await apiClient.get("/currency/rate?from=USD&to=NGN");
+        setUsdToNgnRate(response.data);
+      } catch (error) {
+        handleAxiosError(error, "Failed to fetch exchange rate.");
+      }
+    };
 
-  fetchExchangeRate();
-}, []);
+    fetchExchangeRate();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -60,7 +62,7 @@ const Dashboard: React.FC = () => {
           const error = dashboardResult.reason as AxiosError;
 
           handleAxiosError(error, "Failed to fetch dashboard data.");
-         
+
         }
 
 
@@ -93,9 +95,19 @@ const Dashboard: React.FC = () => {
 
 
 
+
   if (loading) {
-    return <p className="p-6 text-gray-500">Loading dashboard...</p>;
+    return (
+      <>
+        <div className="h-screen flex flex-col items-center justify-center py-24 text-gray-500 min-h-[300px]">
+          <Loader2 className="animate-spin h-6 w-6 text-green-500" />
+          <p className="text-gray-700 text-sm mt-4 font-medium">Loading dashboard...</p>
+        </div>
+
+      </>
+    );
   }
+
 
 
   const getGreeting = () => {
@@ -167,19 +179,37 @@ const Dashboard: React.FC = () => {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
         >
-          {/* Total Balance */}
+          {/* TBudget Remaining */}
           <motion.div
             className="bg-blue-50 shadow-sm rounded-xl p-4 flex items-center justify-between border border-blue-100"
             whileHover={{ scale: 1.03 }}
             transition={{ type: 'spring', stiffness: 200 }}
           >
             <div>
-              <h3 className="text-gray-600 text-sm font-medium">Budget Balance</h3>
-              <p className="text-xl font-semibold text-black-500">
-                ₦{formatAmount(dashboard?.budget.remainingAmount)}
-              </p>
+              {Number(dashboard?.budget.remainingAmount) < 0 ? (
+                <>
+                  <h3 className="text-gray-600 text-sm font-medium">Overspent</h3>
+
+                  <p className="text-xl font-semibold text-black-500">
+                    ₦{formatAmount(dashboard?.budget.overSpent)}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <h3 className="text-gray-600 text-sm font-medium">Budget Remaining</h3>
+                  <p className="text-xl font-semibold text-black-500">₦{formatAmount(dashboard?.budget.remainingAmount)}</p>
+                </>
+              )}
+
             </div>
-            <Wallet className="text-blue-500 w-8 h-8" />
+            <div>
+              {Number(dashboard?.budget.remainingAmount) < 0 ? (
+                <AlertTriangle className="text-red-500 w-8 h-8" />
+              ) : (
+                <Wallet className="text-blue-500 w-8 h-8" />
+              )}
+            </div>
+
           </motion.div>
 
           {/* Total Income */}
@@ -283,17 +313,17 @@ const Dashboard: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                 
-                    <p className={`font-medium ${tx.type === TransactionType.Income
-                      ? "text-green-500"
-                      : "text-gray-600"
-                      }`}>
-                      {tx.type === TransactionType.Income ? "+" : "-"}
-                      {tx.currency !== "NGN"
-                        ? `₦${formatAmount(tx.convertedAmount)}`
-                        : `₦${formatAmount(tx.amount)}`
-                      }
-                    </p>
+
+                  <p className={`font-medium ${tx.type === TransactionType.Income
+                    ? "text-green-500"
+                    : "text-gray-600"
+                    }`}>
+                    {tx.type === TransactionType.Income ? "+" : "-"}
+                    {tx.currency !== "NGN"
+                      ? `₦${formatAmount(tx.convertedAmount)}`
+                      : `₦${formatAmount(tx.amount)}`
+                    }
+                  </p>
 
 
                 </motion.li>

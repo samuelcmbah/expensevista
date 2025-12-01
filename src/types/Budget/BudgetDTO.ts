@@ -4,6 +4,7 @@ export interface BudgetDTO {
   budgetMonth: string;
   currentUsage: string;
   remainingAmount: string;
+  overSpent: string;
   percentageUsed: string;
   totalIncome?: string;
 }

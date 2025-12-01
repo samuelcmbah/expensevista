@@ -15,7 +15,8 @@ export interface Summary{
   totalIncome: string;
   totalExpenses: string;
   netBalance: string;
-  savingsRate: string;
+  budgetBalance: string;
+    overSpent: string;
 }
 
 export interface IncomeExpenseData {
