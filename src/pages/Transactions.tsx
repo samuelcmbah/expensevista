@@ -305,30 +305,35 @@ setLoading(true);
           </div>
 
           {/* Pagination */}
-          <div className="flex flex-col sm:flex-row justify-between items-center sm:items-center gap-4 text-sm text-gray-600">
-            <p>
-              Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
-              {Math.min(currentPage * recordsPerPage, totalCount)} of {totalCount}{" "}
-              transactions
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handlePrev}
-                disabled={currentPage === 1}
-                className="px-3 py-1 border rounded disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <span>{currentPage} / {totalPages}</span>
-              <button
-                onClick={handleNext}
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 border rounded disabled:opacity-50"
-              >
-                Next
-              </button>
+            <div className="flex flex-col sm:flex-row justify-between items-center gap-4 mt-2 pt-2 ">
+              <p className="text-sm text-gray-600">
+                Showing {(currentPage - 1) * recordsPerPage + 1} to{" "}
+                {Math.min(currentPage * recordsPerPage, totalCount)} of {totalCount} transactions
+              </p>
+
+              <div className="flex items-center gap-2 bg-gray-50 px-3 py-2 rounded-full shadow-sm ">
+                <button
+                  onClick={handlePrev}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 rounded-full text-sm font-medium hover:bg-white disabled:opacity-40"
+                >
+                  Prev
+                </button>
+
+                <span className="px-4 py-1 font-semibold">
+                  {currentPage} / {totalPages}
+                </span>
+
+                <button
+                  onClick={handleNext}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 rounded-full text-sm font-medium hover:bg-white disabled:opacity-40"
+                >
+                  Next
+                </button>
+              </div>
             </div>
-          </div>
+
         </>
       )}
     </StickyPageLayout>
