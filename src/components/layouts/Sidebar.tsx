@@ -4,6 +4,7 @@ import { List, BarChart3, Settings, LogOut, LayoutDashboard } from "lucide-react
 import { useAuth } from "../../context/AuthContext";
 
 
+
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
@@ -40,15 +41,17 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         `}
       >
         {/* Logo */}
-        <div className="flex flex-col items-center justify-center py-6 shadow-sm">
-          <img
-            src="/logo.png"
-            alt="ExpenseVista Logo"
-            className="h-10 w-10 rounded-full mb-2"
-          />
-          <h1 className="text-lg font-bold text-gray-800">ExpenseVista</h1>
-          <p className="text-xs text-gray-500">Finance Tracker</p>
+        <div className="flex flex-col items-center py-4 justify-center shadow-sm bg-gradient-to-r from-blue-50 to-blue-25">
+          <Link to="/dashboard" className="flex flex-col items-center">
+            <img
+              src="ExpenseVista-official-logo.png"
+              alt="ExpenseVista Logo"
+              className="h-12 w-auto cursor-pointer"
+            />
+            <p className="text-sm text-gray-500">Finance Tracker</p>
+          </Link>
         </div>
+
 
         {/* Nav Links */}
         <nav className="mt-4 flex flex-col space-y-1 ">
