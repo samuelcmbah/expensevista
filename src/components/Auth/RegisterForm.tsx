@@ -37,7 +37,7 @@ export default function RegisterForm({ setErrorMessages, loading, withLoading }:
       email: "",
       password: "",
     },
-    mode: "onTouched",
+    mode: "onChange",
   });
 
 
@@ -113,6 +113,9 @@ export default function RegisterForm({ setErrorMessages, loading, withLoading }:
             ${loading ? "bg-gray-100 cursor-not-allowed" : ""}
           `}
         />
+        {errors.email && (
+          <p className="text-red-600 text-sm">{errors.email?.message}</p>
+        )}
       </div>
 
       {/* PASSWORD */}

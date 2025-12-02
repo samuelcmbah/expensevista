@@ -4,9 +4,9 @@ const nameRegex = /^[A-Z][a-zA-Z]*(?:[ '-][A-Za-z][a-zA-Z]*)*$/;
 
 export const registerSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required.")
-    .regex(nameRegex, "Invalid name format. Start with a capital letter."),
+    .regex(nameRegex, "Invalid name format."),
   lastName: z.string().trim().min(1, "Last name is required.")
-    .regex(nameRegex, "Invalid name format. Start with a capital letter."),
+    .regex(nameRegex, "Invalid name format."),
 
   email: z.email("Invalid email address."),
   password: z
@@ -21,7 +21,7 @@ export const registerSchema = z.object({
 export type RegisterSchemaType = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
-  email: z.email("Invalid email."),
+  email: z.email("Invalid email adddress."),
   password: z.string().min(1, "Password is required."),
   rememberMe: z.boolean().optional(),
 });
