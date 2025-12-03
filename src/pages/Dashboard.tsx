@@ -13,10 +13,8 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import toast from "react-hot-toast";
 import StickyPageLayout from "../components/layouts/StickyPageLayout";
 import type { AxiosError } from "axios";
-import extractErrors from "../utilities/extractErrors";
 import { getDashboardData } from "../services/dashboardServices";
 import type { DashboardDTO } from "../types/dashboardDTO";
 import { formatAmount } from "../utilities/formatAmount";
@@ -40,7 +38,7 @@ const Dashboard: React.FC = () => {
         const response = await apiClient.get("/currency/rate?from=USD&to=NGN");
         setUsdToNgnRate(response.data);
       } catch (error) {
-        handleAxiosError(error, "Failed to fetch exchange rate.");
+        handleAxiosError(error, "Dashboard error");
       }
     };
 
@@ -61,7 +59,7 @@ const Dashboard: React.FC = () => {
         } else {
           const error = dashboardResult.reason as AxiosError;
 
-          handleAxiosError(error, "Failed to fetch dashboard data.");
+          handleAxiosError(error, "Dashboard error");
 
         }
 
@@ -71,20 +69,13 @@ const Dashboard: React.FC = () => {
           setTransactions(transactionResult.value.data);
         } else {
           const error = transactionResult.reason as AxiosError;
-          const messages = extractErrors(error);
+          handleAxiosError(error, "Dashboard error");
 
-          messages.forEach((msg) =>
-            toast.error(msg, { id: `txn-${msg}` }) // ✅ unique per message
-          );
         }
       } catch (error) {
-        const messages = extractErrors(error as AxiosError);
+        handleAxiosError(error, "Dashboard error");
 
-        messages.forEach((msg) =>
-          toast.error(msg, { id: `catch-${msg}` }) // ✅ prevents duplicates even in catch
-        );
 
-        console.error("❌ Unexpected error:", messages);
       } finally {
         setLoading(false);
       }
