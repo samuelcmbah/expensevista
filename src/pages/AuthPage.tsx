@@ -22,8 +22,7 @@ const [showVerificationPrompt, setShowVerificationPrompt] = useState(false);
   // Logic to determine initial form based on URL
   useEffect(() => {
     setIsLogin(location.pathname === "/login");//false for /register
-    setErrorMessages([]);     // Clear errors when URL changes
-    setShowVerificationPrompt(false);
+    
   }, [location.pathname]);
 
 
@@ -32,7 +31,8 @@ const [showVerificationPrompt, setShowVerificationPrompt] = useState(false);
     if (loading) return; // prevent switching during loading
     
     setIsLogin(mode === 'login');
-    setErrorMessages([]);
+    setErrorMessages([]);     // Clear errors when URL changes
+    setShowVerificationPrompt(false);
     navigate(mode === 'login' ? "/login" : "/register");
     
     // Note: Form fields state is  managed inside LoginForm/RegisterForm

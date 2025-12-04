@@ -17,18 +17,6 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Global response interceptor for 401
-apiClient.interceptors.response.use(
-  (response) => response, // pass through successful responses
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      // Optional: remove stored token
-      localStorage.removeItem("expensevista_token");
-      // Redirect to login page
-      window.location.href = "/login";
-    }
-    return Promise.reject(error); // Propagates the error to the code that made the request.
-  }
-);
+
 
 export default apiClient;
