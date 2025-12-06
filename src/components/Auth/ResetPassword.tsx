@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { resetPassword } from "../../services/authService";
 import { toast } from "react-hot-toast";
 import { handleAxiosError } from "../../utilities/handleAxiosError";
+import { useState } from "react";
 
 const schema = z
   .object({
@@ -16,7 +17,8 @@ const schema = z
       .regex(/[0-9]/, "Password must contain at least one number")
       .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character"),
 
-    confirmPassword: z.string()
+    confirmPassword: z.string(),
+
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     path: ["confirmPassword"],
@@ -33,8 +35,10 @@ export default function ResetPassword() {
   const token = searchParams.get("token") || "";
   const email = searchParams.get("email") || "";
 
+  const [showPassword, setShowPassword] = useState(false);
+
 // REACT HOOK FORM SETUP
-  const { register, handleSubmit, formState} = useForm<FormData>({ resolver: zodResolver(schema), mode: "onChange" });
+  const { register, handleSubmit, formState} = useForm<FormData>({ resolver: zodResolver(schema), mode: "onBlur" });
   const { errors, isSubmitting } = formState;
   const navigate = useNavigate();
 
@@ -67,7 +71,7 @@ export default function ResetPassword() {
             {...register("newPassword")}
             className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring"
             placeholder="New password"
-            type="password"
+            type={showPassword ? "text" : "password"}
           />
           {errors.newPassword && <p className="text-sm text-red-600 mt-1">{errors.newPassword.message}</p>}
         </div>
@@ -79,11 +83,22 @@ export default function ResetPassword() {
             {...register("confirmPassword")}
             className="w-full rounded-md border px-3 py-2 focus:outline-none focus:ring"
             placeholder="Confirm password"
-            type="password"
+            type={showPassword ? "text" : "password"}
           />
           {errors.confirmPassword && (
             <p className="text-sm text-red-600 mt-1">{errors.confirmPassword.message}</p>
           )}
+        </div>
+
+        <div>
+          <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            onChange={() => setShowPassword((prev) => !prev)}
+            className="h-4 w-4"
+          />
+          Show password
+        </label>
         </div>
         <div className="flex items-center justify-end">
           <button

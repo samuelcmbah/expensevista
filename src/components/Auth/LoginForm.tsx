@@ -130,9 +130,9 @@ export default function LoginForm(props: LoginFormProps) {
             type={showPassword ? "text" : "password"}
             placeholder="••••••••"
             className={`w-full border border-gray-300 outline-none rounded-lg px-4 py-2 pr-10 
-        focus:ring-2 focus:ring-green-500
-        ${props.loading ? "bg-gray-100 cursor-not-allowed" : ""}
-      `}
+              focus:ring-2 focus:ring-green-500
+              ${props.loading ? "bg-gray-100 cursor-not-allowed" : ""}
+              `}
             aria-invalid={!!errors.password}
           />
 
