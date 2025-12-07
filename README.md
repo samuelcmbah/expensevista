@@ -1,5 +1,4 @@
 
-```markdown
 # 🚀 ExpenseVista Frontend
 
 A modern, responsive expense tracking dashboard built with **React**, **TypeScript**, and **Tailwind CSS**. This is the client-side application for the ExpenseVista full-stack project.
@@ -64,7 +63,7 @@ src/
  ├── services/       # API call definitions
  ├── types/          # TypeScript interfaces
  └── utilities/      # Formatting helpers
-
+```
 
 ## ⚙️ Installation & Setup
 ### Prerequisites
