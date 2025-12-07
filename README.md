@@ -1,7 +1,7 @@
 
 # 🚀 ExpenseVista Frontend
 
-A modern, responsive Personal Finance Tracker built with **React**, **TypeScript**, and **Tailwind CSS**. This is the client-side application for the ExpenseVista full-stack project.
+A modern, responsive Personal Finance Tracking Platform built with **React**, **TypeScript**, and **Tailwind CSS**. This is the client-side application for the ExpenseVista full-stack project.
 
 [![Status](https://img.shields.io/badge/status-active-success)](https://expensevista-frontend.vercel.app/)
 [![Backend Repo](https://img.shields.io/badge/backend-.NET%208-purple)](https://github.com/samuelcmbah/ExpenseVista.API.git)
