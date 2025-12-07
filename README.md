@@ -89,7 +89,10 @@ Create a .env file in the root directory:
 ```env
 VITE_API_URL=https://localhost:7000/api
 ```
-(Replace with the live backend URL if not running locally)
+Replace with the live backend URL if not running locally
+```env
+VITE_API_URL=https://expensevista-api.onrender.com/api
+```
 
 4. Run the Development Server
 ```bash
