@@ -1,14 +1,22 @@
 import { Navigate, Outlet } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { Loader2 } from "lucide-react";
 
 export default function ProtectedRoute() {
-  const { token, loading } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div className="text-center mt-10 text-gray-500">Loading...</div>;
+    return (
+    <>
+      <div className="h-screen flex flex-col items-center justify-center py-24 text-gray-500 min-h-[300px]">
+        <Loader2 className="animate-spin h-6 w-6 text-green-500" />
+        <p className="text-gray-700 text-sm mt-4 font-medium">Loading...</p>
+      </div>
+    </>
+    );
   }
 
-  if (!token) {
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
 

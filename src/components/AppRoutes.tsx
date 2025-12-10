@@ -32,7 +32,6 @@ export default function AppRoutes() {
       {/* Protected routes */}
       <Route element={<ProtectedRoute />}>
         <Route path="/" element={<MainLayout />}>
-          <Route index element={<Welcome />} />   {/* <-- this makes "/" load Welcome */}
           <Route path="welcome" element={<Welcome />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="transactions" element={<Transactions />} />

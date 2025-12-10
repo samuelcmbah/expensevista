@@ -1,18 +1,15 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { getToken, getUser, setTokenStorage, setUserStorage, clearTokenStorage, clearUserStorage } from "../services/handleJWT";
+import { getUser, setUserStorage, clearUserStorage } from "../services/handleJWT";
 import toast from "react-hot-toast";
+import { getAccessToken, setAccessToken } from "../utilities/tokenMemory";
+import apiClient from "../services/apiClient";
+import type { User } from "../types/auth/user";
+import { registerLogout } from "../utilities/authEvents";
 
-interface User {
-  id: string;
-  firstName?: string;
-  lastName?: string;
-  email: string;
-}
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
   loading: boolean;
   login: (token: string, user: User, remember?: boolean) => void;
@@ -22,43 +19,83 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(getUser());
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // ✅ Load token/user on app start
+
+   // On mount: attempt refresh using HttpOnly cookie ONLY if user exists in storage
   useEffect(() => {
-    const savedToken = getToken();
-    const savedUser = getUser();
+    const initializeAuth = async () => {
+      const storedUser = getUser();
+    const accessToken = getAccessToken();
 
-    if (savedToken) setToken(savedToken);
-    if (savedUser) setUser(savedUser);
+    // ❗ Do NOT try refresh if there is no access token
+    if (!storedUser || !accessToken) {
+      setLoading(false);
+      return;
+    }
 
-    setLoading(false);
+      try {
+        const refreshRes = await apiClient.post("/auth/refresh");
+        const newAccessToken = refreshRes.data.accessToken;
+
+        if (newAccessToken) {
+          setAccessToken(newAccessToken);
+          setUser(storedUser); // use stored user data
+        } else {
+          throw new Error("No access token returned");
+        }
+      } catch (error) {
+        console.error("Refresh failed:", error);
+        logout();
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
   }, []);
 
-  // ✅ login: store token/user and update state
-  const login = (token: string, user: User, remember = false) => {
-    setToken(token);
+
+  //login: store acesstoken in memory and user in localstorage  and updates user state
+  const login = (accessToken: string, user: User, remember = false) => {
+    setAccessToken(accessToken);
     setUser(user);
-    setTokenStorage(token, remember);
     setUserStorage(user, remember);
   };
 
   // ✅ logout: clear everything and redirect
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    clearTokenStorage();
+  const logout = async () => {
+    try {
+      //revoke refresh token server-side
+      await apiClient.post("/auth/logout");
+    } catch (err) {
+      // ignore network errors on logout
+      console.error("Logout failed:", err);
+    }
+
+    setAccessToken(null);
     clearUserStorage();
+    setUser(null);
     toast.success("You’ve been logged out");
     navigate("/login");
   };
 
+  useEffect(() => {
+    registerLogout(logout);
+  }, []);
+
+
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated: !!token, loading, login, logout }}
+      value={{
+        user,
+        isAuthenticated: !!user,
+        loading,
+        login,
+        logout
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -51,10 +51,9 @@ export default function LoginForm(props: LoginFormProps) {
     await props.withLoading(async () => {
       try {
         const data = await loginUser(values);
-
-        const token =
-          data?.token ||
-          data?.accessToken ||
+        console.log("Login response data:", data);
+        const accessToken =
+          data?.token.accessToken ||
           null;
 
         const user =
@@ -62,9 +61,9 @@ export default function LoginForm(props: LoginFormProps) {
           data?.applicationUser ||
           null;
 
-        if (!token) throw new Error("No token received.");
+        if (!accessToken || !user) throw new Error("No token received.");
 
-        login(token, user, values.rememberMe);
+        login(accessToken, user, values.rememberMe);
 
         navigate("/welcome");
       } catch (error) {

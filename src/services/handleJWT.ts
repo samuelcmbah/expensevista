@@ -1,16 +1,3 @@
-// src/features/security/utils/HandleJWT.ts
-export const getToken = (): string | null =>
-  localStorage.getItem("expensevista_token") ?? sessionStorage.getItem("expensevista_token");
-
-export const setTokenStorage = (token: string, remember: boolean) => {
-  if (remember) localStorage.setItem("expensevista_token", token);
-  else sessionStorage.setItem("expensevista_token", token);
-};
-
-export const clearTokenStorage = () => {
-  localStorage.removeItem("expensevista_token");
-  sessionStorage.removeItem("expensevista_token");
-};
 
 export const getUser = (): any | null => {
   const raw =
