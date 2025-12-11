@@ -2,9 +2,9 @@
 
 A modern, responsive Personal Finance Tracking Platform built with **React**, **TypeScript**, and **Tailwind CSS**. This is the client-side application for the ExpenseVista full-stack project.
 
-[![Status](https://img-shields.io/badge/status-active-success)](https://expensevista-frontend.vercel.app/)
-[![Backend Repo](https://img-shields.io/badge/backend-.NET%208-purple)](https://github.com/samuelcmbah/ExpenseVista.API.git)
-[![License](https://img-shields.io/badge/license-MIT-green)](LICENSE)
+[![Status](https://img.shields.io/badge/status-active-success)](https://expensevista-frontend.vercel.app/)
+[![Backend Repo](https://img.shields.io/badge/backend-.NET%208-purple)](https://github.com/samuelcmbah/ExpenseVista.API.git)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 ---
 
@@ -52,9 +52,6 @@ ExpenseVista helps users track expenses, analyze spending patterns, and visualiz
 ## 🔐 Authentication Flow
 
 To provide a secure and persistent user session, this application implements a JWT Access + Refresh Token strategy.
-
-![Authentication Flow Diagram](https://i.imgur.com/your-diagram-image.png)
-*You can easily create a diagram like this using a tool like [Mermaid.js](https://mermaid.js.org/intro/) or [draw.io](https://app.diagrams.net/) to visually represent the flow.*
 
 The process is managed by a custom Axios instance and React Context:
 
