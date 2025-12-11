@@ -33,11 +33,14 @@ api.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // If the request that failed is the refresh token or logout request, do not retry.
+    // If the request that failed is the refresh, login or logout request, do not retry.
     if (originalRequest.url?.includes("/auth/refresh") && error.response?.status === 401) {
       return Promise.reject(error);
     }
     if(originalRequest.url?.includes("/auth/logout") && error.response?.status === 401){
+      return Promise.reject(error);
+    }
+     if(originalRequest.url?.includes("/auth/login") && error.response?.status === 401){
       return Promise.reject(error);
     }
 
