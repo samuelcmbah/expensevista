@@ -67,7 +67,7 @@ export default function LoginForm(props: LoginFormProps) {
         navigate("/welcome");
       } catch (error) {
         let messages = ["Login failed, try again later"];
-
+        console.error(axios.isAxiosError(error));
         if (axios.isAxiosError(error)) {
           const backendMessage = error.response?.data?.message;
 
