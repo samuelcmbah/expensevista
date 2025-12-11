@@ -14,5 +14,4 @@ export const createCategory = async (data: CreateCategoryDTO): Promise<CategoryD
 
 export const deleteCategory = async (id: number): Promise<void> => {
   await apiClient.delete(`/categories/${id}`);
-  console.log(`✅ Deleted category with id: ${id}`);
 }

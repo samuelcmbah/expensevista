@@ -78,7 +78,6 @@ api.interceptors.response.use(
           
           triggerLogout();
         }
-        console.log("message for refresh error", refreshError)
 
         return Promise.reject(refreshError);
       } finally {

@@ -51,7 +51,6 @@ export default function LoginForm(props: LoginFormProps) {
     await props.withLoading(async () => {
       try {
         const data = await loginUser(values);
-        console.log("Login response data:", data);
         const accessToken =
           data?.token.accessToken ||
           null;

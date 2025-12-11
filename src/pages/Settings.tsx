@@ -103,7 +103,6 @@ const loadCategories = async () => {
       if (!budgetId) {
         // 💡 No budget yet → create one
         toast.loading("Creating monthly budget...", { id: toastId });
-        console.log( `this is budgetId ${budgetId}`)
         await createMonthlyBudget({
           monthlyLimit: monthlyBudget
         });

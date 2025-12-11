@@ -39,7 +39,6 @@ export const getTransactionById = async (id: number): Promise<TransactionDTO> =>
 
 export const updateTransaction = async (id: number, data: EditTransactionDTO): Promise<TransactionDTO> => {
   const payload = { ...data, amount: parseFloat(data.amount) };
-  console.log(`🔄 Updating transaction with id: ${id}`, payload);
   const response = await apiClient.put(`/transactions/${id}`, payload);
   return response.data;
 };
@@ -47,5 +46,4 @@ export const updateTransaction = async (id: number, data: EditTransactionDTO): P
 
 export const deleteTransaction = async (id: number): Promise<void> => {
   await apiClient.delete(`/transactions/${id}`);
-  console.log(`✅ Deleted transaction with id: ${id}`);
 };
