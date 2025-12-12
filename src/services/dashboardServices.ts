@@ -1,8 +1,8 @@
 import type { DashboardDTO } from "../types/dashboardDTO";
-import apiClient from "./apiClient";
+import { privateApiClient } from "./apiClient";
 
 export const getDashboardData = async (): Promise<DashboardDTO> => {
 
-  const response = await apiClient.get<DashboardDTO>("/dashboard");
+  const response = await privateApiClient.get<DashboardDTO>("/dashboard");
   return response.data;
 };

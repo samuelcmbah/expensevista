@@ -18,8 +18,10 @@ import type { AxiosError } from "axios";
 import { getDashboardData } from "../services/dashboardServices";
 import type { DashboardDTO } from "../types/dashboardDTO";
 import { formatAmount } from "../utilities/formatAmount";
-import apiClient from "../services/apiClient";
+import { privateApiClient } from "../services/apiClient";
 import { handleAxiosError } from "../utilities/handleAxiosError";
+
+const DASHBOARD_CACHE_KEY = "dashboard_exchange_rate";
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
@@ -28,17 +30,27 @@ const Dashboard: React.FC = () => {
   const [dashboard, setDashboard] = useState<DashboardDTO | null>(null);
   const [transactions, setTransactions] = useState<TransactionDTO[]>([]);
   const [loading, setLoading] = useState(true);
-  const [usdToNgnRate, setUsdToNgnRate] = useState<string | null>(null);
-
+ const [usdToNgnRate, setUsdToNgnRate] = useState<string | null>(() => {
+    // Attempt to get the cached rate on initial load
+    try {
+      const cachedRate = localStorage.getItem(DASHBOARD_CACHE_KEY);
+      return cachedRate ? JSON.parse(cachedRate).rate : null;
+    } catch (error) {
+      console.error("Failed to parse cached exchange rate:", error);
+      return null;
+    }
+  });
   // ✅ Fetch dashboard data when component mounts
 
   useEffect(() => {
     const fetchExchangeRate = async () => {
       try {
-        const response = await apiClient.get("/currency/rate?from=USD&to=NGN");
+        const response = await privateApiClient.get("/currency/rate?from=USD&to=NGN");
         setUsdToNgnRate(response.data);
+        // Cache the successful response
+        localStorage.setItem(DASHBOARD_CACHE_KEY, JSON.stringify({ rate: response.data, timestamp: new Date().getTime() }));
       } catch (error) {
-        handleAxiosError(error, "Dashboard error");
+        console.error("Failed to fetch exchange rate:", error);
       }
     };
 

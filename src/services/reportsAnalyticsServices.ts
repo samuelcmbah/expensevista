@@ -1,8 +1,8 @@
 import type { FinancialData } from "../types/analytics";
-import apiClient from "./apiClient";
+import { privateApiClient } from "./apiClient";
 
 export const getAnalyticsReport = async (timePeriod: string): Promise<FinancialData> => {
-  const response = await apiClient.get<FinancialData>("/analytics", {
+  const response = await privateApiClient.get<FinancialData>("/analytics", {
     params: { period: timePeriod },
   });
   return response.data;
