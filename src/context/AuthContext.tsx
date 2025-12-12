@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from "
 import { useNavigate } from "react-router-dom";
 import { getUser, setUserStorage, clearUserStorage } from "../services/handleJWT";
 import toast from "react-hot-toast";
-import { getAccessToken, setAccessToken } from "../utilities/tokenMemory";
+import { setAccessToken } from "../utilities/tokenMemory";
 import { privateApiClient, publicApiClient } from "../services/apiClient";
 import type { User } from "../types/auth/user";
 import { registerLogout } from "../utilities/authEvents";
