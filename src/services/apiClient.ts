@@ -2,13 +2,24 @@ import axios, { AxiosError } from "axios";
 import { getAccessToken, setAccessToken } from "../utilities/tokenMemory";
 import { triggerLogout } from "../utilities/authEvents";
 
-const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
+
+const baseURL = import.meta.env.VITE_API_URL;
+
+// 1. PUBLIC INSTANCE - For login, register, forgot-password, etc.
+// No interceptors are needed here.
+export const publicApiClient = axios.create({
+  baseURL: baseURL,
+  withCredentials: true,
+});
+// 2. PRIVATE INSTANCE - For all authenticated API calls.
+// This instance will have the interceptors to handle token logic.
+export const privateApiClient  = axios.create({
+  baseURL: baseURL,
   withCredentials: true // Required to send HttpOnly cookies
 });
 
-// Attach access token to every request
-api.interceptors.request.use((config) => {
+// Attach access token to every request made with privateApiClient
+privateApiClient .interceptors.request.use((config) => {
   const token = getAccessToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
@@ -27,22 +38,18 @@ const processQueue = (error: any, token: string | null) => {
   failedQueue = [];
 };
 
-api.interceptors.response.use(
+
+privateApiClient.interceptors.response.use(
   (res) => res,//allow succesful response
 
   async (error) => {
     const originalRequest = error.config;
 
-    // If the request that failed is the refresh, login or logout request, do not retry.
-    if (originalRequest.url?.includes("/auth/refresh") && error.response?.status === 401) {
-      return Promise.reject(error);
-    }
+    // if the request was to logout, just let it fail, dont try to refresh
     if(originalRequest.url?.includes("/auth/logout") && error.response?.status === 401){
       return Promise.reject(error);
     }
-     if(originalRequest.url?.includes("/auth/login") && error.response?.status === 401){
-      return Promise.reject(error);
-    }
+  
 
    // Handle expired access token
     if (error.response?.status === 401 && !originalRequest._retry) {
@@ -54,7 +61,7 @@ api.interceptors.response.use(
           failedQueue.push({ resolve, reject });
         }).then((token) => {
           originalRequest.headers.Authorization = `Bearer ${token}`;
-          return api(originalRequest);
+          return privateApiClient(originalRequest);
         });
       }
     
@@ -62,7 +69,7 @@ api.interceptors.response.use(
       isRefreshing = true;
       try {
         // Attempt to refresh (cookie sent automatically)
-        const { data } = await api.post("/auth/refresh");
+        const { data } = await publicApiClient.post("/auth/refresh");
         const newAccessToken = data.accessToken;
 
         setAccessToken(newAccessToken);
@@ -70,7 +77,7 @@ api.interceptors.response.use(
 
         // Retry original request
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return api(originalRequest);
+        return privateApiClient(originalRequest);
       } catch (refreshError: AxiosError | any) {
         // Refresh failed (token expired/revoked)
         refreshError.response.data.message = "Session expired. Please log in again.";
@@ -91,5 +98,3 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-
-export default api;

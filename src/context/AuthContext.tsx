@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { getUser, setUserStorage, clearUserStorage } from "../services/handleJWT";
 import toast from "react-hot-toast";
 import { getAccessToken, setAccessToken } from "../utilities/tokenMemory";
-import apiClient from "../services/apiClient";
+import { privateApiClient, publicApiClient } from "../services/apiClient";
 import type { User } from "../types/auth/user";
 import { registerLogout } from "../utilities/authEvents";
 
@@ -19,36 +19,40 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(getUser());
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
 
-   // On mount: attempt refresh using HttpOnly cookie ONLY if user exists in storage
+  // On mount: attempt refresh using HttpOnly cookie ONLY if user exists in storage
   useEffect(() => {
     const initializeAuth = async () => {
       const storedUser = getUser();
-    const accessToken = getAccessToken();
 
-    // ❗ Do NOT try refresh if there is no access token
-    if (!storedUser || !accessToken) {
-      setLoading(false);
-      return;
-    }
+      //If no user is stored, they are not logged in.
+      if (!storedUser) {
+        setLoading(false);
+        return;
+      }
 
       try {
-        const refreshRes = await apiClient.post("/auth/refresh");
+        const refreshRes = await publicApiClient.post("/auth/refresh");
         const newAccessToken = refreshRes.data.accessToken;
 
         if (newAccessToken) {
           setAccessToken(newAccessToken);
-          setUser(storedUser); // use stored user data
+          setUser(storedUser); 
         } else {
           throw new Error("No access token returned");
         }
       } catch (error) {
         console.error("Refresh failed:", error);
-        logout();
+        // Use a simplified logout to avoid API calls that might also fail
+        setAccessToken(null);
+        clearUserStorage();
+        setUser(null);
+        toast.error("Session expired. Please log in again.");
+        navigate("/login");
       } finally {
         setLoading(false);
       }
@@ -65,11 +69,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUserStorage(user, remember);
   };
 
-  // ✅ logout: clear everything and redirect
+  //clear everything and redirect
   const logout = async () => {
     try {
       //revoke refresh token server-side
-      await apiClient.post("/auth/logout");
+      await privateApiClient.post("/auth/logout");
     } catch (err) {
       // ignore network errors on logout
       console.error("Logout failed:", err);
