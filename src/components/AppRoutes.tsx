@@ -10,10 +10,11 @@ import VerifyEmailSent from "./Auth/VerifyEmailSent";
 import VerifyEmail from "./Auth/VerifyEmail";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
-import { ExpenseVistaLogo } from "./ExpenseVistaLogo";
 import ForgotPassword from "./Auth/ForgotPassword";
 import ResetPassword from "./Auth/ResetPassword";
 import GoogleCallback from "./Auth/GoogleCallback";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
+import TermsOfService from "../pages/TermsOfService ";
 
 
 export default function AppRoutes() {
@@ -28,7 +29,8 @@ export default function AppRoutes() {
       <Route path="/verify-email" element={<VerifyEmail />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/logo" element={<ExpenseVistaLogo />} />
+      <Route path="/privacy" element={<PrivacyPolicy />} />
+      <Route path="/terms" element={<TermsOfService />} />
 
 
       {/* Protected routes */}

@@ -72,6 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   //clear everything and redirect
   const logout = async () => {
     try {
+      toast.loading("Logging out...", { id: "logout" });
       //revoke refresh token server-side
       await privateApiClient.post("/auth/logout");
     } catch (err) {
@@ -82,7 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAccessToken(null);
     clearUserStorage();
     setUser(null);
-    toast.success("You’ve been logged out");
+    toast.success("You’ve been logged out", { id: "logout" });
     navigate("/login");
   };
 
