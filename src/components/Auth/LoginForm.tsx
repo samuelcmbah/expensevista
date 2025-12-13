@@ -10,13 +10,14 @@ import { type LoginSchemaType, loginSchema } from "../../schemas/auth";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { EyeOff, Eye } from "lucide-react";
+import toast from "react-hot-toast";
 
 // Assuming AuthFormProps for shared props like setting errors/switching modes
 interface LoginFormProps {
   setErrorMessages: (messages: string[]) => void;
   loading: boolean;
   setShowVerificationPrompt: (val: boolean) => void;
-    showVerificationPrompt: boolean; 
+  showVerificationPrompt: boolean;
 
   onResendVerification?: (email: string) => void;
   withLoading: <T>(callback: () => Promise<T>) => Promise<T | void>;
@@ -63,6 +64,7 @@ export default function LoginForm(props: LoginFormProps) {
         if (!accessToken || !user) throw new Error("No token received.");
 
         login(accessToken, user, values.rememberMe);
+        toast.success("Successfully logged in!");
 
         navigate("/welcome");
       } catch (error) {

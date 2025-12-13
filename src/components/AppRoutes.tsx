@@ -13,6 +13,7 @@ import Register from "../pages/Register";
 import { ExpenseVistaLogo } from "./ExpenseVistaLogo";
 import ForgotPassword from "./Auth/ForgotPassword";
 import ResetPassword from "./Auth/ResetPassword";
+import GoogleCallback from "./Auth/GoogleCallback";
 
 
 export default function AppRoutes() {
@@ -21,6 +22,7 @@ export default function AppRoutes() {
     <Routes>
       {/* Public routes */}
       <Route path="/login" element={<Login />} />
+      <Route path="/auth/google/callback" element={<GoogleCallback />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-email-sent" element={<VerifyEmailSent />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
