@@ -18,7 +18,7 @@ A modern, responsive Personal Finance Tracking Platform built with **React**, **
 
 ## 📘 Overview
 
-ExpenseVista helps users track expenses, analyze spending patterns, and visualize their financial activity. This frontend provides a seamless user experience with interactive charts, real-time feedback, and a highly secure, persistent authentication flow.
+This repository contains the client-side application for ExpenseVista. It provides a rich user interface for expense tracking, budget management, and financial analysis. The application is built as a Single-Page Application (SPA) and communicates with the secure [ExpenseVista API](https://github.com/samuelcmbah/expensevista-api) for all data operations.
 
 **Live Demo:** [https://expensevista-frontend.vercel.app/](https://expensevista-frontend.vercel.app/)
 
@@ -45,32 +45,38 @@ ExpenseVista helps users track expenses, analyze spending patterns, and visualiz
 *   **Transaction Management:** Intuitive forms to add, edit, and delete transactions.
 *   **Smart Filtering:** Filter financial data by date, category, or transaction type.
 *   **Responsive Design:** Fully optimized for desktop, tablet, and mobile devices.
-*   **Advanced & Secure Authentication:** A robust implementation using **JWT Refresh Token Rotation**. Features include secure `HttpOnly` cookie storage, automatic session renewal, and instant server-side logout for a seamless and secure user experience.
+*   **Secure Authentication:**
+    *   Full support for email/password registration and login.
+    *   **Seamless "Sign in with Google"** integration using OAuth 2.0.
+    *   Automatic and silent token refresh for an uninterrupted user session.
 
 ---
 
 ## 🔐 Authentication Flow
 
-To provide a secure and persistent user session, this application implements a JWT Access + Refresh Token strategy.
+The frontend implements a robust authentication system designed to work seamlessly with the secure backend. To provide a secure and persistent user session, this application implements a JWT Access + Refresh Token strategy.
 
 The process is managed by a custom Axios instance and React Context:
 
-1.  **Login:** Upon successful login, the API returns a short-lived **Access Token** and a long-lived **Refresh Token**.
-    *   The Access Token is stored in memory.
-    *   The Refresh Token is stored in a secure, `HttpOnly` cookie, making it inaccessible to client-side JavaScript.
-2.  **Authenticated Requests:** A global Axios interceptor automatically attaches the Access Token to the `Authorization` header of every outgoing request.
-3.  **Handling Expiration:** If an API request fails with a `401 Unauthorized` status, the interceptor catches the error.
-4.  **Silent Refresh:** The interceptor pauses all other pending API calls and sends a request to the `/auth/refresh` endpoint (the browser automatically includes the `HttpOnly` refresh token cookie).
-5.  **Session Renewal:** The backend validates the refresh token, revokes it, and issues a *new* pair of access and refresh tokens (Token Rotation).
-6.  **Retry & Resume:** The interceptor updates the stored Access Token and automatically retries the original failed request. All queued requests are then processed. The user experiences no interruption.
+*   **Auth Context:** A global `AuthContext` provides the authentication state (`user`, `isAuthenticated`) to the entire application, enabling components to reactively render based on the user's status.
+*   **Token Management:**
+    *   The JWT **Access Token** is stored securely in-memory and attached to all private API requests via an Axios interceptor.
+    *   The **Refresh Token** is handled automatically via the `HttpOnly` cookie set by the backend.
+*   **Google Login (`/auth/google/callback`):**
+    *   A dedicated callback component handles the redirect from Google.
+    *   It extracts the `authorization_code` from the URL and sends it to the backend's `/api/auth/google-login` endpoint.
+    *   Upon a successful response, it uses the `AuthContext`'s `login` function to create the user session, providing a unified login experience.
+*   **Automatic Refresh:** An Axios response interceptor automatically catches `401 Unauthorized` errors. It then silently calls the `/api/auth/refresh` endpoint to get a new access token and retries the original failed request without interrupting the user.
 
 ---
 
 ## ⚙️ Installation & Setup
 
 ### Prerequisites
-*   Node.js (v18+)
+*   [Node.js](https://nodejs.org/) (v18 or later)
 *   NPM or Yarn
+*   *   A running instance of the [ExpenseVista API](https://github.com/samuelcmbah/expensevista-api).
+
 
 ### Steps
 
@@ -90,20 +96,27 @@ The process is managed by a custom Axios instance and React Context:
     ```bash
     cp .env.example .env.local
     ```
-    Then, update the `VITE_API_URL` in `.env.local` to point to your backend.
+Copy the following structure and replace the placeholder values:
     
-    **For local development:**
     ```env
-    VITE_API_URL=https://localhost:7000/api
+      # The base URL for your running backend API
+      VITE_API_URL="https://localhost:7000/api"
+      
+      **For the live backend:**
+      VITE_API_URL=https://expensevista-api.onrender.com/api
+
+      # Your Google Client ID (from Google Cloud Console)
+      VITE_GOOGLE_CLIENT_ID="PASTE_YOUR_GOOGLE_CLIENT_ID_HERE"
+
+      # The full redirect URI for Google OAuth (must match Google Console and backend config)
+      VITE_GOOGLE_REDIRECT_URI="http://localhost:5000/auth/google/callback"](url)
     ```
-    **For the live backend:**
-    ```env
-    VITE_API_URL=https://expensevista-api.onrender.com/api
-    ```
+   Note: The .gitignore file is configured to ignore .env.local, so your local secrets will not be committed to the repository.
 
 4.  **Run the Development Server:**
     ```bash
     npm run dev
+    The application will now be running on `http://localhost:5000`.
     ```
     
 
