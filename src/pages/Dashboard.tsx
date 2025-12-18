@@ -68,6 +68,7 @@ const Dashboard: React.FC = () => {
         // ✅ Handle Budget Result
         if (dashboardResult.status === "fulfilled") {
           setDashboard(dashboardResult.value);
+          console.log("Dashboard data:", dashboardResult.value);
         } else {
           const error = dashboardResult.reason as AxiosError;
 
@@ -251,7 +252,7 @@ const Dashboard: React.FC = () => {
             <div>
               <h4 className="text-gray-600 text-sm font-medium">Budget Status</h4>
               <p className="text-xl font-semibold text-gray-600">
-                {dashboard?.budget.percentageUsed ?? 0.00}%
+                {(Number(dashboard?.budget.percentageUsed) * 100).toFixed(2)}%
               </p>
               <p className="text-sm text-gray-700 mt-1 truncate">
                 of ₦{formatAmount(dashboard?.budget.monthlyLimit)}

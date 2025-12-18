@@ -288,7 +288,7 @@ export const ReportsAnalytics: React.FC = () => {
                         style={{ width: `${Math.min(budgetProgress.percentage, 100)}%` }}
                       />
                       <span className="absolute top-0 right-0 -mt-5 text-sm font-medium text-gray-700">
-                        {budgetProgress.percentage}%
+                        {Number(budgetProgress.percentage) * 100}%
                       </span>
                     </div>
 
