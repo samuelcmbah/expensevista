@@ -1,6 +1,6 @@
 // src/components/Sidebar.tsx
 import { Link, useLocation } from "react-router-dom";
-import { List, BarChart3, Settings, LogOut, LayoutDashboard } from "lucide-react";
+import { List, BarChart3, Settings, LogOut, LayoutDashboard, Download } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
 
@@ -18,6 +18,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     { name: "Dashboard", path: "/dashboard", icon: <LayoutDashboard size={18} /> },
     { name: "Transactions", path: "/transactions", icon: <List size={18} /> },
     { name: "Reports", path: "/reports", icon: <BarChart3 size={18} /> },
+    { name: "Export Reports", path: "/report-export", icon: <Download size={18} /> },
     { name: "Settings", path: "/settings", icon: <Settings size={18} /> },
   ];
 

@@ -15,6 +15,7 @@ import ResetPassword from "./Auth/ResetPassword";
 import GoogleCallback from "./Auth/GoogleCallback";
 import PrivacyPolicy from "../pages/PrivacyPolicy";
 import TermsOfService from "../pages/TermsOfService ";
+import ReportExport from "../pages/ReportExport";
 
 
 export default function AppRoutes() {
@@ -40,6 +41,7 @@ export default function AppRoutes() {
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="transactions" element={<Transactions />} />
           <Route path="reports" element={<ReportsAnalytics />} />
+          <Route path="/report-export" element={<ReportExport />} />
           <Route path="settings" element={<Settings />} />
         </Route>
       </Route>
