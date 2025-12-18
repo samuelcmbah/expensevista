@@ -36,7 +36,6 @@ const Dashboard: React.FC = () => {
       const cachedRate = localStorage.getItem(DASHBOARD_CACHE_KEY);
       return cachedRate ? JSON.parse(cachedRate).rate : null;
     } catch (error) {
-      console.error("Failed to parse cached exchange rate:", error);
       return null;
     }
   });
