@@ -2,7 +2,7 @@
 
 A modern, responsive Personal Finance Tracking Platform built with **React**, **TypeScript**, and **Tailwind CSS**. This is the client-side application for the ExpenseVista full-stack project.
 
-[![Status](https://img.shields.io/badge/status-active-success)](https://expensevista-frontend.vercel.app/)
+[![Status](https://img.shields.io/badge/status-active-success)](https://expensevista.samuelcmbah.com.ng/)
 [![Backend Repo](https://img.shields.io/badge/backend-.NET%208-purple)](https://github.com/samuelcmbah/ExpenseVista.API.git)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -20,7 +20,7 @@ A modern, responsive Personal Finance Tracking Platform built with **React**, **
 
 This repository contains the client-side application for ExpenseVista. It provides a rich user interface for expense tracking, budget management, and financial analysis. The application is built as a Single-Page Application (SPA) and communicates with the secure [ExpenseVista API](https://github.com/samuelcmbah/expensevista-api) for all data operations.
 
-**Live Demo:** [https://expensevista-frontend.vercel.app/](https://expensevista-frontend.vercel.app/)
+**Live Demo:** [https://expensevista-frontend.vercel.app/](https://expensevista.samuelcmbah.com.ng/)
 
 ---
 
