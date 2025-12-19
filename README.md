@@ -2,7 +2,7 @@
 
 A modern, responsive Personal Finance Tracking Platform built with **React**, **TypeScript**, and **Tailwind CSS**. This is the client-side application for the ExpenseVista full-stack project.
 
-[![Status](https://img.shields.io/badge/status-active-success)](https://expensevista-frontend.vercel.app/)
+[![Status](https://img.shields.io/badge/status-active-success)](https://expensevista.samuelcmbah.com.ng/)
 [![Backend Repo](https://img.shields.io/badge/backend-.NET%208-purple)](https://github.com/samuelcmbah/ExpenseVista.API.git)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -22,7 +22,7 @@ A modern, responsive Personal Finance Tracking Platform built with **React**, **
 
 This repository contains the client-side application for ExpenseVista. It provides a rich user interface for expense tracking, budget management, and financial analysis. The application is built as a Single-Page Application (SPA) and communicates with the secure [ExpenseVista API](https://github.com/samuelcmbah/expensevista-api) for all data operations.
 
-**Live Demo:** [https://expensevista-frontend.vercel.app/](https://expensevista-frontend.vercel.app/)
+**Live Demo:** [https://expensevista-frontend.vercel.app/](https://expensevista.samuelcmbah.com.ng/)
 
 ---
 
@@ -52,6 +52,17 @@ This repository contains the client-side application for ExpenseVista. It provid
     *   **Seamless "Sign in with Google"** integration using OAuth 2.0.
     *   Automatic and silent token refresh for an uninterrupted user session.
 
+### ✨ Feature Spotlight: Full-Stack Report Export
+
+A feature allowing users to download their financial analytics as a multi-sheet Excel report.
+
+*   **UI:** Built with a clean, card-based interface using **ShadCN UI** and **Tailwind CSS** for report configuration.
+*   **Feedback:** Provides asynchronous user feedback with a loading button and **React Hot Toast** notifications.
+*   **Full-Stack Flow:**
+    1.  React client requests the file from the API using **Axios** with `responseType: 'blob'`.
+    2.  The **.NET API** generates the `.xlsx` file in-memory using the **ClosedXML** library.
+    3.  The frontend receives the binary `blob` and uses `window.URL.createObjectURL()` to create a temporary link, triggering a secure, client-side download.
+    
 ---
 
 ## 🔐 Authentication Flow
