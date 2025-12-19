@@ -10,9 +10,11 @@ A modern, responsive Personal Finance Tracking Platform built with **React**, **
 
 ## 📸 Screenshots
 
-| Dashboard | Analytics |
+| **Dashboard** | **Analytics** |
 | :---: | :---: |
 | ![Dashboard Screenshot](./screenshots/dashboard.png) | ![Analytics Screenshot](./screenshots/analytics.png) |
+| **Transactions** | **Report Export** |
+| ![Transactions Screenshot](./screenshots/transaction.png) | ![Report Export Screenshot](./screenshots/report-export.png) |
 
 ---
 
