@@ -251,7 +251,7 @@ const Dashboard: React.FC = () => {
             <div>
               <h4 className="text-gray-600 text-sm font-medium">Budget Status</h4>
               <p className="text-xl font-semibold text-gray-600">
-                {dashboard?.budget.percentageUsed ?? 0.00}%
+                {Number(dashboard?.budget.percentageUsed) * 100}%
               </p>
               <p className="text-sm text-gray-700 mt-1 truncate">
                 of ₦{formatAmount(dashboard?.budget.monthlyLimit)}
