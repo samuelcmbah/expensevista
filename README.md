@@ -30,13 +30,15 @@ This repository contains the client-side application for ExpenseVista. It provid
 
 *   **Core:** [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/)
 *   **Build Tool:** [Vite](https://vitejs.dev/)
-*   **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [ShadCN UI](https://ui.shadcn.com/)
-*   **State/Forms:** [React Hook Form](https://react-hook-form.com/) + [Zod](https://zod.dev/) (Validation)
+*   **Routing:** [React Router DOM](https://reactrouter.com/)
+*   **State Management:**
+    *   **Component State:** Core React Hooks (`useState`)
+    *   **Form State:** [React Hook Form](https://react-hook-form.com/) with [Zod](https://zod.dev/) for validation
 *   **HTTP Client:** [Axios](https://axios-http.com/) (with custom interceptors for auth)
+*   **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [ShadCN UI](https://ui.shadcn.com/)
 *   **Visualization:** [Recharts](https://recharts.org/)
 *   **Icons:** [Lucide React](https://lucide.dev/icons/)
 *   **Notifications:** [React Hot Toast](https://react-hot-toast.com/)
-*   **Routing:** [React Router DOM](https://reactrouter.com/)
 
 ---
 
